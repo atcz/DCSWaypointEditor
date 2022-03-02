@@ -1,0 +1,52 @@
+{
+    "waypoints": [
+		{
+			"latitude": 13.583886111111,
+			"longitude": 144.930055555556,
+			"elevation": 617,
+			"name": "Andersen"
+        },
+        {
+			"latitude": 13.48395,
+			"longitude": 144.797127777778,
+			"elevation": 305,
+			"name": "Guam International"
+        },
+        {
+			"latitude": 13.620858333333,
+			"longitude": 144.856925,
+			"elevation": 478,
+			"name": "Northwest Field"
+        },
+        {
+			"latitude": 13.436944444444,
+			"longitude": 144.641666666667,
+			"elevation": 90,
+			"name": "Orote Field"
+        },
+        {
+			"latitude": 18.124444444444,
+			"longitude": 145.768611111111,
+			"elevation": 34,
+			"name": "Pagan Airstrip"
+        },
+        {
+			"latitude": 14.17435,
+			"longitude": 145.241119444444,
+			"elevation": 606,
+			"name": "Rota"
+        },
+        {
+			"latitude": 15.12025,
+			"longitude": 145.729986111111,
+			"elevation": 214,
+			"name": "Saipan"
+        },
+        {
+			"latitude": 14.999230555556,
+			"longitude": 145.61935,
+			"elevation": 270,
+			"name": "Tinian"
+        }
+	]
+}

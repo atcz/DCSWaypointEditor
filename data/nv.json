@@ -1,0 +1,106 @@
+{
+    "waypoints": [
+		{
+			"latitude": 36.861138888889,
+			"longitude": -116.786388888889,
+			"elevation": 3170,
+			"name": "Beatty"
+        },
+        {
+			"latitude": 35.947308333333,
+			"longitude": -114.861083333333,
+			"elevation": 2203,
+			"name": "Boulder City"
+        },
+        {
+			"latitude": 36.586344444444,
+			"longitude": -115.677369444444,
+			"elevation": 3133,
+			"name": "Creech"
+        },
+        {
+			"latitude": 36.311027777778,
+			"longitude": -114.463888888889,
+			"elevation": 1535,
+			"name": "Echo Bay"
+        },
+        {
+			"latitude": 37.242502777778,
+			"longitude": -115.792397222222,
+			"elevation": 4467,
+			"name": "Groom"
+        },
+        {
+			"latitude": 35.972855555556,
+			"longitude": -115.134386111111,
+			"elevation": 2492,
+			"name": "Henderson"
+        },
+        {
+			"latitude": 35.768263888889,
+			"longitude": -115.329622222222,
+			"elevation": 2835,
+			"name": "Jean"
+        },
+        {
+			"latitude": 36.080044444444,
+			"longitude": -115.152236111111,
+			"elevation": 2181,
+			"name": "Las Vegas"
+        },
+        {
+			"latitude": 35.154613888889,
+			"longitude": -114.559333333333,
+			"elevation": 707,
+			"name": "Laughlin"
+        },
+        {
+			"latitude": 37.787416666667,
+			"longitude": -114.419888888889,
+			"elevation": 4831,
+			"name": "Lincoln County"
+        },
+        {
+			"latitude": 36.833138888889,
+			"longitude": -114.055888888889,
+			"elevation": 1978,
+			"name": "Mesquite"
+        },
+        {
+			"latitude": 38.379861111111,
+			"longitude": -118.09675,
+			"elevation": 4557,
+			"name": "Mina"
+        },
+        {
+			"latitude": 36.2362,
+			"longitude": -115.034255555556,
+			"elevation": 1869,
+			"name": "Nellis"
+        },
+        {
+			"latitude": 36.210702777778,
+			"longitude": -115.194441666667,
+			"elevation": 2205,
+			"name": "North Las Vegas"
+        },
+        {
+			"latitude": 37.102727777778,
+			"longitude": -116.313380555556,
+			"elevation": 5068,
+			"name": "Pahute Mesa"
+        },
+        {
+			"latitude": 38.059894444444,
+			"longitude": -117.0866,
+			"elevation": 5430,
+			"name": "Tonopah"
+        },
+        {
+			"latitude": 37.798866666667,
+			"longitude": -116.780752777778,
+			"elevation": 5550,
+			"name": "Tonopah Test Range"
+        }
+	]
+}
