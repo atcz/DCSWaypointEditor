@@ -26,6 +26,21 @@ def update_base_data(url, file):
             f2.write(html.decode('utf-8'))
     return True
 
+def load_base_file(id, basedict):
+    ids = ["CA", "MA", "NV", "PG"]
+    files = ["cauc.json", "ma.json", "nv.json", "pg.json"]
+    
+    filename = files[ids.index(id)]
+    basedict.clear()
+    with open(".\\data\\" + filename, "r") as f:
+        try:
+            load_base_data(json.load(f), basedict)
+            logger.info(
+                f"Default base data built succesfully from file: {filename}")
+        except AttributeError:
+            logger.warning(
+                f"Failed to build default base data from file: {filename}", exc_info=True)
+
 
 def load_base_data(basedata, basedict):
     waypoints_list = basedata.get("waypoints")
@@ -49,8 +64,6 @@ def load_base_data(basedata, basedict):
 
 
 def generate_default_bases():
-    default_bases_builder_logger = get_logger("default_bases_builder")
-
     pgdata = update_base_data("https://raw.githubusercontent.com/Santi871/HornetWaypointEditor/master/data/"
                               "pg.json?token=ACQW6PPI77ATCRJ2RZSDSBC44UAOG", f".\\data\\pg.json")
 
@@ -58,9 +71,9 @@ def generate_default_bases():
                                 "cauc.json?token=ACQW6PIVKSD72T7FLOBQHCC44W334", f".\\data\\cauc.json")
 
     if pgdata and caucdata:
-        default_bases_builder_logger.info("PG and Caucasus default bases updated succesfully")
+        logger.info("PG and Caucasus default bases updated succesfully")
     else:
-        default_bases_builder_logger.warning("Failed to update PG and Caucasus default bases")
+        logger.warning("Failed to update PG and Caucasus default bases")
 
     for _, _, files in walk(".\\data"):
         for filename in files:
@@ -68,10 +81,10 @@ def generate_default_bases():
                 with open(".\\data\\" + filename, "r") as f:
                     try:
                         load_base_data(json.load(f), default_bases)
-                        default_bases_builder_logger.info(
+                        logger.info(
                             f"Default base data built succesfully from file: {filename}")
                     except AttributeError:
-                        default_bases_builder_logger.warning(
+                        logger.warning(
                             f"Failed to build default base data from file: {filename}", exc_info=True)
 
 
