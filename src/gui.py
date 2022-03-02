@@ -1,4 +1,4 @@
-from src.objects import Profile, Waypoint, MSN
+from src.objects import Profile, Waypoint, MSN, load_base_file
 from src.logger import get_logger
 from peewee import DoesNotExist
 from LatLon23 import LatLon, Longitude, Latitude, string2latlon
@@ -21,6 +21,8 @@ import cv2
 import numpy
 import re
 import datetime
+
+PyGUI.theme('Reddit')
 
 def json_zip(j):
     j = base64.b64encode(
@@ -110,7 +112,7 @@ def check_version(current_version):
         return False
 
     new_version = html.decode("utf-8")
-    if new_version != current_version:
+    if new_version[1:5] > current_version[1:5]:
         popup_answer = PyGUI.PopupYesNo(
             f"New version available: {new_version}\nDo you wish to update?")
 
@@ -187,8 +189,9 @@ class GUI:
         self.logger.debug("Creating GUI")
 
         latitude_col1 = [
-            [PyGUI.Text("Degrees")],
-            [PyGUI.InputText(size=(10, 1), key="latDeg", enable_events=True)],
+            [PyGUI.Text("Degrees", pad=((9,5),3))],
+            [PyGUI.InputText(size=(10, 1), key="latDeg", 
+                             pad=((9,5),3), enable_events=True)],
         ]
 
         latitude_col2 = [
@@ -199,7 +202,7 @@ class GUI:
         latitude_col3 = [
             [PyGUI.Text("Seconds")],
             [PyGUI.InputText(size=(10, 1), key="latSec",
-                             pad=(5, (3, 10)), enable_events=True)],
+                             pad=(5, 3), enable_events=True)],
         ]
 
         longitude_col1 = [
@@ -215,7 +218,7 @@ class GUI:
         longitude_col3 = [
             [PyGUI.Text("Seconds")],
             [PyGUI.InputText(size=(10, 1), key="lonSec",
-                             pad=(5, (3, 10)), enable_events=True)],
+                             pad=(5, 3), enable_events=True)],
         ]
 
         frameelevationlayout = [
@@ -236,6 +239,25 @@ class GUI:
             [PyGUI.Text("Name")],
             [PyGUI.InputText(size=(20, 1), key="msnName", pad=(5, (3, 10)))],
         ]
+        
+        framepresetlayout = [
+            [PyGUI.Text("Select preset location")],
+            [PyGUI.Combo(values=[""] + sorted([base.name for _, base in self.editor.default_bases.items()],),
+                         readonly=False, enable_events=True, key='baseSelector'),
+             PyGUI.Button(button_text="F", key="filter")]
+        ]
+        frameregionlayout = [
+            [PyGUI.Radio("CA", group_id="preset_type",
+                         default=False, key="CA", enable_events=True),
+             PyGUI.Radio("MA", group_id="preset_type",
+                         default=False, key="MA", enable_events=True),
+             PyGUI.Radio("NV", group_id="preset_type",
+                         disabled=False, key="NV", enable_events=True)],
+            [PyGUI.Radio("PG", group_id="preset_type",
+                         disabled=False, key="PG", enable_events=True),
+             PyGUI.Radio("SY", group_id="preset_type",
+                         disabled=False, key="SY", enable_events=True)]
+        ]
 
         framewptypelayout = [
             [PyGUI.Radio("WP", group_id="wp_type", default=True, enable_events=True, key="WP"),
@@ -255,6 +277,16 @@ class GUI:
                          key="sequence", enable_events=True)]
         ]
 
+        lattype_col = [
+            [PyGUI.Radio("N", group_id="lat_type", default=True, enable_events=True, key="North")],
+            [PyGUI.Radio("S", group_id="lat_type", enable_events=True, key="South")]
+        ]
+        
+        lontype_col = [
+            [PyGUI.Radio("E", group_id="lon_type", default=True, enable_events=True, key="East")],
+            [PyGUI.Radio("W", group_id="lon_type", enable_events=True, key="West")]
+        ]
+        
         frameactypelayout = [
             [
                 PyGUI.Radio("F/A-18C", group_id="ac_type",
@@ -271,10 +303,14 @@ class GUI:
             [PyGUI.Radio("F-16C", group_id="ac_type", disabled=False, key="viper", enable_events=True),]
         ]
 
-        framelongitude = PyGUI.Frame("Longitude", [[PyGUI.Column(longitude_col1), PyGUI.Column(longitude_col2),
-                                                    PyGUI.Column(longitude_col3)]])
-        framelatitude = PyGUI.Frame("Latitude", [[PyGUI.Column(latitude_col1), PyGUI.Column(latitude_col2),
-                                                  PyGUI.Column(latitude_col3)]])
+        framelongitude = PyGUI.Frame("Longitude", [
+            [PyGUI.Column(lontype_col), PyGUI.Column(longitude_col1),
+            PyGUI.Column(longitude_col2), PyGUI.Column(longitude_col3)]
+        ])
+        framelatitude = PyGUI.Frame("Latitude", [
+            [PyGUI.Column(lattype_col), PyGUI.Column(latitude_col1),
+            PyGUI.Column(latitude_col2), PyGUI.Column(latitude_col3)]
+        ])
         frameelevation = PyGUI.Frame(
             "Elevation", frameelevationlayout, pad=(5, (3, 10)))
         frameactype = PyGUI.Frame("Aircraft Type", frameactypelayout)
@@ -298,6 +334,8 @@ class GUI:
         ]
 
         frameposition = PyGUI.Frame("Position", framepositionlayout)
+        framepreset = PyGUI.Frame("Preset", framepresetlayout)
+        frameregion = PyGUI.Frame("Region", frameregionlayout)
         framedata = PyGUI.Frame("Data", framedatalayoutcol2)
         framewptype = PyGUI.Frame("Waypoint Type", framewptypelayout)
 
@@ -305,7 +343,7 @@ class GUI:
             [PyGUI.Text("Select profile:")],
             [PyGUI.Combo(values=[""] + self.get_profile_names(), readonly=True,
                          enable_events=True, key='profileSelector', size=(27, 1))],
-            [PyGUI.Listbox(values=list(), size=(30, 27),
+            [PyGUI.Listbox(values=list(), size=(30, 30),
                            enable_events=True, key='activesList')],
             [PyGUI.Button("Add", size=(12, 1)),
              PyGUI.Button("Update", size=(12, 1))],
@@ -318,10 +356,7 @@ class GUI:
         ]
 
         col1 = [
-            [PyGUI.Text("Select preset location")],
-            [PyGUI.Combo(values=[""] + sorted([base.name for _, base in self.editor.default_bases.items()],),
-                         readonly=False, enable_events=True, key='baseSelector'),
-             PyGUI.Button(button_text="F", key="filter")],
+            [framepreset, frameregion],
             [framedata, framewptype],
             [frameposition],
             [frameactype],
@@ -381,13 +416,22 @@ class GUI:
             lonsec = ""
             mgrs_str = ""
 
-        self.window.Element("latDeg").Update(latdeg)
-        self.window.Element("latMin").Update(latmin)
-        self.window.Element("latSec").Update(latsec)
+        # Set N/S/E/W flags and deg/min/sec to absolute value for display
+        if latdeg < 0:
+            self.window.Element("South").Update(True)
+        else:
+            self.window.Element("North").Update(True)
+        self.window.Element("latDeg").Update(abs(latdeg))
+        self.window.Element("latMin").Update(abs(latmin))
+        self.window.Element("latSec").Update(abs(latsec))
 
-        self.window.Element("lonDeg").Update(londeg)
-        self.window.Element("lonMin").Update(lonmin)
-        self.window.Element("lonSec").Update(lonsec)
+        if londeg < 0:
+            self.window.Element("West").Update(True)
+        else:
+            self.window.Element("East").Update(True)
+        self.window.Element("lonDeg").Update(abs(londeg))
+        self.window.Element("lonMin").Update(abs(lonmin))
+        self.window.Element("lonSec").Update(abs(lonsec))
 
         if elevation is not None:
             elevation = round(elevation)
@@ -538,8 +582,11 @@ class GUI:
                     inverted.save(debug_dirname + "/lat_lon_image_inverted.png")
 
                 captured_map_coords = pytesseract.image_to_string(inverted)
+#                                        Whitelist / Blacklist test
+#                                        config='''-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-ftm°,.\\'\\" -c preserve_interword_spaces=1''')
+#                                        config='-c tessedit_char_blacklist=abcdeghijklnopqrsuvwxyz()£')
 
-                self.logger.debug("Raw captured text: " + captured_map_coords)
+                self.logger.debug("Raw captured text: " + captured_map_coords.rstrip())
                 return captured_map_coords
 
         self.logger.debug("Raise exception (could not find the map anywhere i guess)")
@@ -572,17 +619,18 @@ class GUI:
         self.profile = Profile('')
 
     def parse_map_coords_string(self, coords_string, tomcat_mode=False):
-        coords_string = coords_string.upper()
+        coords_string = coords_string.upper().replace(")", "J").replace("£", "E")
         # "X-00199287 Z+00523070, 0 ft"   Not sure how to convert this yet
 
         # "37 T FJ 36255 11628, 5300 ft"  Tessaract did not like this one because the DCS font J looks too much like )
-        res = re.match("^(\d+ [a-zA-Z] [a-zA-Z][a-zA-Z] \d+ \d+), (\d+) (FT|M)$", coords_string)
+        res = re.match("^(\d+\s?[a-zA-Z\)]\s?[a-zA-Z\)][a-zA-Z\)] \d+ \d+), (-?\d+) (FT|M)$", coords_string)
         if res is not None:
             mgrs_string = res.group(1).replace(" ", "")
+            self.logger.debug("MGRS input found: " + mgrs_string)
             decoded_mgrs = mgrs.UTMtoLL(mgrs.decode(mgrs_string))
             position = LatLon(Latitude(degree=decoded_mgrs["lat"]), Longitude(
                 degree=decoded_mgrs["lon"]))
-            elevation = float(res.group(2))
+            elevation = max(0, float(res.group(2)))
 
             if res.group(3) == "M":
                 elevation = elevation * 3.281
@@ -590,12 +638,13 @@ class GUI:
             return position, elevation
 
         # "N43°10.244 E40°40.204, 477 ft"  Degrees and decimal minutes
-        res = re.match("^([NS])(\d+)°([^\s]+) ([EW])(\d+)°([^,]+), (\d+) (FT|M)$", coords_string)
+        res = re.match("([NS])(\d+)[°'](\d+\.\d+) ([EW])(\d+)[°'](\d+\.\d+), (-?\d+) (FT|M)$", coords_string)
         if res is not None:
             lat_str = res.group(2) + " " + res.group(3) + " " + res.group(1)
             lon_str = res.group(5) + " " + res.group(6) + " " + res.group(4)
+            self.logger.debug("DD MM.MMM input found: " + lat_str + " " + lon_str)
             position = string2latlon(lat_str, lon_str, "d% %M% %H")
-            elevation = float(res.group(7))
+            elevation = max(0, float(res.group(7)))
 
             if res.group(8) == "M":
                 elevation = elevation * 3.281
@@ -603,12 +652,13 @@ class GUI:
             return position, elevation
 
         # "N42-43-17.55 E40-38-21.69, 0 ft" Degrees, minutes and decimal seconds
-        res = re.match("^([NS])(\d+)-(\d+)-([^\s]+) ([EW])(\d+)-(\d+)-([^,]+), (\d+) (FT|M)$", coords_string)
+        res = re.match("([NS])(\d+)-(\d+)-(\d+\.\d+) ([EW])(\d+)-(\d+)-(\d+\.\d+), (-?\d+) (FT|M)$", coords_string)
         if res is not None:
             lat_str = res.group(2) + " " + res.group(3) + " " + res.group(4) + " " + res.group(1)
             lon_str = res.group(6) + " " + res.group(7) + " " + res.group(8) + " " + res.group(5)
+            self.logger.debug("DD MM SS.SS input found: " + lat_str + " " + lon_str)
             position = string2latlon(lat_str, lon_str, "d% %m% %S% %H")
-            elevation = float(res.group(9))
+            elevation = max(0, float(res.group(9)))
 
             if res.group(10) == "M":
                 elevation = elevation * 3.281
@@ -616,18 +666,25 @@ class GUI:
             return position, elevation
 
         # "43°34'37"N 29°11'18"E, 0 ft" Degrees minutes and seconds
-        res = re.match("^(\d+)°(\d+)'([^\"]+)\"([NS]) (\d+)°(\d+)'([^\"]+)\"([EW]), (\d+) (FT|M)$", coords_string)
+        res = re.match("^\(?(\d+)[°'](\d+)[°'](\d+)\"([NS]) (\d+)[°'](\d+)[°'](\d+)\"([EW]), (-?\d+) (FT|M)$", coords_string)
         if res is not None:
             lat_str = res.group(1) + " " + res.group(2) + " " + res.group(3) + " " + res.group(4)
             lon_str = res.group(5) + " " + res.group(6) + " " + res.group(7) + " " + res.group(8)
             position = string2latlon(lat_str, lon_str, "d% %m% %S% %H")
-            elevation = float(res.group(9))
+            self.logger.debug("DD MM SS input found: " + lat_str + " " + lon_str)
+            elevation = max(0, float(res.group(9)))
 
             if res.group(10) == "M":
                 elevation = elevation * 3.281
 
             return position, elevation
 
+        # Could not find any matching text
+        self.logger.debug("Text found " + coords_string.rstrip() + " but did not match any known pattern. Sorry about that.")
+        raise ValueError("No matching pattern")
+        return
+
+        # The remainder of this sub appears obsolete
         split_string = coords_string.split(',')
 
         if tomcat_mode:
@@ -679,6 +736,8 @@ class GUI:
         try:
             captured_coords = self.capture_map_coords()
             position, elevation = self.parse_map_coords_string(captured_coords)
+            self.logger.debug(
+                "Parsed text as coords succesfully: " + str(position))
         except (IndexError, ValueError, TypeError):
             self.logger.error("Failed to parse captured text", exc_info=True)
             return
@@ -749,13 +808,21 @@ class GUI:
                 pass
 
     def validate_coords(self):
-        lat_deg = self.window.Element("latDeg").Get()
-        lat_min = self.window.Element("latMin").Get()
-        lat_sec = self.window.Element("latSec").Get()
+        # Make lat/lon negative for S/W before converting position
+        lat_dir = ""
+        lon_dir = ""
+        if self.window.Element("South").Get():
+            lat_dir = "-"
+        if self.window.Element("West").Get():
+            lon_dir = "-"
 
-        lon_deg = self.window.Element("lonDeg").Get()
-        lon_min = self.window.Element("lonMin").Get()
-        lon_sec = self.window.Element("lonSec").Get()
+        lat_deg = lat_dir + self.window.Element("latDeg").Get()
+        lat_min = lat_dir + self.window.Element("latMin").Get()
+        lat_sec = lat_dir + self.window.Element("latSec").Get()
+
+        lon_deg = lon_dir + self.window.Element("lonDeg").Get()
+        lon_min = lon_dir + self.window.Element("lonMin").Get()
+        lon_sec = lon_dir + self.window.Element("lonSec").Get()
 
         try:
             position = LatLon(Latitude(degree=lat_deg, minute=lat_min, second=lat_sec),
@@ -804,6 +871,7 @@ class GUI:
 
     def run(self):
         while True:
+#            self.logger.debug(self.logger.handlers)
             event, self.values = self.window.Read()
             self.logger.debug(f"Event: {event}")
             self.logger.debug(f"Values: {self.values}")
@@ -937,6 +1005,12 @@ class GUI:
                     self.update_position(
                         base.position, base.elevation, base.name)
 
+            elif event in ("CA", "MA", "NV", "PG"):
+                load_base_file(event, self.editor.default_bases)
+                self.window.Element("baseSelector").\
+                    Update(values=[""] + [base.name for _, base in self.editor.default_bases.items()],
+                      set_to_index=0)
+
             elif event == "enter":
                 self.enter_coords_to_aircraft()
 
@@ -949,7 +1023,8 @@ class GUI:
             elif event == "elevMeters":
                 self.update_altitude_elements("feet")
 
-            elif event in ("latDeg", "latMin", "latSec", "lonDeg", "lonMin", "lonSec"):
+            elif event in ("latDeg", "latMin", "latSec", "lonDeg", "lonMin", "lonSec",
+                           "North", "South", "East", "West"):
                 position, _, _ = self.validate_coords()
 
                 if position is not None:
