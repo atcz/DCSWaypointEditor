@@ -1005,7 +1005,7 @@ class GUI:
                     self.update_position(
                         base.position, base.elevation, base.name)
 
-            elif event in ("CA", "MA", "NV", "PG"):
+            elif event in ("CA", "MA", "NV", "PG", "SY"):
                 load_base_file(event, self.editor.default_bases)
                 self.window.Element("baseSelector").\
                     Update(values=[""] + [base.name for _, base in self.editor.default_bases.items()],

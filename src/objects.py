@@ -27,8 +27,8 @@ def update_base_data(url, file):
     return True
 
 def load_base_file(id, basedict):
-    ids = ["CA", "MA", "NV", "PG"]
-    files = ["cauc.json", "ma.json", "nv.json", "pg.json"]
+    ids = ["CA", "MA", "NV", "PG", "SY"]
+    files = ["cauc.json", "ma.json", "nv.json", "pg.json", "sy.json"]
     
     filename = files[ids.index(id)]
     basedict.clear()
