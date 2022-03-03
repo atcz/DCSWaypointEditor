@@ -1,0 +1,263 @@
+{
+        "waypoints": [
+            {
+                "name": "Abu Al-Duhur",
+                "latitude": 35.73145,
+                "longitude": 37.1188,
+                "elevation": 820
+            },
+            {
+                "name": "Adana Sakirpasa",
+                "latitude": 36.988266666667,
+                "longitude": 35.297366666667,
+                "elevation": 55
+            },
+            {
+                "name": "Akrotiri",
+                "latitude": 34.59405,
+                "longitude": 32.974816666667,
+                "elevation": 62
+            },
+            {
+                "name": "Al Qusayr",
+                "latitude": 34.566866666667,
+                "longitude": 36.5854,
+                "elevation": 1729
+            },
+            {
+                "name": "Al-Dumayr",
+                "latitude": 33.60465,
+                "longitude": 36.735816666667,
+                "elevation": 2066
+            },
+            {
+                "name": "Aleppo",
+                "latitude": 36.1822,
+                "longitude": 37.210366666667,
+                "elevation": 1253
+            },
+            {
+                "name": "An Nasiriyah",
+                "latitude": 33.92655,
+                "longitude": 36.875333333333,
+                "elevation": 2746
+            },
+            {
+                "name": "Bassel Al-Assad",
+                "latitude": 35.411583333333,
+                "longitude": 35.950016666667,
+                "elevation": 93
+            },
+            {
+                "name": "Beirut-Rafic Hariri",
+                "latitude": 33.83645,
+                "longitude": 35.487416666667,
+                "elevation": 39
+            },
+            {
+                "name": "Damascus",
+                "latitude": 33.415333333333,
+                "longitude": 36.50425,
+                "elevation": 2007
+            },
+            {
+                "name": "Ercan",
+                "latitude": 35.159233333333,
+                "longitude": 33.4901,
+                "elevation": 311
+            },
+            {
+                "name": "Eyn Shemer",
+                "latitude": 32.441783333333,
+                "longitude": 86.883333333333,
+                "elevation": 93
+            },
+            {
+                "name": "Gaziantep",
+                "latitude": 36.951383333333,
+                "longitude": 37.4645,
+                "elevation": 2287
+            },
+            {
+                "name": "Gazipasa",
+                "latitude": 36.297816666667,
+                "longitude": 32.286066666667,
+                "elevation": 36
+            },
+            {
+                "name": "Gecitkale",
+                "latitude": 35.2364,
+                "longitude": 33.707266666667,
+                "elevation": 147
+            },
+            {
+                "name": "H4",
+                "latitude": 32.53685,
+                "longitude": 38.206366666667,
+                "elevation": 2257
+            },
+            {
+                "name": "Haifa",
+                "latitude": 32.80645,
+                "longitude": 35.045016666667,
+                "elevation": 19
+            },
+            {
+                "name": "Hama",
+                "latitude": 35.116083333333,
+                "longitude": 36.725466666667,
+                "elevation": 984
+            },
+            {
+                "name": "Hatay",
+                "latitude": 36.371266666667,
+                "longitude": 36.298083333333,
+                "elevation": 253
+            },
+            {
+                "name": "Incirlik",
+                "latitude": 36.99425,
+                "longitude": 35.4127,
+                "elevation": 165
+            },
+            {
+                "name": "Jirah",
+                "latitude": 36.094483333333,
+                "longitude": 37.951083333333,
+                "elevation": 1170
+            },
+            {
+                "name": "Khalkhalah",
+                "latitude": 33.0636,
+                "longitude": 36.559783333333,
+                "elevation": 2337
+            },
+            {
+                "name": "King Hussein A.C.",
+                "latitude": 32.348783333333,
+                "longitude": 36.2702,
+                "elevation": 2204
+            },
+            {
+                "name": "Kingsfield",
+                "latitude": 35.016616666667,
+                "longitude": 33.720483333333,
+                "elevation": 275
+            },
+            {
+                "name": "Kiryat Shmona",
+                "latitude": 33.212366666667,
+                "longitude": 35.592416666667,
+                "elevation": 306
+            },
+            {
+                "name": "Kuweires",
+                "latitude": 36.189366666667,
+                "longitude": 37.570433333333,
+                "elevation": 1200
+            },
+            {
+                "name": "Larnaca",
+                "latitude": 34.865616666667,
+                "longitude": 33.613583333333,
+                "elevation": 16
+            },
+            {
+                "name": "Marj Ruhayyil",
+                "latitude": 33.2795,
+                "longitude": 36.446966666667,
+                "elevation": 2160
+            },
+            {
+                "name": "Megiddo",
+                "latitude": 32.597566666667,
+                "longitude": 35.2202,
+                "elevation": 180
+            },
+            {
+                "name": "Mezzeh",
+                "latitude": 33.4827,
+                "longitude": 36.28505,
+                "elevation": 2355
+            },
+            {
+                "name": "Minakh",
+                "latitude": 36.5228,
+                "longitude": 37.033616666667,
+                "elevation": 1614
+            },
+            {
+                "name": "Paphos",
+                "latitude": 34.722383333333,
+                "longitude": 32.4718,
+                "elevation": 40
+            },
+            {
+                "name": "Palmyra",
+                "latitude": 34.558233333333,
+                "longitude": 38.331116666667,
+                "elevation": 1267
+            },
+            {
+                "name": "Ramat David",
+                "latitude": 32.66605,
+                "longitude": 35.16545,
+                "elevation": 105
+            },
+            {
+                "name": "Rayak",
+                "latitude": 33.8429,
+                "longitude": 35.976916666667,
+                "elevation": 2934
+            },
+            {
+                "name": "Rene Mouawad",
+                "latitude": 34.58395,
+                "longitude": 35.998683333333,
+                "elevation": 14
+            },
+            {
+                "name": "Rosh Pina",
+                "latitude": 32.979266666667,
+                "longitude": 35.57265,
+                "elevation": 865
+            },
+            {
+                "name": "Sayqal",
+                "latitude": 33.68005,
+                "longitude": 37.204066666667,
+                "elevation": 2273
+            },
+            {
+                "name": "Shayrat",
+                "latitude": 34.494633333333,
+                "longitude": 36.894466666667,
+                "elevation": 2637
+            },
+            {
+                "name": "Tabqa",
+                "latitude": 35.7556,
+                "longitude": 38.55125,
+                "elevation": 1099
+            },
+            {
+                "name": "Tha'lah",
+                "latitude": 32.698116666667,
+                "longitude": 36.402733333333,
+                "elevation": 2381
+            },
+            {
+                "name": "Tiyas",
+                "latitude": 34.522516666667,
+                "longitude": 38.331116666667,
+                "elevation": 1797
+            },
+            {
+                "name": "Wujah Al Hajar",
+                "latitude": 34.28695,
+                "longitude": 35.683983333333,
+                "elevation": 619
+            }
+        ]
+    
+}
