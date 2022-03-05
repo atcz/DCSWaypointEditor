@@ -373,7 +373,8 @@ class HarrierDriver(Driver):
 
         self.enter_number(lon_str)
 
-        self.odu("2")
+#   Automatically switches, don't need this anymore
+#        self.odu("2")
 
         if elev:
             self.odu("3")
