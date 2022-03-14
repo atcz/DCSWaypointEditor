@@ -14,13 +14,11 @@ def log_settings(version):
 
 def get_logger(name):
     logger = logging.getLogger(name)
-    if logger.hasHandlers(): 
-        logger.handlers = []
-    formatter = logging.Formatter(
-        '%(asctime)s:%(name)s: %(levelname)s - %(message)s')
+    logger.propagate = False
+    formatter = logging.Formatter('%(asctime)s:%(name)s: %(levelname)s - %(message)s')
     s_handler = logging.StreamHandler(stdout)
     s_handler.setFormatter(formatter)
-    f_handler = logging.FileHandler('log.txt', encoding="utf-8")
+    f_handler = logging.FileHandler("log.txt", encoding="utf-8")
     f_handler.setFormatter(formatter)
     logger.addHandler(f_handler)
     logger.addHandler(s_handler)
