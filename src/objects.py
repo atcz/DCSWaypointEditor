@@ -64,16 +64,17 @@ def load_base_data(basedata, basedict):
 
 
 def generate_default_bases():
-    pgdata = update_base_data("https://raw.githubusercontent.com/Santi871/HornetWaypointEditor/master/data/"
-                              "pg.json?token=ACQW6PPI77ATCRJ2RZSDSBC44UAOG", f".\\data\\pg.json")
-
-    caucdata = update_base_data("https://raw.githubusercontent.com/Santi871/HornetWaypointEditor/master/data/"
-                                "cauc.json?token=ACQW6PIVKSD72T7FLOBQHCC44W334", f".\\data\\cauc.json")
-
-    if pgdata and caucdata:
-        logger.info("PG and Caucasus default bases updated succesfully")
-    else:
-        logger.warning("Failed to update PG and Caucasus default bases")
+# Cancel update from Santi871 files
+#    pgdata = update_base_data("https://raw.githubusercontent.com/Santi871/HornetWaypointEditor/master/data/"
+#                             "pg.json?token=ACQW6PPI77ATCRJ2RZSDSBC44UAOG", f".\\data\\pg.json")
+#
+#    caucdata = update_base_data("https://raw.githubusercontent.com/Santi871/HornetWaypointEditor/master/data/"
+#                                "cauc.json?token=ACQW6PIVKSD72T7FLOBQHCC44W334", f".\\data\\cauc.json")
+#
+#    if pgdata and caucdata:
+#        logger.info("PG and Caucasus default bases updated succesfully")
+#    else:
+#        logger.warning("Failed to update PG and Caucasus default bases")
 
     for _, _, files in walk(".\\data"):
         for filename in files:
