@@ -537,8 +537,8 @@ class GUI:
         if self.save_debug_images == "true":
             os.mkdir(debug_dirname)
 
-        map_image = cv2.imread("map.bin")
-        arrow_image = cv2.imread("arrow.bin")
+        map_image = cv2.imread("data/map.bin")
+        arrow_image = cv2.imread("data/arrow.bin")
 
         for display_number, image in enumerate(getDisplaysAsImages(), 1):
             self.logger.debug("Looking for map on screen " + str(display_number))
