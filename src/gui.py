@@ -345,13 +345,14 @@ class GUI:
                          enable_events=True, key='profileSelector', size=(27, 1))],
             [PyGUI.Listbox(values=list(), size=(30, 30),
                            enable_events=True, key='activesList')],
-            [PyGUI.Button("Add", size=(12, 1)),
-             PyGUI.Button("Update", size=(12, 1))],
-            [PyGUI.Button("Remove", size=(26, 1))],
+            [PyGUI.Button("Add", size=(7, 1)),
+             PyGUI.Button("Update", size=(8, 1)),
+             PyGUI.Button("Remove", size=(8, 1))],
             # [PyGUI.Button("Move up", size=(12, 1)),
             # PyGUI.Button("Move down", size=(12, 1))],
-            [PyGUI.Button("Save profile", size=(12, 1)),
-             PyGUI.Button("Delete profile", size=(12, 1))],
+            [PyGUI.Button("Save", size=(7, 1)),
+             PyGUI.Button("Delete", size=(8, 1)),
+             PyGUI.Button("Save As..", size=(8, 1))],
             [PyGUI.Text(f"Version: {self.software_version}")]
         ]
 
@@ -417,21 +418,27 @@ class GUI:
             mgrs_str = ""
 
         # Set N/S/E/W flags and deg/min/sec to absolute value for display
-        if latdeg < 0:
-            self.window.Element("South").Update(True)
-        else:
+        if latdeg == "" or latdeg >= 0:
             self.window.Element("North").Update(True)
-        self.window.Element("latDeg").Update(abs(latdeg))
-        self.window.Element("latMin").Update(abs(latmin))
-        self.window.Element("latSec").Update(abs(latsec))
-
-        if londeg < 0:
-            self.window.Element("West").Update(True)
         else:
+            self.window.Element("South").Update(True)
+        self.window.Element("latDeg").Update(
+            abs(latdeg) if type(latdeg) == int else "")
+        self.window.Element("latMin").Update(
+            abs(latmin) if type(latmin) == int else "")
+        self.window.Element("latSec").Update(
+            abs(latsec) if type(latsec) == float else "")
+
+        if londeg == "" or londeg >= 0:
             self.window.Element("East").Update(True)
-        self.window.Element("lonDeg").Update(abs(londeg))
-        self.window.Element("lonMin").Update(abs(lonmin))
-        self.window.Element("lonSec").Update(abs(lonsec))
+        else:
+            self.window.Element("West").Update(True)
+        self.window.Element("lonDeg").Update(
+            abs(londeg) if type(londeg) == int else "")
+        self.window.Element("lonMin").Update(
+            abs(lonmin) if type(lonmin) == int else "")
+        self.window.Element("lonSec").Update(
+            abs(lonsec) if type(lonsec) == float else "")
 
         if elevation is not None:
             elevation = round(elevation)
@@ -912,20 +919,27 @@ class GUI:
                     self.update_position(
                         waypoint.position, waypoint.elevation, waypoint.name, waypoint_type=waypoint.wp_type)
 
-            elif event == "Save profile":
+            elif event == "Save":
                 if self.profile.waypoints:
                     name = self.profile.profilename
                     if not name:
                         name = PyGUI.PopupGetText(
                             "Enter profile name", "Saving profile")
-
                     if not name:
                         continue
-
                     self.profile.save(name)
                     self.update_profiles_list(name)
 
-            elif event == "Delete profile":
+            elif event == "Save As..":
+                if self.profile.waypoints:
+                    name = PyGUI.PopupGetText(
+                          "Enter profile name", "Saving profile")
+                    if not name:
+                        continue
+                    self.profile.save(name)
+                    self.update_profiles_list(name)
+
+            elif event == "Delete":
                 if not self.profile.profilename:
                     continue
 
