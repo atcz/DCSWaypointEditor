@@ -293,14 +293,16 @@ class GUI:
                             default=True, key="hornet", enable_events=True),
                 PyGUI.Radio("AV-8B", group_id="ac_type",
                             disabled=False, key="harrier", enable_events=True),
-                PyGUI.Radio("M-2000C", group_id="ac_type",
-                            disabled=False, key="mirage", enable_events=True),
                 PyGUI.Radio("F-14A/B", group_id="ac_type",
                             disabled=False, key="tomcat", enable_events=True),
+            ],
+            [   PyGUI.Radio("F-16C", group_id="ac_type",
+                            disabled=False, key="viper", enable_events=True),
+                PyGUI.Radio("M-2000C", group_id="ac_type",
+                            disabled=False, key="mirage", enable_events=True),
                 PyGUI.Radio("A-10C", group_id="ac_type",
                             disabled=False, key="warthog", enable_events=True),
-            ],
-            [PyGUI.Radio("F-16C", group_id="ac_type", disabled=False, key="viper", enable_events=True),]
+            ]
         ]
 
         framelongitude = PyGUI.Frame("Longitude", [
@@ -342,33 +344,34 @@ class GUI:
         col0 = [
             [PyGUI.Text("Select profile:")],
             [PyGUI.Combo(values=[""] + self.get_profile_names(), readonly=True,
-                         enable_events=True, key='profileSelector', size=(27, 1))],
-            [PyGUI.Listbox(values=list(), size=(30, 30),
+                         enable_events=True, key='profileSelector', size=(30, 1))],
+#            [PyGUI.Button("Save", size=(7, 1)),
+#             PyGUI.Button("Delete", size=(8, 1)),
+#             PyGUI.Button("Save As..", size=(8, 1))],
+            [PyGUI.Listbox(values=list(), size=(33, 27),
                            enable_events=True, key='activesList')],
-            [PyGUI.Button("Add", size=(7, 1)),
-             PyGUI.Button("Update", size=(8, 1)),
-             PyGUI.Button("Remove", size=(8, 1))],
             # [PyGUI.Button("Move up", size=(12, 1)),
             # PyGUI.Button("Move down", size=(12, 1))],
-            [PyGUI.Button("Save", size=(7, 1)),
-             PyGUI.Button("Delete", size=(8, 1)),
-             PyGUI.Button("Save As..", size=(8, 1))],
+            [frameactype],
             [PyGUI.Text(f"Version: {self.software_version}")]
         ]
 
         col1 = [
             [framepreset, frameregion],
             [framedata, framewptype],
+            [PyGUI.Button("Add", size=(13, 1)),
+             PyGUI.Button("Update", size=(13, 1)),
+             PyGUI.Button("Remove", size=(13, 1))],
             [frameposition],
-            [frameactype],
             [PyGUI.Button("Enter into aircraft", key="enter")],
         ]
 
         colmain1 = [
-            [PyGUI.MenuBar([["Profile",
-                             [[
-                                 ["Import", ["Paste as string from clipboard", "Load from encoded file"]]],
-                                 "Export", ["Copy as string to clipboard", "Copy plain text to clipboard",
+            [PyGUI.MenuBar([["&Profile",
+                             [
+                                "&Save Profile", "&Delete Profile", "Save Profile &As...", "---",
+                                "Import", ["Paste as string from clipboard", "Load from encoded file"],
+                                "Export", ["Copy as string to clipboard", "Copy plain text to clipboard",
                                             "Save as encoded file"],
                               ]]])],
             [PyGUI.Column(col1)],
@@ -919,7 +922,7 @@ class GUI:
                     self.update_position(
                         waypoint.position, waypoint.elevation, waypoint.name, waypoint_type=waypoint.wp_type)
 
-            elif event == "Save":
+            elif event == "Save Profile":
                 if self.profile.waypoints:
                     name = self.profile.profilename
                     if not name:
@@ -930,7 +933,7 @@ class GUI:
                     self.profile.save(name)
                     self.update_profiles_list(name)
 
-            elif event == "Save As..":
+            elif event == "Save Profile As...":
                 if self.profile.waypoints:
                     name = PyGUI.PopupGetText(
                           "Enter profile name", "Saving profile")
@@ -939,7 +942,7 @@ class GUI:
                     self.profile.save(name)
                     self.update_profiles_list(name)
 
-            elif event == "Delete":
+            elif event == "Delete Profile":
                 if not self.profile.profilename:
                     continue
 
