@@ -7,10 +7,10 @@
             "name": "Ambrolauri"
         },
         {
-			"latitude": 45.004947222222,
-			"longitude": 37.347822222222,
-			"elevation": 141,
-			"name": "Anapa-Vityazevo"
+            "latitude": 45.004947222222,
+            "longitude": 37.347822222222,
+            "elevation": 141,
+            "name": "Anapa-Vityazevo"
         },
         {
             "latitude": 44.453339730242,
@@ -31,16 +31,16 @@
             "name": "Arhyz"
         },
         {
-			"latitude": 41.609597222222,
-			"longitude": 41.600236111111,
-			"elevation": 33,
-			"name": "Batumi"
+            "latitude": 41.609597222222,
+            "longitude": 41.600236111111,
+            "elevation": 33,
+            "name": "Batumi"
         },
         {
-			"latitude": 43.205705555556,
-			"longitude": 44.605805555556,
-			"elevation": 1673,
-			"name": "Beslan"
+            "latitude": 43.205705555556,
+            "longitude": 44.605805555556,
+            "elevation": 1673,
+            "name": "Beslan"
         },
         {
             "latitude": 44.26326669907,
@@ -61,10 +61,10 @@
             "name": "Gagra"
         },
         {
-			"latitude": 44.5729,
-			"longitude": 38.004113888889,
-			"elevation": 72,
-			"name": "Gelendzhik"
+            "latitude": 44.5729,
+            "longitude": 38.011613888889,
+            "elevation": 72,
+            "name": "Gelendzhik"
         },
         {
             "latitude": 44.380170431835,
@@ -73,10 +73,10 @@
             "name": "Gubskaya"
         },
         {
-			"latitude": 43.114325,
-			"longitude": 40.569738888889,
-			"elevation": 69,
-			"name": "Gudauta"
+            "latitude": 43.114325,
+            "longitude": 40.569738888889,
+            "elevation": 69,
+            "name": "Gudauta"
         },
         {
             "latitude": 43.726644452676,
@@ -96,7 +96,7 @@
             "elevation": 1724,
             "name": "Kapsi"
         },
-		{
+        {
             "latitude": 42.632433610716,
             "longitude": 44.619528299184,
             "elevation": 5527,
@@ -108,11 +108,11 @@
             "elevation": 2274,
             "name": "Khashuri"
         },
-		{
-			"latitude": 41.929916666667,
-			"longitude": 41.863272222222,
-			"elevation": 59,
-			"name": "Kobuleti"
+        {
+            "latitude": 41.929916666667,
+            "longitude": 41.863272222222,
+            "elevation": 59,
+            "name": "Kobuleti"
         },
         {
             "latitude": 43.686622576998,
@@ -121,22 +121,22 @@
             "name": "Krasnaya"
         },
         {
-			"latitude": 45.08695,
-			"longitude": 38.939983333333,
-			"elevation": 98,
-			"name": "Krasnodar-Center"
+            "latitude": 45.08695,
+            "longitude": 38.939983333333,
+            "elevation": 98,
+            "name": "Krasnodar-Center"
         },
-		{
-			"latitude": 45.038008333333,
-			"longitude": 39.188133333333,
-			"elevation": 112,
-			"name": "Krasnodar-Pashkovsky"
-		},
         {
-			"latitude": 45.967936111111,
-			"longitude": 37.995027777778,
-			"elevation": 66,
-			"name": "Krymsk"
+            "latitude": 45.038008333333,
+            "longitude": 39.188133333333,
+            "elevation": 112,
+            "name": "Krasnodar-Pashkovsky"
+        },
+        {
+            "latitude": 44.967936111111,
+            "longitude": 37.995027777778,
+            "elevation": 66,
+            "name": "Krymsk"
         },
         {
             "latitude": 42.588867406628,
@@ -145,12 +145,12 @@
             "name": "Kurzu"
         },
         {
-			"latitude": 42.177613888889,
-			"longitude": 42.481291666667,
-			"elevation": 148,
-			"name": "Kutaisi"
+            "latitude": 42.177613888889,
+            "longitude": 42.481291666667,
+            "elevation": 148,
+            "name": "Kutaisi"
         },
-		{
+        {
             "latitude": 43.530625731953,
             "longitude": 38.284733394772,
             "elevation": 88.392250061035,
@@ -164,36 +164,36 @@
             "name": "Malot"
         },
         {
-			"latitude": 44.681283333333,
-			"longitude": 40.035252777778,
-			"elevation": 591,
-			"name": "Maykop-Khanskaya"
-        },
-		{
-			"latitude": 44.22785,
-			"longitude": 43.081188888889,
-			"elevation": 1050,
-			"name": "Mineralnye Vody"
-		},
-        {
-			"latitude": 43.791708333333,
-			"longitude": 44.605836111111,
-			"elevation": 507,
-			"name": "Mozdok"
+            "latitude": 44.681283333333,
+            "longitude": 40.035252777778,
+            "elevation": 591,
+            "name": "Maykop-Khanskaya"
         },
         {
-			"latitude": 43.514,
-			"longitude": 43.63645,
-			"elevation": 1411,
-			"name": "Nalchick"
+            "latitude": 44.22785,
+            "longitude": 43.081188888889,
+            "elevation": 1050,
+            "name": "Mineralnye Vody"
         },
-		{
-			"latitude": 44.668094444444,
-			"longitude": 37.786588888889,
-			"elevation": 131,
-			"name": "Novorossiysk"
-		},
-		{
+        {
+            "latitude": 43.791708333333,
+            "longitude": 44.605836111111,
+            "elevation": 507,
+            "name": "Mozdok"
+        },
+        {
+            "latitude": 43.514,
+            "longitude": 43.63645,
+            "elevation": 1411,
+            "name": "Nalchick"
+        },
+        {
+            "latitude": 44.668094444444,
+            "longitude": 37.778255555556,
+            "elevation": 131,
+            "name": "Novorossiysk"
+        },
+        {
             "latitude": 44.11947316765,
             "longitude": 40.824051677047,
             "elevation": 2025,
@@ -212,23 +212,24 @@
             "name": "Saratovskaya"
         },
         {
-			"latitude": 42.290847222222,
-			"longitude": 42.048013888889,
-			"elevation": 43,
-			"name": "Senaki"
+            "latitude": 42.240847222222,
+            "longitude": 42.048013888889,
+            "elevation": 43,
+            "name": "Senaki"
         },
         {
-			"latitude": 43.444352777778,
-			"longitude": 39.941075,
-			"elevation": 98,
-			"name": "Sochi-Adler"
+            "latitude": 43.444352777778,
+            "longitude": 39.941075,
+            "elevation": 98,
+            "name": "Sochi-Adler"
         },
-		{
-			"latitude": 41.641161111111,
-			"longitude": 44.947180555556,
-			"elevation": 1474,
-			"name": "Soganlug"
-		},
+        {
+            "latitude": 41.64955,
+            "longitude": 44.938372222222,
+            "elevation": 1483,
+            "name": "Soganlug"
+
+        },
         {
             "latitude": 42.40435735783,
             "longitude": 39.414561766676,
@@ -236,17 +237,17 @@
             "name": "Stennis"
         },
         {
-			"latitude": 42.861091666667,
-			"longitude": 41.124997222222,
-			"elevation": 43,
-			"name": "Sukhumi"
+            "latitude": 42.861091666667,
+            "longitude": 41.124997222222,
+            "elevation": 43,
+            "name": "Sukhumi"
         },
         {
-			"latitude": 41.667033333333,
-			"longitude": 44.956286111111,
-			"elevation": 1574,
-			"name": "Tbilisi-Lochini"
-		},
+            "latitude": 41.667033333333,
+            "longitude": 44.956286111111,
+            "elevation": 1574,
+            "name": "Tbilisi-Lochini"
+        },
         {
             "latitude": 42.114250005588,
             "longitude": 44.952253476257,
@@ -278,10 +279,10 @@
             "name": "Udarnyy"
         },
         {
-			"latitude": 41.637733333333,
-			"longitude": 45.019088888889,
-			"elevation": 1523,
-			"name": "Vaziani"
+            "latitude": 41.629027777778,
+            "longitude": 45.027233333333,
+            "elevation": 1524,
+            "name": "Vaziani"
         },
         {
             "latitude": 43.107697285455,
