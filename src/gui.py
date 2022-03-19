@@ -343,12 +343,12 @@ class GUI:
 
         col0 = [
             [PyGUI.Text("Select profile:")],
-            [PyGUI.Combo(values=[""] + self.get_profile_names(), readonly=True,
+            [PyGUI.Combo(values=[""] + sorted(self.get_profile_names()), readonly=True,
                          enable_events=True, key='profileSelector', size=(30, 1))],
 #            [PyGUI.Button("Save", size=(7, 1)),
 #             PyGUI.Button("Delete", size=(8, 1)),
 #             PyGUI.Button("Save As..", size=(8, 1))],
-            [PyGUI.Listbox(values=list(), size=(33, 27),
+            [PyGUI.Listbox(values=list(), size=(33, 25),
                            enable_events=True, key='activesList')],
             # [PyGUI.Button("Move up", size=(12, 1)),
             # PyGUI.Button("Move down", size=(12, 1))],
@@ -359,11 +359,11 @@ class GUI:
         col1 = [
             [framepreset, frameregion],
             [framedata, framewptype],
-            [PyGUI.Button("Add", size=(13, 1)),
-             PyGUI.Button("Update", size=(13, 1)),
-             PyGUI.Button("Remove", size=(13, 1))],
+            [PyGUI.Button("Add", size=(8, 1)),
+             PyGUI.Button("Update", size=(8, 1)),
+             PyGUI.Button("Remove", size=(8, 1)),
+             PyGUI.Button("Enter into aircraft", size=(14, 1), key="enter")],
             [frameposition],
-            [PyGUI.Button("Enter into aircraft", key="enter")],
         ]
 
         colmain1 = [
@@ -846,7 +846,7 @@ class GUI:
             return None, None, None
 
     def update_profiles_list(self, name):
-        profiles = self.get_profile_names()
+        profiles = sorted(self.get_profile_names())
         self.window.Element("profileSelector").Update(values=[""] + profiles,
                                                       set_to_index=profiles.index(name) + 1)
 
@@ -947,7 +947,7 @@ class GUI:
                     continue
 
                 Profile.delete(self.profile.profilename)
-                profiles = self.get_profile_names()
+                profiles = sorted(self.get_profile_names())
                 self.window.Element("profileSelector").Update(
                     values=[""] + profiles)
                 self.load_new_profile()
