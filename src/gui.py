@@ -15,6 +15,7 @@ import pyperclip
 from slpp import slpp as lua
 import src.pymgrs as mgrs
 import PySimpleGUI as PyGUI
+import winsound
 import zlib
 from desktopmagic.screengrab_win32 import getDisplaysAsImages
 import cv2
@@ -23,6 +24,9 @@ import re
 import datetime
 
 PyGUI.theme('Reddit')
+
+UX_SND_ERROR = "data/ux_error.wav"
+UX_SND_SUCCESS = "data/ux_success.wav"
 
 def json_zip(j):
     j = base64.b64encode(
@@ -600,7 +604,8 @@ class GUI:
                 return captured_map_coords
 
         self.logger.debug("Raise exception (could not find the map anywhere i guess)")
-
+        self.window.Element('capture_status').Update(
+            "Status: F10 map not found")
         raise ValueError("F10 map not found")
 
     def export_to_string(self):
@@ -629,10 +634,10 @@ class GUI:
         self.profile = Profile('')
 
     def parse_map_coords_string(self, coords_string, tomcat_mode=False):
-        coords_string = coords_string.upper().replace(")", "J").replace("£", "E")
+        coords_string = coords_string.upper().replace(")", "J").replace("]", "J").replace("}", "J").replace("£", "E")
         # "X-00199287 Z+00523070, 0 ft"   Not sure how to convert this yet
 
-        # "37 T FJ 36255 11628, 5300 ft"  Tessaract did not like this one because the DCS font J looks too much like )
+        # "37 T FJ 36255 11628, 5300 ft"  MGRS
         res = re.match("^(\d+\s?[a-zA-Z\)]\s?[a-zA-Z\)][a-zA-Z\)] \d+ \d+), (-?\d+) (FT|M)$", coords_string)
         if res is not None:
             mgrs_string = res.group(1).replace(" ", "")
@@ -690,35 +695,11 @@ class GUI:
             return position, elevation
 
         # Could not find any matching text
-        self.logger.debug("Text found " + coords_string.rstrip() + " but did not match any known pattern. Sorry about that.")
+        self.logger.debug("Text found " + coords_string.rstrip() + " but did not match any known pattern.")
+        self.window.Element('capture_status').Update(
+            "Status: No matching pattern")
         raise ValueError("No matching pattern")
-        return
-
-        # The remainder of this sub appears obsolete
-        split_string = coords_string.split(',')
-
-        if tomcat_mode:
-            latlon_string = coords_string.replace("\\", "").replace("F", "")
-            split_string = latlon_string.split(' ')
-            lat_string = split_string[1]
-            lon_string = split_string[3]
-            position = string2latlon(
-                lat_string, lon_string, format_str="d%°%m%'%S")
-
-        if not tomcat_mode:
-            elevation = split_string[1].replace(' ', '')
-            if "ft" in elevation:
-                elevation = int(elevation.replace("ft", ""))
-            elif "m" in elevation:
-                elevation = round(int(elevation.replace("m", ""))*3.281)
-            else:
-                raise ValueError("Unable to parse elevation: " + elevation)
-        else:
-            elevation = self.capture_map_coords(2074, 97, 966, 32)
-
-        self.captured_map_coords = str()
-        self.logger.info("Parsed captured text: " + str(position))
-        return position, elevation
+        return None, None
 
     def input_parsed_coords(self):
         try:
@@ -729,10 +710,10 @@ class GUI:
             self.window.Element('capture_status').Update("Status: Captured")
             self.logger.debug(
                 "Parsed text as coords succesfully: " + str(position))
+            winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
         except (IndexError, ValueError, TypeError):
             self.logger.error("Failed to parse captured text", exc_info=True)
-            self.window.Element('capture_status').Update(
-                "Status: Failed to capture")
+            winsound.PlaySound(UX_SND_ERROR, flags=winsound.SND_FILENAME)
         finally:
             self.enable_coords_input()
             self.window.Element('quick_capture').Update(disabled=False)
@@ -746,20 +727,37 @@ class GUI:
         try:
             captured_coords = self.capture_map_coords()
             position, elevation = self.parse_map_coords_string(captured_coords)
+            self.window.Element('capture_status').Update("Status: Captured")
             self.logger.debug(
                 "Parsed text as coords succesfully: " + str(position))
+            winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
         except (IndexError, ValueError, TypeError):
             self.logger.error("Failed to parse captured text", exc_info=True)
+            winsound.PlaySound(UX_SND_ERROR, flags=winsound.SND_FILENAME)
             return
         added = self.add_waypoint(position, elevation)
         if not added:
             self.stop_quick_capture()
 
     def toggle_quick_capture(self):
-        if self.capturing:
-            self.stop_quick_capture()
-        else:
-            self.start_quick_capture()
+        if self.values:
+            if self.capturing:
+                self.stop_quick_capture()
+            else:
+                winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
+                self.quick_capture_button_on()
+
+    def quick_capture_button_on(self):
+        self.exit_quick_capture = False
+        self.disable_coords_input()
+        self.window.Element('capture').Update(text="Stop capturing")
+        self.window.Element('quick_capture').Update(disabled=True)
+        self.window.Element('capture_status').Update(
+            "Status: Capturing...")
+        self.capturing = True
+        self.window.Refresh()
+        keyboard.add_hotkey(
+            self.capture_key, self.add_wp_parsed_coords, timeout=1)
 
     def start_quick_capture(self):
         self.disable_coords_input()
@@ -774,14 +772,6 @@ class GUI:
             timeout=1
         )
         self.capturing = True
-
-    def input_tomcat_alignment(self):
-        try:
-            captured_coords = self.capture_map_coords(2075, 343, 913, 40)
-            position, elevation = self.parse_map_coords_string(captured_coords, tomcat_mode=True)
-        except (IndexError, ValueError, TypeError):
-            self.logger.error("Failed to parse captured text", exc_info=True)
-            return
 
     def stop_quick_capture(self):
         try:
@@ -881,7 +871,6 @@ class GUI:
 
     def run(self):
         while True:
-#            self.logger.debug(self.logger.handlers)
             event, self.values = self.window.Read()
             self.logger.debug(f"Event: {event}")
             self.logger.debug(f"Values: {self.values}")
@@ -1003,16 +992,7 @@ class GUI:
                     self.stop_quick_capture()
 
             elif event == "quick_capture":
-                self.exit_quick_capture = False
-                self.disable_coords_input()
-                self.window.Element('capture').Update(text="Stop capturing")
-                self.window.Element('quick_capture').Update(disabled=True)
-                self.window.Element('capture_status').Update(
-                    "Status: Capturing...")
-                self.capturing = True
-                self.window.Refresh()
-                keyboard.add_hotkey(
-                    self.capture_key, self.add_wp_parsed_coords, timeout=1)
+                self.quick_capture_button_on()
 
             elif event == "baseSelector":
                 base = self.editor.default_bases.get(
