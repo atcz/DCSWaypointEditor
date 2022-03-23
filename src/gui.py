@@ -399,7 +399,7 @@ class GUI:
         elif mode == "station":
             self.window.Element("sequence_text").Update(value="    Station:")
             self.window.Element("sequence").Update(
-                values=(8, 7, 3, 2), value=8, disabled=False)
+                values=(8, 2, 7, 3), value=8, disabled=False)
 
     def update_position(self, position=None, elevation=None, name=None, update_mgrs=True, aircraft=None,
                         waypoint_type=None):

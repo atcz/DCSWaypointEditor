@@ -260,11 +260,11 @@ class HornetDriver(Driver):
         def stations_order(x):
             if x == 8:
                 return 0
-            elif x == 7:
-                return 1
-            elif x == 3:
-                return 2
             elif x == 2:
+                return 1
+            elif x == 7:
+                return 2
+            elif x == 3:
                 return 3
 
         sorted_stations = list()
@@ -276,21 +276,6 @@ class HornetDriver(Driver):
 
         for k in sorted(stations, key=stations_order):
             sorted_stations.append(stations[k])
-
-        #disabled this section, should not be setting qty
-        #self.lmdi("19")
-        #self.lmdi("15")
-        ## select stations
-        #if 8 in stations:
-        #    self.lmdi("14")
-        #if 2 in stations:
-        #    self.lmdi("11")
-        #if 7 in stations:
-        #    self.lmdi("13")
-        #if 3 in stations:
-        #    self.lmdi("12")
-        #self.lmdi("15")
-        #self.lmdi("4")
 
         for msns in sorted_stations:
             if not msns:
@@ -364,18 +349,12 @@ class HarrierDriver(Driver):
             self.ufc("8", delay_release=self.medium_delay)
         self.enter_number(lat_str)
 
-#   Automatically switches to lon, don't need this anymore
-#        self.odu("2")
-
         if latlong.lon.degree > 0:
             self.ufc("6", delay_release=self.medium_delay)
         else:
             self.ufc("4", delay_release=self.medium_delay)
 
         self.enter_number(lon_str)
-
-#   Automatically switches, don't need this anymore
-#        self.odu("2")
 
         if elev:
             self.odu("3")
