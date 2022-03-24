@@ -9,7 +9,7 @@ import requests
 import zipfile
 
 DCS_BIOS_VERSION = '0.7.44'
-DCS_BIOS_URL = "https://github.com/DCSFlightpanels/dcs-bios/releases/download/{}/DCS-BIOS.zip"
+DCS_BIOS_URL = "https://github.com/DCSFlightpanels/dcs-bios/releases/download/v0.7.44/DCS-BIOS_0.7.44.zip"
 
 logger = get_logger(__name__)
 
