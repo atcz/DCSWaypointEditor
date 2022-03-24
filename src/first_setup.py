@@ -9,7 +9,7 @@ import requests
 import zipfile
 
 DCS_BIOS_VERSION = '0.7.44'
-DCS_BIOS_URL = "https://github.com/DCSFlightpanels/dcs-bios/releases/download/v0.7.44/DCS-BIOS_0.7.44.zip"
+DCS_BIOS_URL = "https://github.com/DCSFlightpanels/dcs-bios/releases/download/v{}/DCS-BIOS_{}.zip"
 
 logger = get_logger(__name__)
 
@@ -27,7 +27,7 @@ def install_dcs_bios(dcs_path):
                 "\ndofile(lfs.writedir()..[[Scripts\\DCS-BIOS\\BIOS.lua]])\n")
 
     with tempfile.TemporaryDirectory() as tmp_dir:
-        url = DCS_BIOS_URL.format(DCS_BIOS_VERSION)
+        url = DCS_BIOS_URL.format(DCS_BIOS_VERSION, DCS_BIOS_VERSION)
         response = requests.get(url, stream=True)
         response.raise_for_status()
 
