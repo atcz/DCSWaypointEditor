@@ -349,9 +349,6 @@ class GUI:
             [PyGUI.Text("Select profile:")],
             [PyGUI.Combo(values=[""] + sorted(self.get_profile_names()), readonly=True,
                          enable_events=True, key='profileSelector', size=(30, 1))],
-#            [PyGUI.Button("Save", size=(7, 1)),
-#             PyGUI.Button("Delete", size=(8, 1)),
-#             PyGUI.Button("Save As..", size=(8, 1))],
             [PyGUI.Listbox(values=list(), size=(33, 25),
                            enable_events=True, key='activesList')],
             # [PyGUI.Button("Move up", size=(12, 1)),
@@ -828,7 +825,11 @@ class GUI:
             position = LatLon(Latitude(degree=lat_deg, minute=lat_min, second=lat_sec),
                               Longitude(degree=lon_deg, minute=lon_min, second=lon_sec))
 
-            elevation = int(self.window.Element("elevFeet").Get())
+            try:
+                elevation = int(self.window.Element("elevFeet").Get())
+            except:
+                elevation = 0
+
             name = self.window.Element("msnName").Get()
             return position, elevation, name
         except ValueError as e:
@@ -1005,7 +1006,7 @@ class GUI:
             elif event in ("CA", "MA", "NV", "PG", "SY"):
                 load_base_file(event, self.editor.default_bases)
                 self.window.Element("baseSelector").\
-                    Update(values=[""] + [base.name for _, base in self.editor.default_bases.items()],
+                    Update(values=[""] + sorted([base.name for _, base in self.editor.default_bases.items()]),
                       set_to_index=0)
 
             elif event == "enter":
@@ -1031,12 +1032,16 @@ class GUI:
 
             elif event == "mgrs":
                 mgrs_string = self.window.Element("mgrs").Get()
+                try:
+                    elevation = int(self.window.Element("elevFeet").Get())
+                except:
+                    elevation = 0
                 if mgrs_string:
                     try:
                         decoded_mgrs = mgrs.UTMtoLL(mgrs.decode(mgrs_string.replace(" ", "")))
                         position = LatLon(Latitude(degree=decoded_mgrs["lat"]), Longitude(
                             degree=decoded_mgrs["lon"]))
-                        self.update_position(position, update_mgrs=False)
+                        self.update_position(position, elevation, update_mgrs=False)
                     except (TypeError, ValueError, UnboundLocalError) as e:
                         self.logger.error(f"Failed to decode MGRS: {e}")
 
