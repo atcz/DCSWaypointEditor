@@ -29,7 +29,7 @@ UX_SND_ERROR = "data/ux_error.wav"
 UX_SND_SUCCESS = "data/ux_success.wav"
 
 def json_zip(j):
-    j = base64.b64encode(
+    j = base64.encodebytes(
         zlib.compress(
             j.encode('utf-8')
         )
@@ -144,7 +144,7 @@ class GUI:
         self.captured_map_coords = None
         self.profile = Profile('')
         self.profile.aircraft = "hornet"
-        self.exit_quick_capture = False
+        self.quick_capture = False
         self.values = None
         self.capturing = False
         self.capture_key = try_get_setting(self.editor.settings, "capture_key", "ctrl+t")
@@ -181,9 +181,6 @@ class GUI:
         keyboard.add_hotkey(self.quick_capture_hotkey, self.toggle_quick_capture)
         if self.enter_aircraft_hotkey != '':
             keyboard.add_hotkey(self.enter_aircraft_hotkey, self.enter_coords_to_aircraft)
-
-    def exit_capture(self):
-        self.exit_quick_capture = True
 
     @staticmethod
     def get_profile_names():
@@ -397,6 +394,7 @@ class GUI:
             self.window.Element("sequence_text").Update(value="    Station:")
             self.window.Element("sequence").Update(
                 values=(8, 2, 7, 3), value=8, disabled=False)
+            self.values["sequence"] = 8
 
     def update_position(self, position=None, elevation=None, name=None, update_mgrs=True, aircraft=None,
                         waypoint_type=None):
@@ -717,7 +715,6 @@ class GUI:
             self.window.Element('capture').Update(
                 text="Capture from DCS F10 map")
             self.capturing = False
-
         keyboard.remove_hotkey(self.capture_key)
 
     def add_wp_parsed_coords(self):
@@ -738,39 +735,26 @@ class GUI:
 
     def toggle_quick_capture(self):
         if self.values:
+            winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
             if self.capturing:
-                self.stop_quick_capture()
+                self.stop_capture()
             else:
-                winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
-                self.quick_capture_button_on()
+                self.quick_capture = True
+                self.start_capture()
 
-    def quick_capture_button_on(self):
-        self.exit_quick_capture = False
+    def start_capture(self):
         self.disable_coords_input()
         self.window.Element('capture').Update(text="Stop capturing")
         self.window.Element('quick_capture').Update(disabled=True)
-        self.window.Element('capture_status').Update(
-            "Status: Capturing...")
-        self.capturing = True
-        self.window.Refresh()
-        keyboard.add_hotkey(
-            self.capture_key, self.add_wp_parsed_coords, timeout=1)
-
-    def start_quick_capture(self):
-        self.disable_coords_input()
-        self.window.Element('capture').Update(
-            text="Stop capturing")
-        self.window.Element('quick_capture').Update(disabled=True)
         self.window.Element('capture_status').Update("Status: Capturing...")
         self.window.Refresh()
-        keyboard.add_hotkey(
-            self.capture_key,
-            self.input_parsed_coords, 
-            timeout=1
-        )
+        if self.quick_capture:
+            keyboard.add_hotkey(self.capture_key, self.add_wp_parsed_coords, timeout=1)
+        else:
+            keyboard.add_hotkey(self.capture_key, self.input_parsed_coords, timeout=1)
         self.capturing = True
 
-    def stop_quick_capture(self):
+    def stop_capture(self):
         try:
             keyboard.remove_hotkey(self.capture_key)
         except KeyError:
@@ -781,6 +765,7 @@ class GUI:
         self.window.Element('quick_capture').Update(disabled=False)
         self.window.Element('capture_status').Update("Status: Not capturing")
         self.capturing = False
+        self.quick_capture = False
 
     def update_altitude_elements(self, elevation_unit):
         if elevation_unit == "feet":
@@ -988,12 +973,13 @@ class GUI:
 
             elif event == "capture":
                 if not self.capturing:
-                    self.start_quick_capture()
+                    self.start_capture()
                 else:
-                    self.stop_quick_capture()
+                    self.stop_capture()
 
             elif event == "quick_capture":
-                self.quick_capture_button_on()
+                self.quick_capture = True
+                self.start_capture()
 
             elif event == "baseSelector":
                 base = self.editor.default_bases.get(
