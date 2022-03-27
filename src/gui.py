@@ -390,6 +390,7 @@ class GUI:
             self.window.Element("sequence_text").Update(value="Sequence:")
             self.window.Element("sequence").Update(
                 values=("None", 1, 2, 3), value="None", disabled=False)
+            self.values["sequence"] = "None"
         elif mode == "station":
             self.window.Element("sequence_text").Update(value="    Station:")
             self.window.Element("sequence").Update(
@@ -696,42 +697,27 @@ class GUI:
         raise ValueError("No matching pattern")
         return None, None
 
-    def input_parsed_coords(self):
+    def add_parsed_coords(self):
+        position = None
         try:
             captured_coords = self.capture_map_coords()
             position, elevation = self.parse_map_coords_string(captured_coords)
-            self.update_position(position, elevation, update_mgrs=True)
-            self.update_altitude_elements("meters")
-            self.window.Element('capture_status').Update("Status: Captured")
-            self.logger.debug(
-                "Parsed text as coords succesfully: " + str(position))
+            self.logger.debug("Parsed text as coords succesfully: " + str(position))
             winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
         except (IndexError, ValueError, TypeError):
             self.logger.error("Failed to parse captured text", exc_info=True)
             winsound.PlaySound(UX_SND_ERROR, flags=winsound.SND_FILENAME)
         finally:
-            self.enable_coords_input()
-            self.window.Element('quick_capture').Update(disabled=False)
-            self.window.Element('capture').Update(
-                text="Capture from DCS F10 map")
-            self.capturing = False
-        keyboard.remove_hotkey(self.capture_key)
-
-    def add_wp_parsed_coords(self):
-        try:
-            captured_coords = self.capture_map_coords()
-            position, elevation = self.parse_map_coords_string(captured_coords)
-            self.window.Element('capture_status').Update("Status: Captured")
-            self.logger.debug(
-                "Parsed text as coords succesfully: " + str(position))
-            winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
-        except (IndexError, ValueError, TypeError):
-            self.logger.error("Failed to parse captured text", exc_info=True)
-            winsound.PlaySound(UX_SND_ERROR, flags=winsound.SND_FILENAME)
-            return
-        added = self.add_waypoint(position, elevation)
-        if not added:
-            self.stop_quick_capture()
+            if not self.quick_capture:
+                self.stop_capture()
+            if position is not None:
+                self.update_position(position, elevation, update_mgrs=True)
+                self.update_altitude_elements("meters")
+                self.window.Element('capture_status').Update("Status: Captured")
+                if self.quick_capture:
+                    added = self.add_waypoint(position, elevation)
+                    if not added:
+                        self.stop_capture()
 
     def toggle_quick_capture(self):
         if self.values:
@@ -748,10 +734,7 @@ class GUI:
         self.window.Element('quick_capture').Update(disabled=True)
         self.window.Element('capture_status').Update("Status: Capturing...")
         self.window.Refresh()
-        if self.quick_capture:
-            keyboard.add_hotkey(self.capture_key, self.add_wp_parsed_coords, timeout=1)
-        else:
-            keyboard.add_hotkey(self.capture_key, self.input_parsed_coords, timeout=1)
+        keyboard.add_hotkey(self.capture_key, self.add_parsed_coords, timeout=1)
         self.capturing = True
 
     def stop_capture(self):
