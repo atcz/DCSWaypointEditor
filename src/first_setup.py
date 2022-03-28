@@ -1,9 +1,9 @@
 from configparser import ConfigParser
 from shutil import copytree
-from src.gui import first_time_setup_gui, detect_dcs_bios
 from src.logger import get_logger
 from pathlib import Path
 import PySimpleGUI as PyGUI
+import os
 import tempfile
 import requests
 import zipfile
@@ -43,13 +43,73 @@ def install_dcs_bios(dcs_path):
             PyGUI.Popup(f'DCS-BIOS v{DCS_BIOS_VERSION} successfully downloaded and installed')
 
 
-def first_time_setup():
+def detect_dcs_bios(dcs_path):
+    dcs_bios_detected = False
+
+    try:
+        with open(dcs_path + "\\Scripts\\Export.lua", "r") as f:
+            if r"dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])" in f.read() and \
+                    os.path.exists(dcs_path + "\\Scripts\\DCS-BIOS"):
+                dcs_bios_detected = True
+    except FileNotFoundError:
+        pass
+    return dcs_bios_detected
+
+
+def first_time_setup_gui(settings):
+    section = "PREFERENCES"
+    dcs_bios_detected = "Detected" if detect_dcs_bios(settings.get(section, 'dcs_path')) else "Not detected"
+
+    layout = [
+        [PyGUI.Text("DCS User Folder Path:"),
+         PyGUI.Input(settings.get(section, 'dcs_path'), key="dcs_path", enable_events=True),
+         PyGUI.Button("Browse...", button_type=PyGUI.BUTTON_TYPE_BROWSE_FOLDER, target="dcs_path")],
+
+        [PyGUI.Text("Tesseract.exe Path:"),
+         PyGUI.Input(settings.get(section, 'tesseract_path'), key="tesseract_path"),
+         PyGUI.Button("Browse...", button_type=PyGUI.BUTTON_TYPE_BROWSE_FILE, target="tesseract_path")],
+
+        [PyGUI.Text("F10 Map Capture Hotkey:"),
+         PyGUI.Input(settings.get(section, 'capture_key'), key="capture_key")],
+
+        [PyGUI.Text("Quick Capture Toggle Hotkey:"),
+         PyGUI.Input(settings.get(section, "quick_capture_hotkey"), key="quick_capture_hotkey")],
+
+        [PyGUI.Text("Enter into Aircraft Hotkey (Optional):"),
+         PyGUI.Input(settings.get(section, 'enter_aircraft_hotkey'), key="enter_aircraft_hotkey")],
+
+        [PyGUI.Text("Select PySimpleGUI theme:"),
+         PyGUI.Combo(values=PyGUI.theme_list(), readonly=True, default_value=settings.get(section, 'pysimplegui_theme'),
+            enable_events=True, key='pysimplegui_theme', size=(30, 1))],
+
+        [PyGUI.Text("DCS-BIOS:"), PyGUI.Text(dcs_bios_detected, key="dcs_bios"),
+         PyGUI.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected")],
+    ]
+
+    return PyGUI.Window("DCS Waypoint Editor Settings", [[PyGUI.Frame("Settings", layout)],
+                                             [PyGUI.Button("Accept", key="accept_button", pad=((250, 1), 1),
+                                                           disabled=dcs_bios_detected != "Detected")]])
+
+
+def first_time_setup(settings):
+    section = "PREFERENCES"
     default_dcs_path = f"{str(Path.home())}\\Saved Games\\DCS.openbeta\\"
+    default_tesseract_path = f"{os.environ['PROGRAMW6432']}\\Tesseract-OCR\\tesseract.exe"
+    if settings is None:
+        settings = ConfigParser()
+        settings.add_section(section)
+        settings.set(section, "tesseract_path", default_tesseract_path)
+        settings.set(section, "dcs_path", default_dcs_path)
+        settings.set(section, "capture_key", "ctrl+t")
+        settings.set(section, "quick_capture_hotkey", "ctrl+shift+t")
+        settings.set(section, "enter_aircraft_hotkey", '')
+        settings.set(section, "log_raw_tesseract_output", "false")
+        settings.set(section, "pysimplegui_theme", PyGUI.theme())
 
     setup_logger = get_logger("setup")
     setup_logger.info("Running first time setup...")
 
-    gui = first_time_setup_gui()
+    gui = first_time_setup_gui(settings)
 
     while True:
         event, values = gui.Read()
@@ -83,19 +143,27 @@ def first_time_setup():
                 gui.Element("install_button").Update(disabled=False)
                 gui.Element("accept_button").Update(disabled=True)
                 gui.Element("dcs_bios").Update(value="Not detected")
+        elif event == "pysimplegui_theme":
+            PyGUI.theme(values['pysimplegui_theme'])
+            keep_new_theme = PyGUI.popup_get_text(
+                                'This is {}\nChanges are applied after restart.'.format(values['pysimplegui_theme']),
+                                title = 'Theme Sample', default_text = values['pysimplegui_theme'])
+            if keep_new_theme is None:
+                gui.Element("pysimplegui_theme").Update(settings.get(section, "pysimplegui_theme"))
 
     config = ConfigParser()
-    config.add_section("PREFERENCES")
-    config.set("PREFERENCES", "grace_period", "5")
-    config.set("PREFERENCES", "button_release_short_delay", "0.2")
-    config.set("PREFERENCES", "button_release_medium_delay", "0.5")
-    config.set("PREFERENCES", "tesseract_path", values.get("tesseract_path"))
-    config.set("PREFERENCES", "dcs_path", dcs_path or default_dcs_path)
-    config.set("PREFERENCES", "db_name", "profiles_new.db")
-    config.set("PREFERENCES", "capture_key", values.get("capture_key") or "ctrl+t")
-    config.set("PREFERENCES", "quick_capture_hotkey", values.get("quick_capture_hotkey") or "ctrl+shift+t")
-    config.set("PREFERENCES", "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
-    config.set("PREFERENCES", "log_raw_tesseract_output", "false")
+    config.add_section(section)
+    config.set(section, "grace_period", "5")
+    config.set(section, "button_release_short_delay", "0.2")
+    config.set(section, "button_release_medium_delay", "0.5")
+    config.set(section, "tesseract_path", values.get("tesseract_path"))
+    config.set(section, "dcs_path", dcs_path or default_dcs_path)
+    config.set(section, "db_name", "profiles_new.db")
+    config.set(section, "capture_key", values.get("capture_key") or "ctrl+t")
+    config.set(section, "quick_capture_hotkey", values.get("quick_capture_hotkey") or "ctrl+shift+t")
+    config.set(section, "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
+    config.set(section, "log_raw_tesseract_output", "false")
+    config.set(section, "pysimplegui_theme", values.get("pysimplegui_theme") or PyGUI.theme())
 
     with open("settings.ini", "w+") as f:
         config.write(f)

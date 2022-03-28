@@ -1,4 +1,5 @@
 from src.objects import Profile, Waypoint, MSN, load_base_file
+from src.first_setup import first_time_setup
 from src.logger import get_logger
 from peewee import DoesNotExist
 from LatLon23 import LatLon, Longitude, Latitude, string2latlon
@@ -22,8 +23,6 @@ import cv2
 import numpy
 import re
 import datetime
-
-PyGUI.theme('Reddit')
 
 UX_SND_ERROR = "data/ux_error.wav"
 UX_SND_SUCCESS = "data/ux_success.wav"
@@ -52,50 +51,6 @@ def strike(text):
 
 def unstrike(text):
     return text.replace('\u0336', '')
-
-
-def detect_dcs_bios(dcs_path):
-    dcs_bios_detected = False
-
-    try:
-        with open(dcs_path + "\\Scripts\\Export.lua", "r") as f:
-            if r"dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])" in f.read() and \
-                    os.path.exists(dcs_path + "\\Scripts\\DCS-BIOS"):
-                dcs_bios_detected = True
-    except FileNotFoundError:
-        pass
-    return dcs_bios_detected
-
-
-def first_time_setup_gui():
-    default_dcs_path = f"{str(Path.home())}\\Saved Games\\DCS.openbeta\\"
-    default_tesseract_path = f"{os.environ['PROGRAMW6432']}\\Tesseract-OCR\\tesseract.exe"
-    dcs_bios_detected = "Detected" if detect_dcs_bios(
-        default_dcs_path) else "Not detected"
-
-    layout = [
-        [PyGUI.Text("DCS User Folder Path:"), PyGUI.Input(default_dcs_path, key="dcs_path", enable_events=True),
-         PyGUI.Button("Browse...", button_type=PyGUI.BUTTON_TYPE_BROWSE_FOLDER, target="dcs_path")],
-
-        [PyGUI.Text("Tesseract.exe Path:"), PyGUI.Input(default_tesseract_path, key="tesseract_path"),
-         PyGUI.Button("Browse...", button_type=PyGUI.BUTTON_TYPE_BROWSE_FILE, target="tesseract_path")],
-
-        [PyGUI.Text("F10 Map Capture Hotkey:"), PyGUI.Input(
-            "ctrl+t", key="capture_key")],
-
-        [PyGUI.Text("Quick Capture Toggle Hotkey:"), PyGUI.Input(
-            "ctrl+shift+t", key="quick_capture_hotkey")],
-
-        [PyGUI.Text("Enter into Aircraft Hotkey (Optional):"), PyGUI.Input(
-            "", key="enter_aircraft_hotkey")],
-
-        [PyGUI.Text("DCS-BIOS:"), PyGUI.Text(dcs_bios_detected, key="dcs_bios"),
-         PyGUI.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected")],
-    ]
-
-    return PyGUI.Window("First time setup", [[PyGUI.Frame("Settings", layout)],
-                                             [PyGUI.Button("Accept", key="accept_button", pad=((250, 1), 1),
-                                                           disabled=dcs_bios_detected != "Detected")]])
 
 
 def exception_gui(exc_info):
@@ -151,6 +106,7 @@ class GUI:
         self.quick_capture_hotkey = try_get_setting(self.editor.settings, "quick_capture_hotkey", "ctrl+alt+t")
         self.enter_aircraft_hotkey = try_get_setting(self.editor.settings, "enter_aircraft_hotkey", "ctrl+shift+t")
         self.save_debug_images = try_get_setting(self.editor.settings, "save_debug_images", "false")
+        self.pysimplegui_theme = try_get_setting(self.editor.settings, "pysimplegui_theme", PyGUI.theme())
         self.software_version = software_version
         self.is_focused = True
         self.scaled_dcs_gui = False
@@ -188,6 +144,8 @@ class GUI:
 
     def create_gui(self):
         self.logger.debug("Creating GUI")
+        
+        PyGUI.theme(self.pysimplegui_theme)
 
         latitude_col1 = [
             [PyGUI.Text("Degrees", pad=((9,5),3))],
@@ -364,14 +322,17 @@ class GUI:
             [frameposition],
         ]
 
+        menudef = [['&File',
+                    ['&Settings', '---', 'E&xit']],
+                   ['&Profile',
+                    ['&Save Profile', '&Delete Profile', 'Save Profile &As...', '---',
+                        "Import", ["Paste as string from clipboard", "Load from encoded file"],
+                        "Export", ["Copy as string to clipboard", "Copy plain text to clipboard",
+                                    "Save as encoded file"],
+                    ]]]
+
         colmain1 = [
-            [PyGUI.MenuBar([["&Profile",
-                             [
-                                "&Save Profile", "&Delete Profile", "Save Profile &As...", "---",
-                                "Import", ["Paste as string from clipboard", "Load from encoded file"],
-                                "Export", ["Copy as string to clipboard", "Copy plain text to clipboard",
-                                            "Save as encoded file"],
-                              ]]])],
+            [PyGUI.MenuBar(menudef)],
             [PyGUI.Column(col1)],
         ]
 
@@ -847,6 +808,9 @@ class GUI:
             if event is None or event == 'Exit':
                 self.logger.info("Exiting...")
                 break
+
+            elif event == "Settings":
+                first_time_setup(self.editor.settings)
 
             elif event == "Add":
                 position, elevation, name = self.validate_coords()
