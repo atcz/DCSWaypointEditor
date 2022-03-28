@@ -98,8 +98,12 @@ def first_time_setup(settings):
     if settings is None:
         settings = ConfigParser()
         settings.add_section(section)
+        settings.set(section, "grace_period", "5")
+        settings.set(section, "button_release_short_delay", "0.2")
+        settings.set(section, "button_release_medium_delay", "0.5")
         settings.set(section, "tesseract_path", default_tesseract_path)
         settings.set(section, "dcs_path", default_dcs_path)
+        settings.set(section, "db_name", "profiles_new.db")
         settings.set(section, "capture_key", "ctrl+t")
         settings.set(section, "quick_capture_hotkey", "ctrl+shift+t")
         settings.set(section, "enter_aircraft_hotkey", '')
@@ -151,22 +155,15 @@ def first_time_setup(settings):
             if keep_new_theme is None:
                 gui.Element("pysimplegui_theme").Update(settings.get(section, "pysimplegui_theme"))
 
-    config = ConfigParser()
-    config.add_section(section)
-    config.set(section, "grace_period", "5")
-    config.set(section, "button_release_short_delay", "0.2")
-    config.set(section, "button_release_medium_delay", "0.5")
-    config.set(section, "tesseract_path", values.get("tesseract_path"))
-    config.set(section, "dcs_path", dcs_path or default_dcs_path)
-    config.set(section, "db_name", "profiles_new.db")
-    config.set(section, "capture_key", values.get("capture_key") or "ctrl+t")
-    config.set(section, "quick_capture_hotkey", values.get("quick_capture_hotkey") or "ctrl+shift+t")
-    config.set(section, "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
-    config.set(section, "log_raw_tesseract_output", "false")
-    config.set(section, "pysimplegui_theme", values.get("pysimplegui_theme") or PyGUI.theme())
+    settings.set(section, "dcs_path", dcs_path or default_dcs_path)
+    settings.set(section, "tesseract_path", values.get("tesseract_path") or default_tesseract_path)
+    settings.set(section, "capture_key", values.get("capture_key") or "ctrl+t")
+    settings.set(section, "quick_capture_hotkey", values.get("quick_capture_hotkey") or "ctrl+shift+t")
+    settings.set(section, "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
+    settings.set(section, "pysimplegui_theme", values.get("pysimplegui_theme") or PyGUI.theme())
 
     with open("settings.ini", "w+") as f:
-        config.write(f)
+        settings.write(f)
 
     setup_logger.info("First time setup completed succesfully")
     gui.Close()
