@@ -15,6 +15,8 @@ def log_settings(version):
 def get_logger(name):
     logger = logging.getLogger(name)
     logger.propagate = False
+    if logger.hasHandlers(): 
+        logger.handlers = []
     formatter = logging.Formatter('%(asctime)s:%(name)s: %(levelname)s - %(message)s')
     s_handler = logging.StreamHandler(stdout)
     s_handler.setFormatter(formatter)
