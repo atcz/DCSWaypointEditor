@@ -9,7 +9,7 @@ import logging
 from pyproj import datadir, _datadir
 
 
-version = "v1.1.0-rc1"
+version = "v1.1.0-rc3"
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
     if update_exit:
         return
 
-    setup_completed = not first_time or first_time_setup()
+    setup_completed = not first_time or first_time_setup(None)
 
     if setup_completed:
         generate_default_bases()
