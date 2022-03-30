@@ -169,4 +169,3 @@ def first_time_setup(settings):
     setup_logger.info("First time setup completed succesfully")
     gui.Close()
     return True
-    
