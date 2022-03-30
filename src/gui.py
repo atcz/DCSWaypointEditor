@@ -326,7 +326,8 @@ class GUI:
                     ['&Settings', '---', 'E&xit']],
                    ['&Profile',
                     ['&Save Profile', '&Delete Profile', 'Save Profile &As...', '---',
-                        "Import", ["Paste as string from clipboard", "Load from encoded file"],
+                        "Import", ["Paste as string from clipboard", "Load from encoded file", "---",
+                                    "Import NS430 from clipboard", "Import NS430 from file"],
                         "Export", ["Copy as string to clipboard", "Copy plain text to clipboard",
                                     "Save as encoded file"],
                     ]]]
@@ -587,6 +588,21 @@ class GUI:
             self.logger.error(e, exc_info=True)
             PyGUI.Popup('Failed to parse profile from string')
 
+    def import_NS430(self, text):
+        # Load NS430 dat
+        lines = list(text.split('\n'))
+        for i in range(len(lines)):
+            fields = list(lines[i].strip().split(";"))
+            if len(fields) == 4 and fields[0] == "FIX":
+                self.logger.info("NS430: " + lines[i])
+                try:
+                    position = LatLon(Latitude(degree=fields[2]),
+                                      Longitude(degree=fields[1]))
+                    self.add_waypoint(position, 0, fields[3])
+                except Exception as e:
+                    self.logger.error(e, exc_info=True)
+                    PyGUI.Popup('Data error importing NS430 fixes')
+
     def load_new_profile(self):
         self.profile = Profile('')
 
@@ -823,6 +839,20 @@ class GUI:
             elif event == "Paste as string from clipboard":
                 self.import_from_string()
 
+            elif event == "Import NS430 from clipboard":
+                importdata = pyperclip.paste()
+                self.import_NS430(importdata)
+
+            elif event == "Import NS430 from file":
+                filename = PyGUI.PopupGetFile(
+                    "Enter file name", "Importing NS430 Data")
+                if filename is None:
+                    continue
+
+                with open(filename, "r") as f:
+                    importdata = f.read()
+                self.import_NS430(importdata)
+
             elif event == "Update":
                 if self.values['activesList']:
                     waypoint = self.find_selected_waypoint()
@@ -896,7 +926,7 @@ class GUI:
                 if filename is None:
                     continue
 
-                with open(filename + ".json", "w+") as f:
+                with open(filename, "w+") as f:
                     f.write(str(self.profile))
 
             elif event == "Copy plain text to clipboard":
