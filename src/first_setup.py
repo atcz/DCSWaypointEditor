@@ -154,6 +154,7 @@ def first_time_setup(settings):
                                 title = 'Theme Sample', default_text = values['pysimplegui_theme'])
             if keep_new_theme is None:
                 gui.Element("pysimplegui_theme").Update(settings.get(section, "pysimplegui_theme"))
+                PyGUI.theme(settings.get(section, "pysimplegui_theme"))
 
     settings.set(section, "dcs_path", dcs_path or default_dcs_path)
     settings.set(section, "tesseract_path", values.get("tesseract_path") or default_tesseract_path)
