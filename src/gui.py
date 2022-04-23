@@ -611,7 +611,7 @@ class GUI:
         # "X-00199287 Z+00523070, 0 ft"   Not sure how to convert this yet
 
         # "37 T FJ 36255 11628, 5300 ft"  MGRS
-        res = re.match("^(\d+\s?[a-zA-Z\)]\s?[a-zA-Z\)][a-zA-Z\)] \d+ \d+), (-?\d+) (FT|M)$", coords_string)
+        res = re.search("(\d+\s?[a-zA-Z\)]\s?[a-zA-Z\)][a-zA-Z\)] \d+ \d+), (-?\d+) (FT|M)$", coords_string)
         if res is not None:
             mgrs_string = res.group(1).replace(" ", "")
             self.logger.debug("MGRS input found: " + mgrs_string)
@@ -626,7 +626,7 @@ class GUI:
             return position, elevation
 
         # "N43°10.244 E40°40.204, 477 ft"  Degrees and decimal minutes
-        res = re.match("([NS])(\d+)[°'](\d+\.\d+) ([EW])(\d+)[°'](\d+\.\d+), (-?\d+) (FT|M)$", coords_string)
+        res = re.search("([NS])(\d+)[°'](\d+\.\d+) ([EW])(\d+)[°'](\d+\.\d+), (-?\d+) (FT|M)$", coords_string)
         if res is not None:
             lat_str = res.group(2) + " " + res.group(3) + " " + res.group(1)
             lon_str = res.group(5) + " " + res.group(6) + " " + res.group(4)
@@ -640,7 +640,7 @@ class GUI:
             return position, elevation
 
         # "N42-43-17.55 E40-38-21.69, 0 ft" Degrees, minutes and decimal seconds
-        res = re.match("([NS])(\d+)-(\d+)-(\d+\.\d+) ([EW])(\d+)-(\d+)-(\d+\.\d+), (-?\d+) (FT|M)$", coords_string)
+        res = re.search("([NS])(\d+)-(\d+)-(\d+\.\d+) ([EW])(\d+)-(\d+)-(\d+\.\d+), (-?\d+) (FT|M)$", coords_string)
         if res is not None:
             lat_str = res.group(2) + " " + res.group(3) + " " + res.group(4) + " " + res.group(1)
             lon_str = res.group(6) + " " + res.group(7) + " " + res.group(8) + " " + res.group(5)
@@ -654,7 +654,7 @@ class GUI:
             return position, elevation
 
         # "43°34'37"N 29°11'18"E, 0 ft" Degrees minutes and seconds
-        res = re.match("^\(?(\d+)[°'](\d+)[°'](\d+)\"([NS]) (\d+)[°'](\d+)[°'](\d+)\"([EW]), (-?\d+) (FT|M)$", coords_string)
+        res = re.search("(\d+)[°'](\d+)[°'](\d+)[\"\*°]([NS]) (\d+)[°'](\d+)[°'](\d+)[\"\*°]([EW]), (-?\d+) (FT|M)$", coords_string)
         if res is not None:
             lat_str = res.group(1) + " " + res.group(2) + " " + res.group(3) + " " + res.group(4)
             lon_str = res.group(5) + " " + res.group(6) + " " + res.group(7) + " " + res.group(8)
@@ -887,9 +887,13 @@ class GUI:
 
             elif event == "Save Profile As...":
                 if self.profile.waypoints:
+                    profiles = self.get_profile_names()
+                    overwrite = "OK"
                     name = PyGUI.PopupGetText(
                           "Enter profile name", "Saving profile")
-                    if not name:
+                    if name in profiles:
+                        overwrite = PyGUI.PopupOKCancel("Profile already exists, overwrite?")
+                    if not name or overwrite != "OK":
                         continue
                     self.profile.save(name)
                     self.update_profiles_list(name)
@@ -897,14 +901,16 @@ class GUI:
             elif event == "Delete Profile":
                 if not self.profile.profilename:
                     continue
-
-                Profile.delete(self.profile.profilename)
-                profiles = sorted(self.get_profile_names())
-                self.window.Element("profileSelector").Update(
-                    values=[""] + profiles)
-                self.load_new_profile()
-                self.update_waypoints_list()
-                self.update_position()
+                confirm_delete = PyGUI.PopupOKCancel(
+                                "Confirm delete " + self.profile.profilename + "?")
+                if confirm_delete == "OK":
+                    Profile.delete(self.profile.profilename)
+                    profiles = sorted(self.get_profile_names())
+                    self.window.Element("profileSelector").Update(
+                        values=[""] + profiles)
+                    self.load_new_profile()
+                    self.update_waypoints_list()
+                    self.update_position()
 
             elif event == "profileSelector":
                 try:
