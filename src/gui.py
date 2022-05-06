@@ -781,6 +781,17 @@ class GUI:
             self.logger.error(f"Failed to validate coords: {e}")
             return None, None, None
 
+    def write_profile(self, name):
+        profiles = self.get_profile_names()
+        overwrite = "OK"
+        name = PyGUI.PopupGetText(
+            "Enter profile name", "Saving profile")
+        if name in profiles:
+            overwrite = PyGUI.PopupOKCancel("Profile " + name + " already exists, overwrite?")
+        if name and overwrite == "OK":
+            self.profile.save(name)
+            self.update_profiles_list(name)
+
     def update_profiles_list(self, name):
         profiles = sorted(self.get_profile_names())
         self.window.Element("profileSelector").Update(values=[""] + profiles,
@@ -877,26 +888,15 @@ class GUI:
             elif event == "Save Profile":
                 if self.profile.waypoints:
                     name = self.profile.profilename
-                    if not name:
-                        name = PyGUI.PopupGetText(
-                            "Enter profile name", "Saving profile")
-                    if not name:
-                        continue
-                    self.profile.save(name)
-                    self.update_profiles_list(name)
+                    if name:
+                        self.profile.save(name)
+                        self.update_profiles_list(name)
+                    else:
+                        self.write_profile(name)
 
             elif event == "Save Profile As...":
                 if self.profile.waypoints:
-                    profiles = self.get_profile_names()
-                    overwrite = "OK"
-                    name = PyGUI.PopupGetText(
-                          "Enter profile name", "Saving profile")
-                    if name in profiles:
-                        overwrite = PyGUI.PopupOKCancel("Profile already exists, overwrite?")
-                    if not name or overwrite != "OK":
-                        continue
-                    self.profile.save(name)
-                    self.update_profiles_list(name)
+                    self.write_profile(name)
 
             elif event == "Delete Profile":
                 if not self.profile.profilename:
