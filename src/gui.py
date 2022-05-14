@@ -1,5 +1,5 @@
 from src.objects import Profile, Waypoint, MSN, load_base_file
-from src.first_setup import first_time_setup
+from src.first_setup import first_time_setup, detect_the_way
 from src.logger import get_logger
 from peewee import DoesNotExist
 from LatLon23 import LatLon, Longitude, Latitude, string2latlon
@@ -8,6 +8,8 @@ from pathlib import Path
 import pytesseract
 import keyboard
 import os
+import json
+import socket
 import urllib.request
 import urllib.error
 import webbrowser
@@ -98,19 +100,23 @@ class GUI:
         self.editor = editor
         self.captured_map_coords = None
         self.profile = Profile('')
-        self.profile.aircraft = "hornet"
+        self.aircraft = ["hornet", "harrier", "tomcat", "viper", "mirage", "warthog", "apachep", "apacheg"]
         self.quick_capture = False
         self.values = None
         self.capturing = False
+        self.enable_the_way = detect_the_way(self.editor.settings.get('PREFERENCES', 'dcs_path'))
         self.capture_key = try_get_setting(self.editor.settings, "capture_key", "ctrl+t")
         self.quick_capture_hotkey = try_get_setting(self.editor.settings, "quick_capture_hotkey", "ctrl+alt+t")
         self.enter_aircraft_hotkey = try_get_setting(self.editor.settings, "enter_aircraft_hotkey", "ctrl+shift+t")
         self.save_debug_images = try_get_setting(self.editor.settings, "save_debug_images", "false")
         self.pysimplegui_theme = try_get_setting(self.editor.settings, "pysimplegui_theme", PyGUI.theme())
+        self.default_aircraft = try_get_setting(self.editor.settings, "default_aircraft", "hornet")
         self.software_version = software_version
         self.is_focused = True
         self.scaled_dcs_gui = False
         self.selected_wp_type = "WP"
+        self.profile.aircraft = self.default_aircraft
+        self.editor.set_driver(self.default_aircraft)
 
         try:
             with open(f"{self.editor.settings.get('PREFERENCES', 'dcs_path')}\\Config\\options.lua", "r") as f:
@@ -249,7 +255,7 @@ class GUI:
         frameactypelayout = [
             [
                 PyGUI.Radio("F/A-18C", group_id="ac_type",
-                            default=True, key="hornet", enable_events=True),
+                            disabled=False, key="hornet", enable_events=True),
                 PyGUI.Radio("AV-8B", group_id="ac_type",
                             disabled=False, key="harrier", enable_events=True),
                 PyGUI.Radio("F-14A/B", group_id="ac_type",
@@ -261,6 +267,11 @@ class GUI:
                             disabled=False, key="mirage", enable_events=True),
                 PyGUI.Radio("A-10C", group_id="ac_type",
                             disabled=False, key="warthog", enable_events=True),
+            ],
+            [   PyGUI.Radio("AH-64D Pilot", group_id="ac_type",
+                            disabled=False, key="apachep", enable_events=True),
+                PyGUI.Radio("AH-64D CPG", group_id="ac_type",
+                            disabled=False, key="apacheg", enable_events=True),
             ]
         ]
 
@@ -284,8 +295,9 @@ class GUI:
                  [
                      [PyGUI.Frame("MGRS", mgrslayout)],
                      [PyGUI.Button("Capture from DCS F10 map", disabled=self.capture_button_disabled, key="capture",
-                                   pad=(1, (18, 3)))],
-
+                                   size=(22, 1), pad=(2, (10, 3)))],
+                     [PyGUI.Button("Capture from The Way", disabled=(not self.enable_the_way), key="cam_capture",
+                                   size=(22, 1), pad=(2, (0, 3)))],
                      [PyGUI.Text(self.capture_status, key="capture_status",
                                  auto_size_text=False, size=(20, 1))],
                  ]
@@ -341,7 +353,7 @@ class GUI:
             [PyGUI.Column(col0), PyGUI.Column(colmain1)],
         ]
 
-        return PyGUI.Window('DCS Waypoint Editor', layout)
+        return PyGUI.Window('DCS Waypoint Editor', layout, finalize=True)
 
     def set_sequence_station_selector(self, mode):
         if mode is None:
@@ -696,6 +708,41 @@ class GUI:
                     if not added:
                         self.stop_capture()
 
+    def add_cam_coords(self):
+        UDP_IP = "127.0.0.1"
+        UDP_PORT = 42069
+        BUFFER_SIZE = 65508
+        data = None
+
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+            s.bind((UDP_IP, UDP_PORT))
+            s.settimeout(2.0)
+            data, addr = s.recvfrom(BUFFER_SIZE)
+            self.logger.info("Received data from socket: %s" % data)
+            winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
+            s.close()
+        except Exception as e:
+            s.close()
+            self.logger.error("Failed to connect socket: %s" % e)
+            winsound.PlaySound(UX_SND_ERROR, flags=winsound.SND_FILENAME)
+        finally:
+            if data:
+                wpdata = json.loads(data.decode('utf8'))
+                coords = wpdata.get('coords')
+                position = LatLon(Latitude(degree=coords.get('lat')),
+                                  Longitude(degree=coords.get('long')))
+                elevation = float(wpdata.get('elev')) * 3.281
+
+                if position is not None:
+                    self.logger.info("Waypoint data: " + str(position) + " " + str(elevation))
+                    self.update_position(position, elevation, update_mgrs=True)
+                    self.update_altitude_elements("meters")
+                    self.window.Element('capture_status').Update("Status: Captured")
+                    added = self.add_waypoint(position, elevation)
+                    if not added:
+                        self.stop_capture()
+
     def toggle_quick_capture(self):
         if self.values:
             winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
@@ -709,6 +756,7 @@ class GUI:
         self.disable_coords_input()
         self.window.Element('capture').Update(text="Stop capturing")
         self.window.Element('quick_capture').Update(disabled=True)
+        self.window.Element('cam_capture').Update(disabled=True)
         self.window.Element('capture_status').Update("Status: Capturing...")
         self.window.Refresh()
         keyboard.add_hotkey(self.capture_key, self.add_parsed_coords, timeout=1)
@@ -722,10 +770,23 @@ class GUI:
 
         self.enable_coords_input()
         self.window.Element('capture').Update(text="Capture from DCS F10 map")
-        self.window.Element('quick_capture').Update(disabled=False)
+        self.window.Element('quick_capture').Update(disabled=self.capture_button_disabled)
+        self.window.Element('capture').Update(disabled=self.capture_button_disabled)
+        self.window.Element('cam_capture').Update(disabled=(not self.enable_the_way))
         self.window.Element('capture_status').Update("Status: Not capturing")
         self.capturing = False
         self.quick_capture = False
+
+    def start_cam_capture(self):
+        self.disable_coords_input()
+        self.window.Element('capture').Update(text="Stop capturing")
+        self.window.Element('quick_capture').Update(disabled=True)
+        self.window.Element('capture').Update(disabled=False)
+        self.window.Element('cam_capture').Update(disabled=True)
+        self.window.Element('capture_status').Update("Status: Capturing...")
+        self.window.Refresh()
+        keyboard.add_hotkey(self.capture_key, self.add_cam_coords, timeout=1)
+        self.capturing = True
 
     def update_altitude_elements(self, elevation_unit):
         if elevation_unit == "feet":
@@ -781,7 +842,7 @@ class GUI:
             self.logger.error(f"Failed to validate coords: {e}")
             return None, None, None
 
-    def write_profile(self, name):
+    def write_profile(self):
         profiles = self.get_profile_names()
         overwrite = "OK"
         name = PyGUI.PopupGetText(
@@ -827,6 +888,7 @@ class GUI:
         self.window.Element('enter').Update(disabled=False)
 
     def run(self):
+        self.window.Element(self.default_aircraft).Update(value=True)
         while True:
             event, self.values = self.window.Read()
             self.logger.debug(f"Event: {event}")
@@ -892,11 +954,11 @@ class GUI:
                         self.profile.save(name)
                         self.update_profiles_list(name)
                     else:
-                        self.write_profile(name)
+                        self.write_profile()
 
             elif event == "Save Profile As...":
                 if self.profile.waypoints:
-                    self.write_profile(name)
+                    self.write_profile()
 
             elif event == "Delete Profile":
                 if not self.profile.profilename:
@@ -964,6 +1026,9 @@ class GUI:
                 self.quick_capture = True
                 self.start_capture()
 
+            elif event == "cam_capture":
+                self.start_cam_capture()
+
             elif event == "baseSelector":
                 base = self.editor.default_bases.get(
                     self.values['baseSelector'])
@@ -1014,7 +1079,7 @@ class GUI:
                     except (TypeError, ValueError, UnboundLocalError) as e:
                         self.logger.error(f"Failed to decode MGRS: {e}")
 
-            elif event in ("hornet", "tomcat", "harrier", "warthog", "mirage", "viper"):
+            elif event in (self.aircraft):
                 self.profile.aircraft = event
                 self.editor.set_driver(event)
                 self.update_waypoints_list()
