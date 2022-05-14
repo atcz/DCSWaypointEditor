@@ -56,8 +56,22 @@ def detect_dcs_bios(dcs_path):
     return dcs_bios_detected
 
 
+def detect_the_way(dcs_path):
+    the_way_detected = False
+
+    try:
+        with open(dcs_path + "\\Scripts\\Export.lua", "r") as f:
+            if r"dofile(TheWayLfs.writedir()..'Scripts/TheWay.lua')" in f.read() and \
+                    os.path.exists(dcs_path + "\Scripts\TheWay.lua"):
+                the_way_detected = True
+    except FileNotFoundError:
+        pass
+    return the_way_detected
+
+
 def first_time_setup_gui(settings):
     section = "PREFERENCES"
+    aircraft = ["hornet", "harrier", "tomcat", "viper", "mirage", "warthog", "apachep", "apacheg"]
     dcs_bios_detected = "Detected" if detect_dcs_bios(settings.get(section, 'dcs_path')) else "Not detected"
 
     layout = [
@@ -78,6 +92,10 @@ def first_time_setup_gui(settings):
         [PyGUI.Text("Enter into Aircraft Hotkey (Optional):"),
          PyGUI.Input(settings.get(section, 'enter_aircraft_hotkey'), key="enter_aircraft_hotkey")],
 
+        [PyGUI.Text("Default Aircraft:"),
+         PyGUI.Combo(values=aircraft, readonly=True, default_value=settings.get(section, 'default_aircraft'),
+            enable_events=True, key='default_aircraft', size=(30, 1))],
+
         [PyGUI.Text("Select PySimpleGUI theme:"),
          PyGUI.Combo(values=PyGUI.theme_list(), readonly=True, default_value=settings.get(section, 'pysimplegui_theme'),
             enable_events=True, key='pysimplegui_theme', size=(30, 1))],
@@ -95,6 +113,7 @@ def first_time_setup(settings):
     section = "PREFERENCES"
     default_dcs_path = f"{str(Path.home())}\\Saved Games\\DCS.openbeta\\"
     default_tesseract_path = f"{os.environ['PROGRAMW6432']}\\Tesseract-OCR\\tesseract.exe"
+    default_aircraft = 'hornet'
     if settings is None:
         settings = ConfigParser()
         settings.add_section(section)
@@ -109,6 +128,7 @@ def first_time_setup(settings):
         settings.set(section, "enter_aircraft_hotkey", '')
         settings.set(section, "log_raw_tesseract_output", "false")
         settings.set(section, "pysimplegui_theme", PyGUI.theme())
+        settings.set(section, "default_aircraft", "hornet")
 
     setup_logger = get_logger("setup")
     setup_logger.info("Running first time setup...")
@@ -162,6 +182,7 @@ def first_time_setup(settings):
     settings.set(section, "quick_capture_hotkey", values.get("quick_capture_hotkey") or "ctrl+shift+t")
     settings.set(section, "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
     settings.set(section, "pysimplegui_theme", values.get("pysimplegui_theme") or PyGUI.theme())
+    settings.set(section, "default_aircraft", values.get("default_aircraft") or "hornet")
 
     with open("settings.ini", "w+") as f:
         settings.write(f)
