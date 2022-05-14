@@ -8,7 +8,7 @@ class DriverException(Exception):
     pass
 
 
-def latlon_tostring(latlong, decimal_minutes_mode=False, easting_zfill=2, zfill_minutes=2, one_digit_seconds=False, precision=4):
+def latlon_tostring(latlong, decimal_minutes_mode=False, easting_zfill=2, zfill_minutes=2, one_digit_seconds=False, precision=4, dfill=False):
 
     if not decimal_minutes_mode:
         lat_deg = str(abs(round(latlong.lat.degree)))
@@ -44,6 +44,8 @@ def latlon_tostring(latlong, decimal_minutes_mode=False, easting_zfill=2, zfill_
 
         lat_min_split = lat_min.split(".")
         lat_min_split[0] = lat_min_split[0].zfill(zfill_minutes)
+        if dfill:
+            lat_min_split[1] = lat_min_split[1].ljust(precision, '0')
         lat_min = ".".join(lat_min_split)
 
         lon_deg = str(abs(round(latlong.lon.degree))).zfill(easting_zfill)
@@ -51,6 +53,8 @@ def latlon_tostring(latlong, decimal_minutes_mode=False, easting_zfill=2, zfill_
 
         lon_min_split = lon_min.split(".")
         lon_min_split[0] = lon_min_split[0].zfill(zfill_minutes)
+        if dfill:
+            lon_min_split[1] = lon_min_split[1].ljust(precision, '0')
         lon_min = ".".join(lon_min_split)
 
         return lat_deg + lat_min, lon_deg + lon_min
@@ -682,3 +686,153 @@ class ViperDriver(Driver):
 
     def enter_all(self, profile):
         self.enter_waypoints(self.validate_waypoints(profile.all_waypoints_as_list))
+
+
+class ApachePilotDriver(Driver):
+    def __init__(self, logger, config):
+        super().__init__(logger, config)
+        self.limits = dict(WP=None)
+
+    def kbu(self, num, delay_after=None, delay_release=None):
+        key = f"PLT_KU_{num}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
+
+    def rmpd(self, pb, delay_after=None, delay_release=None):
+        key = f"PLT_MPD_R_{pb}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
+
+    def enter_number(self, number):
+        for num in str(number):
+            if num != ".":
+                self.kbu(num)
+
+    def enter_coords(self, latlong, elev=None):
+        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, precision=2, dfill=True)
+        self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
+
+        if latlong.lat.degree > 0:
+            self.kbu("N", delay_release=self.medium_delay)
+        else:
+            self.kbu("S", delay_release=self.medium_delay)
+        self.enter_number(lat_str)
+        sleep(0.5)
+
+        if latlong.lon.degree > 0:
+            self.kbu("E", delay_release=self.medium_delay)
+        else:
+            self.kbu("W", delay_release=self.medium_delay)
+        self.enter_number(lon_str)
+
+        self.kbu("ENT")
+
+        if elev:
+            self.enter_number(elev)
+        
+        self.kbu("ENT")
+
+    def enter_waypoints(self, wps):
+        if not wps:
+            return
+
+        self.rmpd("TSD")
+        self.rmpd("B6")
+
+        for i, wp in enumerate(wps):
+            if not wp.name:
+                self.logger.info(f"Entering waypoint {i+1}")
+            else:
+                self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
+
+            self.rmpd("L2") # ADD
+            self.rmpd("L1") # IDENT
+            if wp.name:
+                for char in wp.name:
+                    self.kbu(char)
+            self.kbu("ENT") 
+            self.kbu("ENT")
+            self.kbu("CLR")
+
+            self.enter_coords(wp.position, wp.elevation)
+
+        self.kbu("CLR")
+        self.kbu("CLR")
+
+    def enter_all(self, profile):
+        self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
+
+
+class ApacheGunnerDriver(Driver):
+    def __init__(self, logger, config):
+        super().__init__(logger, config)
+        self.limits = dict(WP=None)
+
+    def kbu(self, num, delay_after=None, delay_release=None):
+        key = f"CPG_KU_{num}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
+
+    def rmpd(self, pb, delay_after=None, delay_release=None):
+        key = f"CPG_MPD_R_{pb}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
+
+    def enter_number(self, number):
+        for num in str(number):
+            if num != ".":
+                self.kbu(num)
+
+    def enter_coords(self, latlong, elev=None):
+        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, precision=2, dfill=True)
+        self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
+
+        if latlong.lat.degree > 0:
+            self.kbu("N", delay_release=self.medium_delay)
+        else:
+            self.kbu("S", delay_release=self.medium_delay)
+        self.enter_number(lat_str)
+        sleep(0.5)
+
+        if latlong.lon.degree > 0:
+            self.kbu("E", delay_release=self.medium_delay)
+        else:
+            self.kbu("W", delay_release=self.medium_delay)
+        self.enter_number(lon_str)
+
+        self.kbu("ENT")
+
+        if elev:
+            self.enter_number(elev)
+        
+        self.kbu("ENT")
+
+    def enter_waypoints(self, wps):
+        if not wps:
+            return
+
+        self.rmpd("TSD")
+        self.rmpd("B6")
+
+        for i, wp in enumerate(wps):
+            if not wp.name:
+                self.logger.info(f"Entering waypoint {i+1}")
+            else:
+                self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
+
+            self.rmpd("L2") # ADD
+            self.rmpd("L1") # IDENT
+            if wp.name:
+                for char in wp.name:
+                    self.kbu(char)
+            self.kbu("ENT") 
+            self.kbu("ENT")
+            self.kbu("CLR")
+
+            self.enter_coords(wp.position, wp.elevation)
+
+        self.kbu("CLR")
+        self.kbu("CLR")
+
+    def enter_all(self, profile):
+        self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
