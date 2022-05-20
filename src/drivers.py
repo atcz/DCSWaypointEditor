@@ -597,11 +597,13 @@ class ViperDriver(Driver):
 
     def icp_btn(self, num, delay_after=None, delay_release=None):
         key = f"ICP_BTN_{num}"
+        print(key)
         if num == "ENTR":
             key = "ICP_ENTR_BTN"
         self.press_with_delay(key, delay_after=delay_after, delay_release=delay_release)
 
     def icp_ded(self, num, delay_after=None, delay_release=None):
+        print("ICP_DED_SW " + num)
         if delay_release is None:
             delay_release = self.short_delay
 
@@ -617,6 +619,7 @@ class ViperDriver(Driver):
             "utf-8"), (self.host, self.port))
 
     def icp_data(self, num, delay_after=None, delay_release=None):
+        print("ICP_DATA_UP_DN_SW " + num)
         if delay_release is None:
             delay_release = self.short_delay
 
@@ -698,6 +701,11 @@ class ApachePilotDriver(Driver):
         self.press_with_delay(key, delay_after=delay_after,
                               delay_release=delay_release)
 
+    def lmpd(self, pb, delay_after=None, delay_release=None):
+        key = f"PLT_MPD_L_{pb}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
+
     def rmpd(self, pb, delay_after=None, delay_release=None):
         key = f"PLT_MPD_R_{pb}"
         self.press_with_delay(key, delay_after=delay_after,
@@ -709,7 +717,7 @@ class ApachePilotDriver(Driver):
                 self.kbu(num)
 
     def enter_coords(self, latlong, elev=None):
-        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, precision=2, dfill=True)
+        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=2, dfill=True)
         self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
 
         if latlong.lat.degree > 0:
@@ -728,8 +736,9 @@ class ApachePilotDriver(Driver):
         self.kbu("ENT")
 
         if elev:
+            self.kbu("CLR")
             self.enter_number(elev)
-        
+
         self.kbu("ENT")
 
     def enter_waypoints(self, wps):
@@ -737,7 +746,7 @@ class ApachePilotDriver(Driver):
             return
 
         self.rmpd("TSD")
-        self.rmpd("B6")
+        self.rmpd("B6") # POINT
 
         for i, wp in enumerate(wps):
             if not wp.name:
@@ -747,17 +756,14 @@ class ApachePilotDriver(Driver):
 
             self.rmpd("L2") # ADD
             self.rmpd("L1") # IDENT
-            if wp.name:
-                for char in wp.name:
-                    self.kbu(char)
             self.kbu("ENT") 
+            if wp.name:
+                for char in wp.name[0:3].upper():
+                    self.kbu(char)
             self.kbu("ENT")
             self.kbu("CLR")
 
             self.enter_coords(wp.position, wp.elevation)
-
-        self.kbu("CLR")
-        self.kbu("CLR")
 
     def enter_all(self, profile):
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
@@ -773,6 +779,11 @@ class ApacheGunnerDriver(Driver):
         self.press_with_delay(key, delay_after=delay_after,
                               delay_release=delay_release)
 
+    def lmpd(self, pb, delay_after=None, delay_release=None):
+        key = f"CPG_MPD_L_{pb}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
+
     def rmpd(self, pb, delay_after=None, delay_release=None):
         key = f"CPG_MPD_R_{pb}"
         self.press_with_delay(key, delay_after=delay_after,
@@ -784,7 +795,7 @@ class ApacheGunnerDriver(Driver):
                 self.kbu(num)
 
     def enter_coords(self, latlong, elev=None):
-        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, precision=2, dfill=True)
+        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=2, dfill=True)
         self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
 
         if latlong.lat.degree > 0:
@@ -803,8 +814,9 @@ class ApacheGunnerDriver(Driver):
         self.kbu("ENT")
 
         if elev:
+            self.kbu("CLR")
             self.enter_number(elev)
-        
+
         self.kbu("ENT")
 
     def enter_waypoints(self, wps):
@@ -812,7 +824,7 @@ class ApacheGunnerDriver(Driver):
             return
 
         self.rmpd("TSD")
-        self.rmpd("B6")
+        self.rmpd("B6") # POINT
 
         for i, wp in enumerate(wps):
             if not wp.name:
@@ -822,17 +834,14 @@ class ApacheGunnerDriver(Driver):
 
             self.rmpd("L2") # ADD
             self.rmpd("L1") # IDENT
-            if wp.name:
-                for char in wp.name:
-                    self.kbu(char)
             self.kbu("ENT") 
+            if wp.name:
+                for char in wp.name[0:3].upper():
+                    self.kbu(char)
             self.kbu("ENT")
             self.kbu("CLR")
 
             self.enter_coords(wp.position, wp.elevation)
-
-        self.kbu("CLR")
-        self.kbu("CLR")
 
     def enter_all(self, profile):
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
