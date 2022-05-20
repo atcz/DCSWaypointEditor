@@ -338,10 +338,10 @@ class GUI:
                     ['&Settings', '---', 'E&xit']],
                    ['&Profile',
                     ['&Save Profile', '&Delete Profile', 'Save Profile &As...', '---',
-                        "Import", ["Paste as string from clipboard", "Load from encoded file", "---",
+                        "&Import", ["Paste as &String from clipboard", "Load from &Encoded file", "---",
                                     "Import NS430 from clipboard", "Import NS430 from file"],
-                        "Export", ["Copy as string to clipboard", "Copy plain text to clipboard",
-                                    "Save as encoded file"],
+                        "&Export", ["Copy as &String to clipboard", "Copy plain &Text to clipboard",
+                                    "Save as &Encoded file"],
                     ]]]
 
         colmain1 = [
@@ -906,10 +906,10 @@ class GUI:
                 if position is not None:
                     self.add_waypoint(position, elevation, name)
 
-            elif event == "Copy as string to clipboard":
+            elif event == "Copy as String to clipboard":
                 self.export_to_string()
 
-            elif event == "Paste as string from clipboard":
+            elif event == "Paste as String from clipboard":
                 self.import_from_string()
 
             elif event == "Import NS430 from clipboard":
@@ -987,7 +987,7 @@ class GUI:
                 except DoesNotExist:
                     PyGUI.Popup("Profile not found")
 
-            elif event == "Save as encoded file":
+            elif event == "Save as Encoded file":
                 filename = PyGUI.PopupGetFile("Enter file name", "Exporting profile", default_extension=".json",
                                               save_as=True, file_types=(("JSON File", "*.json"),))
 
@@ -997,12 +997,12 @@ class GUI:
                 with open(filename, "w+") as f:
                     f.write(str(self.profile))
 
-            elif event == "Copy plain text to clipboard":
+            elif event == "Copy plain Text to clipboard":
                 profile_string = self.profile.to_readable_string()
                 pyperclip.copy(profile_string)
                 PyGUI.Popup("Profile copied as plain text to clipboard")
 
-            elif event == "Load from encoded file":
+            elif event == "Load from Encoded file":
                 filename = PyGUI.PopupGetFile(
                     "Enter file name", "Importing profile")
 
