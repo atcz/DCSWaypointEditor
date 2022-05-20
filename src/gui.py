@@ -980,7 +980,7 @@ class GUI:
                     if profile_name != '':
                         self.profile = Profile.load(profile_name)
                     else:
-                        self.profile = Profile('')
+                        self.profile = Profile('', aircraft=self.default_aircraft)
                     self.editor.set_driver(self.profile.aircraft)
                     self.update_waypoints_list()
 
