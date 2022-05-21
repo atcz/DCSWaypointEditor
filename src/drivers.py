@@ -530,16 +530,16 @@ class WarthogDriver(Driver):
             result = f"WP{wp.number}"
         self.logger.debug("Waypoint name: " + result)
         self.clear_input()
-        for character in result:
-            self.logger.debug("Entering value: " + character)
-            self.cdu(character.upper(), delay_after=self.short_delay)
+        for character in result[0:12].upper():
+#            self.logger.debug("Entering value: " + character)
+            self.cdu(character, delay_after=self.short_delay)
 
         self.cdu("LSK_3R")
 
     def enter_number(self, number):
         for num in str(number):
             if num != '.':
-                self.logger.debug(f"Entering value: " + str(num))
+#                self.logger.debug(f"Entering value: " + str(num))
                 self.cdu(num)
 
     def enter_coords(self, latlong):
@@ -581,10 +581,11 @@ class WarthogDriver(Driver):
             self.enter_coords(wp.position)
 
             # if the elevation is exactly 0ft we don't enter it an the CDU will automatically set it to 0ft AGL
-            if wp.elevation != 0:
-                self.enter_elevation(wp.elevation)
-            else:
-                self.logger.debug("Not entering elevation because it is 0")
+#            if wp.elevation != 0:
+            self.logger.debug("Entering elevation: " + str(wp.elevation))
+            self.enter_elevation(wp.elevation)
+#            else:
+#                self.logger.debug("Not entering elevation because it is 0")
 
     def enter_all(self, profile):
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
@@ -597,13 +598,11 @@ class ViperDriver(Driver):
 
     def icp_btn(self, num, delay_after=None, delay_release=None):
         key = f"ICP_BTN_{num}"
-        print(key)
         if num == "ENTR":
             key = "ICP_ENTR_BTN"
         self.press_with_delay(key, delay_after=delay_after, delay_release=delay_release)
 
     def icp_ded(self, num, delay_after=None, delay_release=None):
-        print("ICP_DED_SW " + num)
         if delay_release is None:
             delay_release = self.short_delay
 
@@ -619,7 +618,6 @@ class ViperDriver(Driver):
             "utf-8"), (self.host, self.port))
 
     def icp_data(self, num, delay_after=None, delay_release=None):
-        print("ICP_DATA_UP_DN_SW " + num)
         if delay_release is None:
             delay_release = self.short_delay
 
@@ -672,19 +670,29 @@ class ViperDriver(Driver):
         self.icp_data("DN")
 
     def enter_waypoints(self, wps):
+        self.icp_data("RTN")
         self.icp_btn("4", delay_release=1)
-        self.icp_data("DN", delay_release=1)
 
-        for wp in wps:
+        for i, wp in enumerate(wps):
+            if not wp.name:
+                self.logger.info(f"Entering waypoint {i+1}")
+            else:
+                self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
+
+            self.icp_data("DN")                     # To MAN/AUTO
+            self.icp_data("DN")                     # To LAT
+
             self.enter_coords(wp.position)
             if wp.elevation != 0:
                 self.enter_elevation(wp.elevation)
 
-            self.icp_data("UP")
-            self.icp_data("UP")
-            self.icp_ded("UP")
+            self.icp_data("UP")                     # To LON
+            self.icp_data("UP")                     # To LAT
+            self.icp_data("UP")                     # To MAN/AUTO
+            self.icp_data("UP")                     # To STPT number
+            self.icp_ded("UP")                      # Increment STPT number
 
-        self.icp_ded("DN")
+        self.icp_ded("DN")                          # Backup to last STPT
         self.icp_data("RTN")
 
     def enter_all(self, profile):
@@ -694,7 +702,7 @@ class ViperDriver(Driver):
 class ApachePilotDriver(Driver):
     def __init__(self, logger, config):
         super().__init__(logger, config)
-        self.limits = dict(WP=None)
+        self.limits = dict(WP=None, HZ=None, CM=None, TG=None)
 
     def kbu(self, num, delay_after=None, delay_release=None):
         key = f"PLT_KU_{num}"
@@ -742,6 +750,7 @@ class ApachePilotDriver(Driver):
         self.kbu("ENT")
 
     def enter_waypoints(self, wps):
+        wp_type_buttons = dict(WP='L3', HZ='L4', CM='L5', TG='L6')
         if not wps:
             return
 
@@ -755,6 +764,7 @@ class ApachePilotDriver(Driver):
                 self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
 
             self.rmpd("L2") # ADD
+            self.rmpd(wp_type_buttons[wp.wp_type]) # WP TYPE
             self.rmpd("L1") # IDENT
             self.kbu("ENT") 
             if wp.name:
@@ -772,7 +782,7 @@ class ApachePilotDriver(Driver):
 class ApacheGunnerDriver(Driver):
     def __init__(self, logger, config):
         super().__init__(logger, config)
-        self.limits = dict(WP=None)
+        self.limits = dict(WP=None, HZ=None, CM=None, TG=None)
 
     def kbu(self, num, delay_after=None, delay_release=None):
         key = f"CPG_KU_{num}"
@@ -820,6 +830,7 @@ class ApacheGunnerDriver(Driver):
         self.kbu("ENT")
 
     def enter_waypoints(self, wps):
+        wp_type_buttons = dict(WP='L3', HZ='L4', CM='L5', TG='L6')
         if not wps:
             return
 
@@ -833,6 +844,7 @@ class ApacheGunnerDriver(Driver):
                 self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
 
             self.rmpd("L2") # ADD
+            self.rmpd(wp_type_buttons[wp.wp_type]) # WP TYPE
             self.rmpd("L1") # IDENT
             self.kbu("ENT") 
             if wp.name:
