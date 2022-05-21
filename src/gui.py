@@ -234,6 +234,9 @@ class GUI:
              PyGUI.Radio("DP", group_id="wp_type", key="DP", enable_events=True),
              PyGUI.Radio("HA", group_id="wp_type", key="HA", enable_events=True),
              PyGUI.Radio("HB", group_id="wp_type", key="HB", enable_events=True)],
+            [PyGUI.Radio("HZ", group_id="wp_type", key="HZ", enable_events=True),
+             PyGUI.Radio("CM", group_id="wp_type", key="CM", enable_events=True),
+             PyGUI.Radio("TG", group_id="wp_type", key="TG", enable_events=True)],
             [PyGUI.Button("Quick Capture", disabled=self.capture_button_disabled, key="quick_capture", pad=(5, (3, 8))),
              PyGUI.Text("Sequence:", pad=((0, 1), 3),
                         key="sequence_text", auto_size_text=False, size=(8, 1)),
@@ -1046,7 +1049,7 @@ class GUI:
             elif event == "enter":
                 self.enter_coords_to_aircraft()
 
-            elif event in ("MSN", "WP", "HA", "FP", "ST", "DP", "IP", "HB"):
+            elif event in ("MSN", "WP", "HA", "FP", "ST", "DP", "IP", "HB", "HZ", "CM", "TG"):
                 self.select_wp_type(event)
 
             elif event == "elevFeet":
