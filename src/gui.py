@@ -903,6 +903,7 @@ class GUI:
 
             elif event == "Settings":
                 first_time_setup(self.editor.settings)
+                self.default_aircraft = try_get_setting(self.editor.settings, "default_aircraft", "hornet")
 
             elif event == "Add":
                 position, elevation, name = self.validate_coords()
