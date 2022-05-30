@@ -8,7 +8,7 @@ import tempfile
 import requests
 import zipfile
 
-DCS_BIOS_VERSION = '0.7.44'
+DCS_BIOS_VERSION = '0.7.45'
 DCS_BIOS_URL = "https://github.com/DCSFlightpanels/dcs-bios/releases/download/v{}/DCS-BIOS_{}.zip"
 
 logger = get_logger(__name__)
