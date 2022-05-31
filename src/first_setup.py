@@ -1,5 +1,5 @@
 from configparser import ConfigParser
-from shutil import copytree
+from shutil import copytree, rmtree
 from src.logger import get_logger
 from pathlib import Path
 import PySimpleGUI as PyGUI
@@ -38,9 +38,12 @@ def install_dcs_bios(dcs_path):
             with zipfile.ZipFile(tmp_file) as zip_ref:
                 zip_ref.extractall(tmp_dir)
 
-            copytree(tmp_dir + '\\DCS-BIOS', dcs_path + "Scripts\\DCS-BIOS")
-
-            PyGUI.Popup(f'DCS-BIOS v{DCS_BIOS_VERSION} successfully downloaded and installed')
+            try:
+                rmtree(dcs_path + "Scripts\\DCS-BIOS", ignore_errors=True)
+                copytree(tmp_dir + '\\DCS-BIOS', dcs_path + "Scripts\\DCS-BIOS")
+                PyGUI.Popup(f'DCS-BIOS v{DCS_BIOS_VERSION} successfully downloaded and installed.')
+            except:
+                logger.debug(f"DCS Bios install failed.")
 
 
 def detect_dcs_bios(dcs_path):
@@ -72,7 +75,8 @@ def detect_the_way(dcs_path):
 def first_time_setup_gui(settings):
     section = "PREFERENCES"
     aircraft = ["hornet", "harrier", "tomcat", "viper", "mirage", "warthog", "apachep", "apacheg"]
-    dcs_bios_detected = "Detected" if detect_dcs_bios(settings.get(section, 'dcs_path')) else "Not detected"
+    dcs_bios_detected = "Detected" if detect_dcs_bios(settings.get(section, 'dcs_path')) else "Not Detected"
+    the_way_detected = "Detected" if detect_the_way(settings.get(section, 'dcs_path')) else "Not Detected"
 
     layout = [
         [PyGUI.Text("DCS User Folder Path:"),
@@ -101,7 +105,10 @@ def first_time_setup_gui(settings):
             enable_events=True, key='pysimplegui_theme', size=(30, 1))],
 
         [PyGUI.Text("DCS-BIOS:"), PyGUI.Text(dcs_bios_detected, key="dcs_bios"),
-         PyGUI.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected")],
+         PyGUI.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected"),
+         PyGUI.Button("Update to v" + DCS_BIOS_VERSION, key="update_button", disabled=dcs_bios_detected == "Not Detected")],
+
+        [PyGUI.Text("The Way:"), PyGUI.Text(the_way_detected, key="dcs_bios")],
     ]
 
     return PyGUI.Window("DCS Waypoint Editor Settings", [[PyGUI.Frame("Settings", layout)],
@@ -154,9 +161,19 @@ def first_time_setup(settings):
                 gui.Element("accept_button").Update(disabled=False)
                 gui.Element("dcs_bios").Update(value="Installed")
             except (FileExistsError, FileNotFoundError, requests.HTTPError) as e:
-                gui.Element("dcs_bios").Update(value="Failed to install")
+                gui.Element("dcs_bios").Update(value="Install failed")
                 setup_logger.error("DCS-BIOS failed to install", exc_info=True)
                 PyGUI.Popup(f"DCS-BIOS failed to install:\n{e}")
+        elif event == "update_button":
+            try:
+                setup_logger.info("Updating DCS BIOS...")
+                install_dcs_bios(dcs_path)
+                gui.Element("update_button").Update(disabled=True)
+                gui.Element("dcs_bios").Update(value="Installed")
+            except (FileExistsError, FileNotFoundError, requests.HTTPError) as e:
+                gui.Element("dcs_bios").Update(value="Update failed")
+                setup_logger.error("DCS-BIOS failed to update", exc_info=True)
+                PyGUI.Popup(f"DCS-BIOS failed to update:\n{e}")
         elif event == "dcs_path":
             dcs_bios_detected = detect_dcs_bios(values["dcs_path"])
             if dcs_bios_detected:
