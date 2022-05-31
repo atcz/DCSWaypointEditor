@@ -1079,7 +1079,9 @@ class GUI:
                         decoded_mgrs = mgrs.UTMtoLL(mgrs.decode(mgrs_string.replace(" ", "")))
                         position = LatLon(Latitude(degree=decoded_mgrs["lat"]), Longitude(
                             degree=decoded_mgrs["lon"]))
-                        self.update_position(position, elevation, update_mgrs=False)
+                        self.update_position(position, elevation, 
+                                                name=self.window.Element("msnName").Get(), 
+                                                update_mgrs=False)
                     except (TypeError, ValueError, UnboundLocalError) as e:
                         self.logger.error(f"Failed to decode MGRS: {e}")
 
