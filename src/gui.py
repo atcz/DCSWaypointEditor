@@ -1069,7 +1069,7 @@ class GUI:
                     self.window.Element("mgrs").Update(m)
 
             elif event == "mgrs":
-                mgrs_string = self.window.Element("mgrs").Get()
+                mgrs_string = self.window.Element("mgrs").Get().upper()
                 try:
                     elevation = int(self.window.Element("elevFeet").Get())
                 except:
