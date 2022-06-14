@@ -10,6 +10,8 @@ import zipfile
 
 DCS_BIOS_VERSION = '0.7.45'
 DCS_BIOS_URL = "https://github.com/DCSFlightpanels/dcs-bios/releases/download/v{}/DCS-BIOS_{}.zip"
+aircraft = ["hornet", "harrier", "tomcat", "viper", "mirage", "warthog", "apachep", "apacheg"]
+aircraft_name = ["F/A-18C", "AV-8B", "F-14A/B", "F-16C", "M-2000C", "A-10C", "AH-64D Pilot", "AH-64D CPG"]
 
 logger = get_logger(__name__)
 
@@ -74,7 +76,6 @@ def detect_the_way(dcs_path):
 
 def first_time_setup_gui(settings):
     section = "PREFERENCES"
-    aircraft = ["hornet", "harrier", "tomcat", "viper", "mirage", "warthog", "apachep", "apacheg"]
     dcs_bios_detected = "Detected" if detect_dcs_bios(settings.get(section, 'dcs_path')) else "Not Detected"
     the_way_detected = "Detected" if detect_the_way(settings.get(section, 'dcs_path')) else "Not Detected"
 
@@ -97,7 +98,8 @@ def first_time_setup_gui(settings):
          PyGUI.Input(settings.get(section, 'enter_aircraft_hotkey'), key="enter_aircraft_hotkey")],
 
         [PyGUI.Text("Default Aircraft:"),
-         PyGUI.Combo(values=aircraft, readonly=True, default_value=settings.get(section, 'default_aircraft'),
+         PyGUI.Combo(values=aircraft_name, readonly=True,
+            default_value=aircraft_name[aircraft.index(settings.get(section, 'default_aircraft'))],
             enable_events=True, key='default_aircraft', size=(30, 1))],
 
         [PyGUI.Text("Select PySimpleGUI theme:"),
@@ -108,7 +110,7 @@ def first_time_setup_gui(settings):
          PyGUI.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected"),
          PyGUI.Button("Update to v" + DCS_BIOS_VERSION, key="update_button", disabled=dcs_bios_detected == "Not Detected")],
 
-        [PyGUI.Text("The Way:"), PyGUI.Text(the_way_detected, key="dcs_bios")],
+        [PyGUI.Text("The Way:"), PyGUI.Text(the_way_detected, key="the_way")],
     ]
 
     return PyGUI.Window("DCS Waypoint Editor Settings", [[PyGUI.Frame("Settings", layout)],
@@ -118,7 +120,7 @@ def first_time_setup_gui(settings):
 
 def first_time_setup(settings):
     section = "PREFERENCES"
-    default_dcs_path = f"{str(Path.home())}\\Saved Games\\DCS.openbeta\\"
+    default_dcs_path = f"{str(Path.home())}\\Saved Games\\DCS\\"
     default_tesseract_path = f"{os.environ['PROGRAMW6432']}\\Tesseract-OCR\\tesseract.exe"
     default_aircraft = 'hornet'
     if settings is None:
@@ -147,8 +149,8 @@ def first_time_setup(settings):
         if event is None:
             return False
 
-        dcs_path = values.get("dcs_path")
-        if dcs_path is not None and not dcs_path.endswith("\\") and not dcs_path.endswith("/"):
+        dcs_path = values.get("dcs_path").replace('/','\\')
+        if dcs_path is not None and not dcs_path.endswith("\\"):
             dcs_path = dcs_path + "\\"
 
         if event == "accept_button":
@@ -175,7 +177,9 @@ def first_time_setup(settings):
                 setup_logger.error("DCS-BIOS failed to update", exc_info=True)
                 PyGUI.Popup(f"DCS-BIOS failed to update:\n{e}")
         elif event == "dcs_path":
+            dcs_path.replace('/','\\')
             dcs_bios_detected = detect_dcs_bios(values["dcs_path"])
+            the_way_detected = detect_the_way(values["dcs_path"])
             if dcs_bios_detected:
                 gui.Element("install_button").Update(disabled=True)
                 gui.Element("accept_button").Update(disabled=False)
@@ -184,6 +188,10 @@ def first_time_setup(settings):
                 gui.Element("install_button").Update(disabled=False)
                 gui.Element("accept_button").Update(disabled=True)
                 gui.Element("dcs_bios").Update(value="Not detected")
+            if the_way_detected:
+                gui.Element("the_way").Update(value="Detected")
+            else:
+                gui.Element("the_way").Update(value="Not detected")
         elif event == "pysimplegui_theme":
             PyGUI.theme(values['pysimplegui_theme'])
             keep_new_theme = PyGUI.popup_get_text(
@@ -199,7 +207,7 @@ def first_time_setup(settings):
     settings.set(section, "quick_capture_hotkey", values.get("quick_capture_hotkey") or "ctrl+shift+t")
     settings.set(section, "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
     settings.set(section, "pysimplegui_theme", values.get("pysimplegui_theme") or PyGUI.theme())
-    settings.set(section, "default_aircraft", values.get("default_aircraft") or "hornet")
+    settings.set(section, "default_aircraft", aircraft[aircraft_name.index(values.get("default_aircraft"))] or "hornet")
 
     with open("settings.ini", "w+") as f:
         settings.write(f)
