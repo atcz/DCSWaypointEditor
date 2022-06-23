@@ -9,7 +9,9 @@ Currently supported aircraft:
 * M-2000C
 * F-14A/B
 * A-10C
-
+* F-16C
+* AH-64D Pilot
+* AH-64D CPG
 
 ## Installation
 
@@ -19,16 +21,17 @@ Currently supported aircraft:
 
 ## Usage
 
-Waypoints and JDAM preplanned missions can be added by either manually entering a set of coordinates or capturing them
-from the DCS F10 map via optical text recognition. 
+Waypoints and JDAM/SLAM preplanned missions can be added by either manually entering a set of coordinates or capturing them
+from the DCS F10 map via optical text recognition. If "DCSTheWay" is installed, the coordinates can be captured from the
+current camera view.
 
 #### Manual coordinates entry
 
-1. Choose a waypoint type (WP = regular waypoint, MSN = JDAM preplanned mission)
+1. Choose a waypoint type (WP = regular waypoint, MSN = JDAM/SLAM preplanned mission)
 
 2. Enter the latitude and longitude. Decimal seconds are supported.
 
-3. Enter the elevation in feet (optional for regular waypoints, mandatory for JDAM preplanned missions)
+3. Enter the elevation in feet (optional for regular waypoints, mandatory for JDAM/SLAM preplanned missions)
 
 5. (Optional) Choose a sequence to assign the waypoint to.
 
@@ -54,19 +57,20 @@ in the capture status textbox.
 
 #### F10 map quick capture
 
-Quick capture works in a similar way to regular coordinates capturing, except it will automatically add a waypoint
-at the desired position every time the F10 map capture keybind is pressed.  This can be toggled on/off with a
+`Quick Capture` and `Capture from The Way` work in a similar way to regular coordinates capturing, except it will automatically add a waypoint
+at the desired position every time the F10 map capture keybind is pressed.  `Quick Capture` can be toggled on/off with a
 hotkey (default is `LCtrl+LShift+T`).
 
 #### Preset coordinates
 
-You may select a position from a list of preset coordinates. Coordinates for all Caucasus and PG airfields and BlueFlag
-FARPS are included.
+You may select a position from a list of preset coordinates. Coordinates for all Caucasus, Persian Gulf, Marianas, Nevada and Syria airfields
+and BlueFlag FARPS are included.
 
-#### Hornet JDAM preplanned missions
+#### Hornet JDAM/SLAM preplanned missions
 
-Hornet JDAM preplanned missions work in a similar way to waypoints, however, you **must** select the correct station
-for the mission to be assigned using the station selector.
+Hornet JDAM/SLAM preplanned missions work in a similar way to waypoints, however, you **must** select the correct station
+for the mission to be assigned using the station selector.  Aircraft entry does not skip stations, so if you select stations
+8 and 7, stations will be entered in order 8-2-7-3.
 
 #### Entering a list of waypoints into your aircraft
 
@@ -77,7 +81,8 @@ of the application.
 
 1. Make sure the main HSI page is on the AMPCD (bottom screen) if you are entering waypoints.
  
-2. If you are entering JDAM preplanned missions, make sure the JDAM preplanned missions page is on the left DDI
+2. If you are entering JDAM/SLAM preplanned missions, make sure to select the MSN preplanned missions page on the left DDI.
+JDAM and SLAM missions must be entered separately.
 
 ![pages](https://i.imgur.com/Nxr9qKX.png)
 
@@ -101,12 +106,12 @@ of the application.
 
 #### Profile saving
 
-You may save your current list of waypoints as a profile and then load it later. Clicking `save` with a profile active
+You may save your current list of waypoints as a profile and then load it later. Selecting "Save Profile" with a profile active
 will overwrite it with the current list.
 
 #### Export to file
 
-If you wish to share your current profile, click `Export to file` and give it a descriptive name.
+If you wish to share your current profile, click `Save as Encoded file` and give it a descriptive name.
 
 #### Import from file
 
@@ -115,18 +120,18 @@ Profiles may be imported from a file that was previously exported.
 #### Creating your own preset locations
 
 You may add more preset locations by adding more JSON formatted files in the data folder,
-following the format in `pg.json` and `cauc.json`.
+following the format in `pg.json` and `cauc.json`.												  
 
 #### Exporting to encoded string
 
 Support for exporting current profile to an encoded string has been implemented to allow for quick sharing
-of waypoint and mission data to other people.  Once you have created a mission, click the `Encode to String`
-button.  This will copy an encoded string to your clipboard to share with other users.
+of waypoint and mission data to other people.  Once you have created a mission, select `Copy as String to clipboard`
+from the menu.  This will copy an encoded string to your clipboard to share with other users.
 
 #### Importing from encoded string
 
 Once another user has sent their encoded string to yourself, just copy the string to your clipboard (default `LCtrl+C`)
-and press the `Decode from String` button in the application.  If successful, their mission data should be imported into
+and select `Paste as String from clipboard`.  If successful, their mission data should be imported into
 a new profile and a pop-up should appear letting you know import was successful.
 
 ## Known issues
@@ -143,6 +148,8 @@ If you'd like to support my work, it is very much appreciated!
 DCS-BIOS is redistributed under GPLv3 license.
 
 DCS-BIOS: https://github.com/DCSFlightpanels/dcs-bios
+
+DCSTheWay: https://github.com/aronCiucu/DCSTheWay
 
 ## Other credits
 
