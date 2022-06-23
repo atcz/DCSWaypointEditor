@@ -691,6 +691,7 @@ class GUI:
 
     def add_parsed_coords(self):
         position = None
+        name = self.window.Element("msnName").Get()
         try:
             captured_coords = self.capture_map_coords()
             position, elevation = self.parse_map_coords_string(captured_coords)
@@ -703,11 +704,11 @@ class GUI:
             if not self.quick_capture:
                 self.stop_capture()
             if position is not None:
-                self.update_position(position, elevation, update_mgrs=True)
+                self.update_position(position, elevation, name=name, update_mgrs=True)
                 self.update_altitude_elements("meters")
                 self.window.Element('capture_status').Update("Status: Captured")
                 if self.quick_capture:
-                    added = self.add_waypoint(position, elevation)
+                    added = self.add_waypoint(position, elevation, name=name)
                     if not added:
                         self.stop_capture()
 
@@ -716,6 +717,7 @@ class GUI:
         UDP_PORT = 42069
         BUFFER_SIZE = 65508
         data = None
+        name = self.window.Element("msnName").Get()
 
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
@@ -739,10 +741,10 @@ class GUI:
 
                 if position is not None:
                     self.logger.info("Waypoint data: " + str(position) + " " + str(elevation))
-                    self.update_position(position, elevation, update_mgrs=True)
+                    self.update_position(position, elevation, name=name, update_mgrs=True)
                     self.update_altitude_elements("meters")
                     self.window.Element('capture_status').Update("Status: Captured")
-                    added = self.add_waypoint(position, elevation)
+                    added = self.add_waypoint(position, elevation, name=name)
                     if not added:
                         self.stop_capture()
 
