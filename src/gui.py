@@ -8,6 +8,7 @@ from pathlib import Path
 import pytesseract
 import keyboard
 import os
+import subprocess
 import json
 import socket
 import urllib.request
@@ -338,7 +339,7 @@ class GUI:
         ]
 
         menudef = [['&File',
-                    ['&Settings', '---', 'E&xit']],
+                    ['&Settings', '---', '&Run Target Jar', '---', 'E&xit']],
                    ['&Profile',
                     ['&Save Profile', '&Delete Profile', 'Save Profile &As...', '---',
                         "&Import", ["Paste as &String from clipboard", "Load from &Encoded file", "---",
@@ -906,6 +907,10 @@ class GUI:
             elif event == "Settings":
                 first_time_setup(self.editor.settings)
                 self.default_aircraft = try_get_setting(self.editor.settings, "default_aircraft", "hornet")
+
+            elif event == "Run Target Jar":
+                if os.path.exists('.\Target-jar-with-dependencies.jar'):
+                    subprocess.Popen(['java', '-jar', '.\Target-jar-with-dependencies.jar'], shell=True)
 
             elif event == "Add":
                 position, elevation, name = self.validate_coords()
