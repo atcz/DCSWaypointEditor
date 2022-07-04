@@ -768,7 +768,8 @@ class ApachePilotDriver(Driver):
             self.rmpd("L1") # IDENT
             self.kbu("ENT") 
             if wp.name:
-                for char in wp.name[0:3].upper():
+                free = wp.name.replace(' ', '')
+                for char in free[0:3].upper():
                     self.kbu(char)
             self.kbu("ENT")
             self.kbu("CLR")
@@ -848,7 +849,8 @@ class ApacheGunnerDriver(Driver):
             self.rmpd("L1") # IDENT
             self.kbu("ENT") 
             if wp.name:
-                for char in wp.name[0:3].upper():
+                free = wp.name.replace(' ', '')
+                for char in free[0:3].upper():
                     self.kbu(char)
             self.kbu("ENT")
             self.kbu("CLR")
