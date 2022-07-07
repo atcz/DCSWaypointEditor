@@ -1,333 +1,375 @@
 {
     "waypoints": [
         {
-            "latitude": 24.439880466298,
-            "longitude": 54.650051560517,
-            "elevation": 18.597383499146,
-            "name": "Abu Dhabi"
+            "latitude": 24.45370833333333,
+            "longitude": 54.65426944444445,
+            "elevation": 91,
+            "name": "Abu Dhabi Intl"
         },
         {
-            "latitude": 24.245060127601,
-            "longitude": 54.547083816434,
-            "elevation": 18.597383499146,
-            "name": "Al Dhafra"
+            "latitude": 25.875991666666669,
+            "longitude": 55.032919444444448,
+            "elevation": 16,
+            "name": "Abu Musa Island"
         },
         {
-            "latitude": 25.874262366447,
-            "longitude": 55.034348391583,
-            "elevation": 18.597383499146,
-            "name": "Abu Musa"
+            "latitude": 24.26142777777778,
+            "longitude": 55.60924444444444,
+            "elevation": 813,
+            "name": "Al Ain Intl"
         },
         {
-            "latitude": 24.263438253558,
-            "longitude": 55.613340809672,
-            "elevation": 18.597383499146,
-            "name": "Al Ain"
+            "latitude": 24.42807777777778,
+            "longitude": 54.45858055555556,
+            "elevation": 11,
+            "name": "Al Bateen"
+        },
+        {
+            "latitude": 24.24828888888889,
+            "longitude": 54.54769999999999,
+            "elevation": 52,
+            "name": "Al Dhafra AFB"
         },
         {
             "latitude": 25.30700724803,
             "longitude": 55.854566001189,
-            "elevation": 18.597383499146,
+            "elevation": 334,
             "name": "Al Dhaid"
         },
         {
             "latitude": 24.206243798094,
             "longitude": 55.117766883294,
-            "elevation": 18.597383499146,
+            "elevation": 425,
             "name": "Al Khazna"
         },
         {
             "latitude": 24.978542840285,
             "longitude": 55.792980209902,
-            "elevation": 18.597383499146,
+            "elevation": 572,
             "name": "Al Madam"
-        },
-        {
-            "latitude": 24.889616355297,
-            "longitude": 55.166408715131,
-            "elevation": 18.597383499146,
-            "name": "Al Maktoum"
-        },
-        {
-            "latitude": 25.0230628513,
-            "longitude": 55.366937900866,
-            "elevation": 18.597383499146,
-            "name": "Al Minhad"
         },
         {
             "latitude": 25.948222386548,
             "longitude": 56.423339462984,
-            "elevation": 18.597383499146,
+            "elevation": 33,
             "name": "Al Maksuriyah"
         },
         {
-            "latitude": 27.219725907418,
-            "longitude": 56.376890850765,
-            "elevation": 18.597383499146,
-            "name": "Bandar Abbas"
+            "latitude": 24.897055555555555,
+            "longitude": 55.1602388888889,
+            "elevation": 123,
+            "name": "Al Maktoum Intl"
+        },
+        {
+            "latitude": 25.026880555555555,
+            "longitude": 55.36575833333333,
+            "elevation": 179,
+            "name": "Al Minhad AFB"
+        },
+        {
+            "latitude": 27.217688888888888,
+            "longitude": 56.378961111111099,
+            "elevation": 17,
+            "name": "Bandar Abbas Intl"
         },
         {
             "latitude": 26.952063295247,
             "longitude": 55.592436819218,
-            "elevation": 18.597383499146,
+            "elevation": 43,
             "name": "Bandar Khamir"
         },
         {
-            "latitude": 26.534966284785,
-            "longitude": 54.852660765831,
-            "elevation": 18.597383499146,
+            "latitude": 26.532263888888889,
+            "longitude": 54.82466666666667,
+            "elevation": 76,
             "name": "Bandar Lengeh"
+        },
+        {
+            "latitude": 25.65467222222222,
+            "longitude": 57.801436111111119,
+            "elevation": 26,
+            "name": "Bandar-e-Jask"
         },
         {
             "latitude": 26.655893170745,
             "longitude": 55.272593073628,
-            "elevation": 18.597383499146,
+            "elevation": 24,
             "name": "Basa'idu"
         },
         {
             "latitude": 27.527296408187,
             "longitude": 56.744761747516,
-            "elevation": 18.597383499146,
+            "elevation": 166,
             "name": "Chahestan"
         },
         {
             "latitude": 27.306258983797,
             "longitude": 54.649170285209,
-            "elevation": 18.597383499146,
+            "elevation": 1299,
             "name": "Dehong"
         },
         {
             "latitude": 25.615125931791,
             "longitude": 56.282893008639,
-            "elevation": 18.597383499146,
+            "elevation": 0,
             "name": "Dibba Al-Hisn"
         },
         {
             "latitude": 28.719540029834,
             "longitude": 57.160960924554,
-            "elevation": 18.597383499146,
+            "elevation": 5561,
             "name": "Dowlatabad"
         },
         {
-            "latitude": 25.2529755735,
-            "longitude": 55.367032799786,
-            "elevation": 18.597383499146,
-            "name": "Dubai"
+            "latitude": 25.256375,
+            "longitude": 55.365261111111127,
+            "elevation": 16,
+            "name": "Dubai Intl"
         },
         {
             "latitude": 24.774526242096,
             "longitude": 54.678896006901,
-            "elevation": 18.597383499146,
+            "elevation": 0,
             "name": "EMAL"
         },
         {
             "latitude": 28.944174923518,
             "longitude": 53.663931100017,
-            "elevation": 18.597383499146,
+            "elevation": 4487,
             "name": "Fasa"
         },
         {
-            "latitude": 25.10965689705,
-            "longitude": 56.331910519103,
-            "elevation": 18.597383499146,
-            "name": "Fujairah"
+            "latitude": 25.11094166666667,
+            "longitude": 56.327352777777779,
+            "elevation": 102,
+            "name": "Fujairah Intl"
         },
         {
-            "latitude": 27.155820420902,
-            "longitude": 56.17369393103,
-            "elevation": 18.597383499146,
+            "latitude": 27.158224999999999,
+            "longitude": 56.17201944444446,
+            "elevation": 50,
             "name": "Havadarya"
         },
         {
             "latitude": 26.252338002228,
             "longitude": 54.514179073682,
-            "elevation": 18.597383499146,
+            "elevation": 22,
             "name": "Jazireh-ye Farur"
         },
         {
             "latitude": 27.013431274189,
             "longitude": 54.302733608644,
-            "elevation": 18.597383499146,
+            "elevation": 1086,
             "name": "Jenah"
         },
         {
-            "latitude": 28.723565745326,
-            "longitude": 57.675051651755,
-            "elevation": 18.597383499146,
+            "latitude": 28.723516666666666,
+            "longitude": 57.675094444444429,
+            "elevation": 2664,
             "name": "Jiroft"
         },
         {
             "latitude": 28.27060777332,
             "longitude": 53.972988598828,
-            "elevation": 18.597383499146,
+            "elevation": 2910,
             "name": "Juyom"
         },
         {
-            "latitude": 30.275081839795,
-            "longitude": 56.957206391791,
-            "elevation": 18.597383499146,
+            "latitude": 30.27311111111111,
+            "longitude": 56.95155277777778,
+            "elevation": 5746,
             "name": "Kerman"
         },
         {
             "latitude": 29.271524137796,
             "longitude": 52.979075380264,
-            "elevation": 18.597383499146,
+            "elevation": 4815,
             "name": "Khar Zahreh"
         },
         {
-            "latitude": 26.165478766567,
-            "longitude": 56.23745269001,
-            "elevation": 18.597383499146,
+            "latitude": 26.169825,
+            "longitude": 56.24016944444446,
+            "elevation": 73,
             "name": "Khasab"
         },
         {
             "latitude": 27.542516642801,
             "longitude": 54.997631174979,
-            "elevation": 18.597383499146,
+            "elevation": 1693,
             "name": "Khund"
         },
         {
-            "latitude": 26.528273604283,
-            "longitude": 53.98114193093,
-            "elevation": 18.597383499146,
-            "name": "Kish"
+            "latitude": 26.52815,
+            "longitude": 53.98104722222223,
+            "elevation": 114,
+            "name": "Kish Intl"
         },
         {
             "latitude": 26.03319834348,
             "longitude": 53.697804307799,
-            "elevation": 18.597383499146,
+            "elevation": 0,
             "name": "Kuznetsov"
         },
         {
             "latitude": 25.360749377195,
             "longitude": 53.264186817878,
-            "elevation": 18.597383499146,
+            "elevation": 0,
             "name": "Kuznetsov South"
         },
         {
-            "latitude": 27.675039087757,
-            "longitude": 54.389965898672,
-            "elevation": 18.597383499146,
+            "latitude": 27.674733333333337,
+            "longitude": 54.38314444444444,
+            "elevation": 2635,
             "name": "Lar"
         },
         {
-            "latitude": 26.81114226894,
-            "longitude": 53.353171335735,
-            "elevation": 18.597383499146,
-            "name": "Lavan"
+            "latitude": 26.811108333333335,
+            "longitude": 53.35329444444443,
+            "elevation": 75,
+            "name": "Lavan Island"
         },
         {
             "latitude": 27.056014216064,
             "longitude": 54.897088414611,
-            "elevation": 18.597383499146,
+            "elevation": 631,
             "name": "Lemazan"
+        },
+        {
+            "latitude": 23.65078611111111,
+            "longitude": 53.82441944444446,
+            "elevation": 400,
+            "name": "Liwa AFB"
         },
         {
             "latitude": 25.285585319436,
             "longitude": 56.370380771324,
-            "elevation": 18.597383499146,
+            "elevation": 8,
             "name": "Murbah"
         },
         {
             "latitude": 28.370911857967,
             "longitude": 57.229486973363,
-            "elevation": 18.597383499146,
+            "elevation": 4882,
             "name": "Muredan"
         },
         {
             "latitude": 29.74657624859,
             "longitude": 56.693765692031,
-            "elevation": 18.597383499146,
+            "elevation": 6927,
             "name": "Negar"
         },
         {
             "latitude": 28.300629676733,
             "longitude": 56.64363836199,
-            "elevation": 18.597383499146,
+            "elevation": 3599,
             "name": "Qaderabad"
         },
         {
             "latitude": 27.88569779344,
             "longitude": 53.884614366853,
-            "elevation": 18.597383499146,
+            "elevation": 2608,
             "name": "Qalat"
         },
         {
-            "latitude": 26.75806689519,
-            "longitude": 55.902402009607,
-            "elevation": 18.597383499146,
-            "name": "Qeshm"
+            "latitude": 26.754669444444447,
+            "longitude": 55.90238333333332,
+            "elevation": 17,
+            "name": "Qeshm Island"
+        },
+        {
+            "latitude": 22.776102777777778,
+            "longitude": 55.06328888888888,
+            "elevation": 329,
+            "name": "Quasoura Airfield"
         },
         {
             "latitude": 25.765619807673,
             "longitude": 55.953745156821,
-            "elevation": 18.597383499146,
+            "elevation": 13,
             "name": "Ras al Khaimah"
+        },
+        {
+            "latitude": 25.613494444444446,
+            "longitude": 55.938797222222209,
+            "elevation": 70,
+            "name": "Ras Al Khaimah Intl"
         },
         {
             "latitude": 27.354462825817,
             "longitude": 55.499609856719,
-            "elevation": 18.597383499146,
+            "elevation": 576,
             "name": "Rudbar"
         },
         {
-            "latitude": 29.536066489988,
-            "longitude": 52.598778359372,
-            "elevation": 18.597383499146,
-            "name": "Shiraz"
+            "latitude": 24.441111111111114,
+            "longitude": 54.51702222222224,
+            "elevation": 9,
+            "name": "Sas Al Nakheel"
         },
         {
             "latitude": 27.760149786339,
             "longitude": 56.348501863597,
-            "elevation": 18.597383499146,
+            "elevation": 2130,
             "name": "Seyahu"
         },
         {
-            "latitude": 25.334555782119,
-            "longitude": 55.518363090778,
-            "elevation": 18.597383499146,
-            "name": "Sharjah"
+            "latitude": 25.330675,
+            "longitude": 55.518263888888899,
+            "elevation": 98,
+            "name": "Sharjah Intl"
         },
         {
-            "latitude": 25.217271909447,
-            "longitude": 54.232775852909,
-            "elevation": 18.597383499146,
+            "latitude": 29.540911111111116,
+            "longitude": 52.59107499999999,
+            "elevation": 4878,
+            "name": "Shiraz Intl"
+        },
+        {
+            "latitude": 25.21686944444444,
+            "longitude": 54.23365000000001,
+            "elevation": 24,
             "name": "Sir Abu Nuayr"
         },
         {
-            "latitude": 25.901569119189,
-            "longitude": 54.531661654981,
-            "elevation": 18.597383499146,
-            "name": "Sirri"
+            "latitude": 25.909602777777779,
+            "longitude": 54.53925555555554,
+            "elevation": 14,
+            "name": "Sirri Island"
         },
         {
             "latitude": 26.940262190804,
             "longitude": 56.265998388586,
-            "elevation": 18.597383499146,
+            "elevation": 96,
             "name": "Sistan"
         },
         {
             "latitude": 24.840899401306,
             "longitude": 57.602956661293,
-            "elevation": 18.597383499146,
+            "elevation": 0,
             "name": "Stennis"
         },
         {
-            "latitude": 26.246671291809,
-            "longitude": 55.23290881434,
-            "elevation": 18.597383499146,
-            "name": "Tunb"
+            "latitude": 26.25888888888889,
+            "longitude": 55.31578055555556,
+            "elevation": 42,
+            "name": "Tunb Island AFB"
+        },
+        {
+            "latitude": 26.24331666666667,
+            "longitude": 55.14556944444445,
+            "elevation": 16,
+            "name": "Tunb Kochak"
         },
         {
             "latitude": 25.527480102625,
             "longitude": 55.529092299359,
-            "elevation": 18.597383499146,
+            "elevation": 14,
             "name": "Umm Al Quwain"
         },
         {
             "latitude": 24.542822661565,
             "longitude": 55.007594604615,
-            "elevation": 18.597383499146,
+            "elevation": 273,
             "name": "Zayed Military City"
         }
     ]
