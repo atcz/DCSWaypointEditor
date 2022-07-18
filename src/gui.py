@@ -101,7 +101,8 @@ class GUI:
         self.editor = editor
         self.captured_map_coords = None
         self.profile = Profile('')
-        self.aircraft = ["hornet", "harrier", "tomcat", "viper", "mirage", "warthog", "apachep", "apacheg"]
+        self.aircraft = ["warthog", "apacheg", "apachep", "harrier", "hornet", "tomcat", "viper", "mirage"]
+        self.aircraft_name = ["A-10C", "AH-64D CPG", "AH-64D Pilot", "AV-8B", "F/A-18C", "F-14A/B", "F-16C", "M-2000C"]
         self.quick_capture = False
         self.values = None
         self.capturing = False
@@ -202,6 +203,9 @@ class GUI:
         ]
 
         framedatalayoutcol2 = [
+            [PyGUI.Text("Aircraft Type")],
+            [PyGUI.Combo(values=self.aircraft_name, readonly=True, enable_events=True,
+                         key='aircraftSelector', size=(18,1))] ,
             [PyGUI.Text("Name")],
             [PyGUI.InputText(size=(20, 1), key="msnName", pad=(5, (3, 10)))],
         ]
@@ -255,29 +259,6 @@ class GUI:
             [PyGUI.Radio("E", group_id="lon_type", default=True, enable_events=True, key="East")],
             [PyGUI.Radio("W", group_id="lon_type", enable_events=True, key="West")]
         ]
-        
-        frameactypelayout = [
-            [
-                PyGUI.Radio("F/A-18C", group_id="ac_type",
-                            disabled=False, key="hornet", enable_events=True),
-                PyGUI.Radio("AV-8B", group_id="ac_type",
-                            disabled=False, key="harrier", enable_events=True),
-                PyGUI.Radio("F-14A/B", group_id="ac_type",
-                            disabled=False, key="tomcat", enable_events=True),
-            ],
-            [   PyGUI.Radio("F-16C", group_id="ac_type",
-                            disabled=False, key="viper", enable_events=True),
-                PyGUI.Radio("M-2000C", group_id="ac_type",
-                            disabled=False, key="mirage", enable_events=True),
-                PyGUI.Radio("A-10C", group_id="ac_type",
-                            disabled=False, key="warthog", enable_events=True),
-            ],
-            [   PyGUI.Radio("AH-64D Pilot", group_id="ac_type",
-                            disabled=False, key="apachep", enable_events=True),
-                PyGUI.Radio("AH-64D CPG", group_id="ac_type",
-                            disabled=False, key="apacheg", enable_events=True),
-            ]
-        ]
 
         framelongitude = PyGUI.Frame("Longitude", [
             [PyGUI.Column(lontype_col), PyGUI.Column(longitude_col1),
@@ -289,7 +270,6 @@ class GUI:
         ])
         frameelevation = PyGUI.Frame(
             "Elevation", frameelevationlayout, pad=(5, (3, 10)))
-        frameactype = PyGUI.Frame("Aircraft Type", frameactypelayout)
 
         framepositionlayout = [
             [framelatitude],
@@ -320,11 +300,10 @@ class GUI:
             [PyGUI.Text("Select profile:")],
             [PyGUI.Combo(values=[""] + sorted(self.get_profile_names()), readonly=True,
                          enable_events=True, key='profileSelector', size=(30, 1))],
-            [PyGUI.Listbox(values=list(), size=(33, 25),
+            [PyGUI.Listbox(values=list(), size=(33, 32),
                            enable_events=True, key='activesList')],
             # [PyGUI.Button("Move up", size=(12, 1)),
             # PyGUI.Button("Move down", size=(12, 1))],
-            [frameactype],
             [PyGUI.Text(f"Version: {self.software_version}")]
         ]
 
@@ -461,7 +440,7 @@ class GUI:
             self.window.Element('activesList').Update(values=values, set_to_index=0)
         else:
             self.window.Element('activesList').Update(values=values)
-        self.window.Element(self.profile.aircraft).Update(value=True)
+        self.window.Element("aircraftSelector").Update(value=self.aircraft_name[self.aircraft.index(self.profile.aircraft)])
 
     def disable_coords_input(self):
         for element_name in\
@@ -894,7 +873,7 @@ class GUI:
         self.window.Element('enter').Update(disabled=False)
 
     def run(self):
-        self.window.Element(self.default_aircraft).Update(value=True)
+        self.window.Element("aircraftSelector").Update(value=self.aircraft_name[self.aircraft.index(self.default_aircraft)])
         while True:
             event, self.values = self.window.Read()
             self.logger.debug(f"Event: {event}")
@@ -1092,9 +1071,10 @@ class GUI:
                     except (TypeError, ValueError, UnboundLocalError) as e:
                         self.logger.error(f"Failed to decode MGRS: {e}")
 
-            elif event in (self.aircraft):
-                self.profile.aircraft = event
-                self.editor.set_driver(event)
+            elif event == "aircraftSelector":
+                selected = self.aircraft[self.aircraft_name.index(self.values.get("aircraftSelector"))]
+                self.profile.aircraft = selected
+                self.editor.set_driver(selected)
                 self.update_waypoints_list()
 
             elif event == "filter":
