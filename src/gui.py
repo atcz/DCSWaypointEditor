@@ -61,8 +61,8 @@ def exception_gui(exc_info):
 
 
 def check_version(current_version):
-    version_url = "https://raw.githubusercontent.com/Santi871/DCSWaypointEditor/master/release_version.txt"
-    releases_url = "https://github.com/Santi871/DCSWaypointEditor/releases"
+    version_url = "https://raw.githubusercontent.com/atcz/DCSWaypointEditor/master/release_version.txt"
+    releases_url = "https://github.com/atcz/DCSWaypointEditor/releases"
 
     try:
         with urllib.request.urlopen(version_url) as response:
@@ -74,7 +74,7 @@ def check_version(current_version):
         return False
 
     new_version = html.decode("utf-8")
-    if new_version[1:5] > current_version[1:5]:
+    if new_version[1:6] > current_version[1:6]:
         popup_answer = PyGUI.PopupYesNo(
             f"New version available: {new_version}\nDo you wish to update?")
 
@@ -103,6 +103,7 @@ class GUI:
         self.profile = Profile('')
         self.aircraft = ["warthog", "apacheg", "apachep", "harrier", "hornet", "tomcat", "viper", "mirage"]
         self.aircraft_name = ["A-10C", "AH-64D CPG", "AH-64D Pilot", "AV-8B", "F/A-18C", "F-14A/B", "F-16C", "M-2000C"]
+        self.wp_types = ["WP", "MSN", "FP", "ST", "IP", "DP", "HA", "HB", "HZ", "CM", "TG"]
         self.quick_capture = False
         self.values = None
         self.capturing = False
@@ -188,18 +189,23 @@ class GUI:
                              pad=(5, 3), enable_events=True)],
         ]
 
-        frameelevationlayout = [
+        elevation_col1 = [
             [PyGUI.Text("Feet")],
-            [PyGUI.InputText(size=(20, 1), key="elevFeet",
-                             enable_events=True)],
-            [PyGUI.Text("Meters")],
-            [PyGUI.InputText(size=(20, 1), key="elevMeters",
-                             enable_events=True, pad=(5, (3, 10)))],
+            [PyGUI.InputText(size=(8, 1), key="elevFeet", enable_events=True)]
         ]
 
-        mgrslayout = [
-            [PyGUI.InputText(size=(20, 1), key="mgrs",
-                             enable_events=True, pad=(5, (3, 12)))],
+        elevation_col2 = [
+            [PyGUI.Text("Meters")],
+            [PyGUI.InputText(size=(8, 1), key="elevMeters", enable_events=True)]
+        ]
+
+        frameelevationlayout = [
+            [PyGUI.Column(elevation_col1), PyGUI.Column(elevation_col2)]
+        ]
+
+        framemgrslayout = [
+            [PyGUI.Text("Grid Reference", pad=(10, 6))],
+            [PyGUI.InputText(size=(20, 1), key="mgrs", enable_events=True, pad=(10, (0, 6)))],
         ]
 
         framedatalayoutcol2 = [
@@ -209,7 +215,7 @@ class GUI:
             [PyGUI.Text("Name")],
             [PyGUI.InputText(size=(20, 1), key="msnName", pad=(5, (3, 10)))],
         ]
-        
+
         framepresetlayout = [
             [PyGUI.Text("Select preset location")],
             [PyGUI.Combo(values=[""] + sorted([base.name for _, base in self.editor.default_bases.items()],),
@@ -230,31 +236,28 @@ class GUI:
         ]
 
         framewptypelayout = [
-            [PyGUI.Radio("WP", group_id="wp_type", default=True, enable_events=True, key="WP"),
-             PyGUI.Radio("MSN", group_id="wp_type",
-                         enable_events=True, key="MSN"),
-             PyGUI.Radio("FP", group_id="wp_type", key="FP", enable_events=True),
-             PyGUI.Radio("ST", group_id="wp_type", key="ST", enable_events=True)],
-            [PyGUI.Radio("IP", group_id="wp_type", key="IP", enable_events=True),
-             PyGUI.Radio("DP", group_id="wp_type", key="DP", enable_events=True),
-             PyGUI.Radio("HA", group_id="wp_type", key="HA", enable_events=True),
-             PyGUI.Radio("HB", group_id="wp_type", key="HB", enable_events=True)],
-            [PyGUI.Radio("HZ", group_id="wp_type", key="HZ", enable_events=True),
-             PyGUI.Radio("CM", group_id="wp_type", key="CM", enable_events=True),
-             PyGUI.Radio("TG", group_id="wp_type", key="TG", enable_events=True)],
-            [PyGUI.Button("Quick Capture", disabled=self.capture_button_disabled, key="quick_capture", pad=(5, (3, 8))),
+            [PyGUI.Combo(values=self.wp_types, default_value=self.wp_types[0], readonly=True, enable_events=True,
+                         key='wpType', size=(7,len(self.wp_types))),
              PyGUI.Text("Sequence:", pad=((0, 1), 3),
                         key="sequence_text", auto_size_text=False, size=(8, 1)),
              PyGUI.Combo(values=("None", 1, 2, 3), default_value="None",
                          auto_size_text=False, size=(5, 1), readonly=True,
-                         key="sequence", enable_events=True)]
+                         key="sequence", enable_events=True)],
+            [PyGUI.Button("Quick Capture", disabled=self.capture_button_disabled, key="quick_capture",
+                size=(22, 1), pad=(10, (10, 3)))],
+            [PyGUI.Button("Capture from DCS F10 map", disabled=self.capture_button_disabled, key="capture",
+                size=(22, 1), pad=(10, (0, 3)))],
+            [PyGUI.Button("Capture from The Way", disabled=(not self.enable_the_way), key="cam_capture",
+                size=(22, 1), pad=(10, (0, 3)))],
+            [PyGUI.Text(self.capture_status, key="capture_status", auto_size_text=False, 
+                size=(20, 1), pad=(10, 3))],
         ]
 
         lattype_col = [
             [PyGUI.Radio("N", group_id="lat_type", default=True, enable_events=True, key="North")],
             [PyGUI.Radio("S", group_id="lat_type", enable_events=True, key="South")]
         ]
-        
+
         lontype_col = [
             [PyGUI.Radio("E", group_id="lon_type", default=True, enable_events=True, key="East")],
             [PyGUI.Radio("W", group_id="lon_type", enable_events=True, key="West")]
@@ -262,11 +265,11 @@ class GUI:
 
         framelongitude = PyGUI.Frame("Longitude", [
             [PyGUI.Column(lontype_col), PyGUI.Column(longitude_col1),
-            PyGUI.Column(longitude_col2), PyGUI.Column(longitude_col3)]
+             PyGUI.Column(longitude_col2), PyGUI.Column(longitude_col3)]
         ])
         framelatitude = PyGUI.Frame("Latitude", [
             [PyGUI.Column(lattype_col), PyGUI.Column(latitude_col1),
-            PyGUI.Column(latitude_col2), PyGUI.Column(latitude_col3)]
+             PyGUI.Column(latitude_col2), PyGUI.Column(latitude_col3)]
         ])
         frameelevation = PyGUI.Frame(
             "Elevation", frameelevationlayout, pad=(5, (3, 10)))
@@ -275,32 +278,21 @@ class GUI:
             [framelatitude],
             [framelongitude],
             [frameelevation,
-             PyGUI.Column(
-                 [
-                     [PyGUI.Frame("MGRS", mgrslayout)],
-                     [PyGUI.Button("Capture from DCS F10 map", disabled=self.capture_button_disabled, key="capture",
-                                   size=(22, 1), pad=(2, (10, 3)))],
-                     [PyGUI.Button("Capture from The Way", disabled=(not self.enable_the_way), key="cam_capture",
-                                   size=(22, 1), pad=(2, (0, 3)))],
-                     [PyGUI.Text(self.capture_status, key="capture_status",
-                                 auto_size_text=False, size=(20, 1))],
-                 ]
-             )
-             ],
-
+             PyGUI.Frame("MGRS", framemgrslayout, pad=(5, (3, 10))),
+            ]
         ]
 
         frameposition = PyGUI.Frame("Position", framepositionlayout)
         framepreset = PyGUI.Frame("Preset", framepresetlayout)
         frameregion = PyGUI.Frame("Region", frameregionlayout)
         framedata = PyGUI.Frame("Data", framedatalayoutcol2)
-        framewptype = PyGUI.Frame("Waypoint Type", framewptypelayout)
+        framewptype = PyGUI.Frame("Waypoint", framewptypelayout)
 
         col0 = [
             [PyGUI.Text("Select profile:")],
             [PyGUI.Combo(values=[""] + sorted(self.get_profile_names()), readonly=True,
                          enable_events=True, key='profileSelector', size=(30, 1))],
-            [PyGUI.Listbox(values=list(), size=(33, 32),
+            [PyGUI.Listbox(values=list(), size=(33, 30),
                            enable_events=True, key='activesList')],
             # [PyGUI.Button("Move up", size=(12, 1)),
             # PyGUI.Button("Move down", size=(12, 1))],
@@ -853,7 +845,7 @@ class GUI:
         else:
             self.set_sequence_station_selector(None)
 
-        self.window.Element(wp_type).Update(value=True)
+        self.window.Element("wpType").Update(value=wp_type)
 
     def find_selected_waypoint(self):
         valuestr = unstrike(self.values['activesList'][0])
@@ -1036,8 +1028,8 @@ class GUI:
             elif event == "enter":
                 self.enter_coords_to_aircraft()
 
-            elif event in ("MSN", "WP", "HA", "FP", "ST", "DP", "IP", "HB", "HZ", "CM", "TG"):
-                self.select_wp_type(event)
+            elif event == "wpType":
+                self.select_wp_type(self.values.get("wpType"))
 
             elif event == "elevFeet":
                 self.update_altitude_elements("meters")
