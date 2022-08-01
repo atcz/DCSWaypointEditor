@@ -84,16 +84,12 @@ class Driver:
         if delay_release is None:
             delay_release = self.short_delay
 
-        encoded_str = key.replace("OSB", "OS").encode("utf-8")
-
-        # TODO get rid of the OSB -> OS replacement
+        encoded_str = key.encode("utf-8")                                                              
         if not raw:
-            sent = self.s.sendto(f"{key} 1\n".replace("OSB", "OS").encode(
-                "utf-8"), (self.host, self.port))
+            sent = self.s.sendto(f"{key} 1\n".encode("utf-8"), (self.host, self.port))
             sleep(delay_release)
 
-            self.s.sendto(f"{key} 0\n".replace("OSB", "OS").encode(
-                "utf-8"), (self.host, self.port))
+            self.s.sendto(f"{key} 0\n".encode("utf-8"), (self.host, self.port))
             strlen = len(encoded_str) + 3
         else:
             sent = self.s.sendto(f"{key}\n".encode("utf-8"), (self.host, self.port))
@@ -175,18 +171,18 @@ class HornetDriver(Driver):
             self.enter_number(lon_str, two_enters=True)
 
             if elev:
-                self.ufc("OSB3")
-                self.ufc("OSB1")
+                self.ufc("OS3")
+                self.ufc("OS1")
                 self.enter_number(elev)
         else:
-            self.ufc("OSB1")
+            self.ufc("OS1")
             if latlong.lat.degree > 0:
                 self.ufc("2", delay_release=self.medium_delay)
             else:
                 self.ufc("8", delay_release=self.medium_delay)
             self.enter_number(lat_str, two_enters=True)
 
-            self.ufc("OSB3")
+            self.ufc("OS3")
 
             if latlong.lon.degree > 0:
                 self.ufc("6", delay_release=self.medium_delay)
@@ -199,8 +195,8 @@ class HornetDriver(Driver):
             self.lmdi("14")
 
             if elev:
-                self.ufc("OSB4")
-                self.ufc("OSB4")
+                self.ufc("OS4")
+                self.ufc("OS4")
                 elev = round(float(elev) / 3.2808)
                 self.enter_number(elev)
 
@@ -221,7 +217,7 @@ class HornetDriver(Driver):
 
             self.ampcd("12")
             self.ampcd("5")
-            self.ufc("OSB1")
+            self.ufc("OS1")
             self.enter_coords(wp.position, wp.elevation, pp=False, decimal_minutes_mode=True)
             self.ufc("CLR")
 
@@ -235,7 +231,7 @@ class HornetDriver(Driver):
             self.ampcd("1")
 
             for waypoint in waypointslist:
-                self.ufc("OSB4")
+                self.ufc("OS4")
                 self.enter_number(waypoint)
 
         self.ufc("CLR")
@@ -253,7 +249,7 @@ class HornetDriver(Driver):
         if n > 1:
             self.lmdi(f"{n + 5}")
         self.lmdi("14")
-        self.ufc("OSB3")
+        self.ufc("OS3")
 
         self.enter_coords(msn.position, msn.elevation, pp=True)
 
@@ -607,35 +603,27 @@ class ViperDriver(Driver):
             delay_release = self.short_delay
 
         if num == "DN":
-            self.s.sendto(f"ICP_DED_SW 0\n".replace("OSB", "OS").encode(
-                "utf-8"), (self.host, self.port))
+            self.s.sendto(f"ICP_DED_SW 0\n".encode("utf-8"), (self.host, self.port))
         elif num == "UP":
-            self.s.sendto(f"ICP_DED_SW 2\n".replace("OSB", "OS").encode(
-                "utf-8"), (self.host, self.port))
+            self.s.sendto(f"ICP_DED_SW 2\n".encode("utf-8"), (self.host, self.port))
 
         sleep(delay_release)
-        self.s.sendto(f"ICP_DED_SW 1\n".replace("OSB", "OS").encode(
-            "utf-8"), (self.host, self.port))
+        self.s.sendto(f"ICP_DED_SW 1\n".encode("utf-8"), (self.host, self.port))
 
     def icp_data(self, num, delay_after=None, delay_release=None):
         if delay_release is None:
             delay_release = self.short_delay
 
         if num == "DN":
-            self.s.sendto(f"ICP_DATA_UP_DN_SW 0\n".replace("OSB", "OS").encode(
-                "utf-8"), (self.host, self.port))
+            self.s.sendto(f"ICP_DATA_UP_DN_SW 0\n".encode("utf-8"), (self.host, self.port))
         elif num == "UP":
-            self.s.sendto(f"ICP_DATA_UP_DN_SW 2\n".replace("OSB", "OS").encode(
-                "utf-8"), (self.host, self.port))
+            self.s.sendto(f"ICP_DATA_UP_DN_SW 2\n".encode("utf-8"), (self.host, self.port))
         elif num == "RTN":
-            self.s.sendto(f"ICP_DATA_RTN_SEQ_SW 0\n".replace("OSB", "OS").encode(
-                "utf-8"), (self.host, self.port))
+            self.s.sendto(f"ICP_DATA_RTN_SEQ_SW 0\n".encode("utf-8"), (self.host, self.port))
 
         sleep(delay_release)
-        self.s.sendto(f"ICP_DATA_UP_DN_SW 1\n".replace("OSB", "OS").encode(
-            "utf-8"), (self.host, self.port))
-        self.s.sendto(f"ICP_DATA_RTN_SEQ_SW 1\n".replace("OSB", "OS").encode(
-            "utf-8"), (self.host, self.port))
+        self.s.sendto(f"ICP_DATA_UP_DN_SW 1\n".encode("utf-8"), (self.host, self.port))
+        self.s.sendto(f"ICP_DATA_RTN_SEQ_SW 1\n".encode("utf-8"), (self.host, self.port))
 
     def enter_number(self, number):
         for num in str(number):
