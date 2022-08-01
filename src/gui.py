@@ -109,8 +109,9 @@ class GUI:
         self.capturing = False
         self.enable_the_way = detect_the_way(self.editor.settings.get('PREFERENCES', 'dcs_path'))
         self.capture_key = try_get_setting(self.editor.settings, "capture_key", "ctrl+t")
-        self.quick_capture_hotkey = try_get_setting(self.editor.settings, "quick_capture_hotkey", "ctrl+alt+t")
-        self.enter_aircraft_hotkey = try_get_setting(self.editor.settings, "enter_aircraft_hotkey", "ctrl+shift+t")
+        self.quick_capture_hotkey = try_get_setting(self.editor.settings, "quick_capture_hotkey", "ctrl+shift+t")
+        self.camera_capture_hotkey = try_get_setting(self.editor.settings, "camera_capture_hotkey", "ctrl+shift+u")
+        self.enter_aircraft_hotkey = try_get_setting(self.editor.settings, "enter_aircraft_hotkey", "")
         self.save_debug_images = try_get_setting(self.editor.settings, "save_debug_images", "false")
         self.pysimplegui_theme = try_get_setting(self.editor.settings, "pysimplegui_theme", PyGUI.theme())
         self.default_aircraft = try_get_setting(self.editor.settings, "default_aircraft", "hornet")
@@ -144,6 +145,7 @@ class GUI:
         self.logger.info(f"Tesseract version is: {self.tesseract_version}")
         self.window = self.create_gui()
         keyboard.add_hotkey(self.quick_capture_hotkey, self.toggle_quick_capture)
+        keyboard.add_hotkey(self.camera_capture_hotkey, self.toggle_camera_capture)
         if self.enter_aircraft_hotkey != '':
             keyboard.add_hotkey(self.enter_aircraft_hotkey, self.enter_coords_to_aircraft)
 
@@ -156,56 +158,62 @@ class GUI:
         
         PyGUI.theme(self.pysimplegui_theme)
 
+        lattype_col = [
+            [PyGUI.Radio("N", group_id="lat_type", default=True, enable_events=True, key="North")],
+            [PyGUI.Radio("S", group_id="lat_type", enable_events=True, key="South")]
+        ]
+
         latitude_col1 = [
-            [PyGUI.Text("Degrees", pad=((9,5),3))],
-            [PyGUI.InputText(size=(10, 1), key="latDeg", 
+            [PyGUI.Text("Deg", pad=((9,5),3))],
+            [PyGUI.InputText(size=(5, 1), key="latDeg", 
                              pad=((9,5),3), enable_events=True)],
         ]
 
         latitude_col2 = [
-            [PyGUI.Text("Minutes")],
-            [PyGUI.InputText(size=(10, 1), key="latMin", enable_events=True)],
+            [PyGUI.Text("Min")],
+            [PyGUI.InputText(size=(5, 1), key="latMin", enable_events=True)],
         ]
 
         latitude_col3 = [
-            [PyGUI.Text("Seconds")],
-            [PyGUI.InputText(size=(10, 1), key="latSec",
+            [PyGUI.Text("Sec")],
+            [PyGUI.InputText(size=(5, 1), key="latSec",
                              pad=(5, 3), enable_events=True)],
         ]
 
+        lontype_col = [
+            [PyGUI.Radio("E", group_id="lon_type", default=True, enable_events=True, key="East")],
+            [PyGUI.Radio("W", group_id="lon_type", enable_events=True, key="West")]
+        ]
+
         longitude_col1 = [
-            [PyGUI.Text("Degrees")],
-            [PyGUI.InputText(size=(10, 1), key="lonDeg", enable_events=True)],
+            [PyGUI.Text("Deg")],
+            [PyGUI.InputText(size=(5, 1), key="lonDeg", enable_events=True)],
         ]
 
         longitude_col2 = [
-            [PyGUI.Text("Minutes")],
-            [PyGUI.InputText(size=(10, 1), key="lonMin", enable_events=True)],
+            [PyGUI.Text("Min")],
+            [PyGUI.InputText(size=(5, 1), key="lonMin", enable_events=True)],
         ]
 
         longitude_col3 = [
-            [PyGUI.Text("Seconds")],
-            [PyGUI.InputText(size=(10, 1), key="lonSec",
+            [PyGUI.Text("Sec")],
+            [PyGUI.InputText(size=(5, 1), key="lonSec",
                              pad=(5, 3), enable_events=True)],
         ]
 
         elevation_col1 = [
             [PyGUI.Text("Feet")],
-            [PyGUI.InputText(size=(8, 1), key="elevFeet", enable_events=True)]
+            [PyGUI.InputText(size=(6, 1), key="elevFeet", enable_events=True)]
         ]
 
         elevation_col2 = [
             [PyGUI.Text("Meters")],
-            [PyGUI.InputText(size=(8, 1), key="elevMeters", enable_events=True)]
+            [PyGUI.InputText(size=(6, 1), key="elevMeters", enable_events=True)]
         ]
 
         frameelevationlayout = [
-            [PyGUI.Column(elevation_col1), PyGUI.Column(elevation_col2)]
-        ]
-
-        framemgrslayout = [
-            [PyGUI.Text("Grid Reference", pad=(10, 6))],
-            [PyGUI.InputText(size=(20, 1), key="mgrs", enable_events=True, pad=(10, (0, 6)))],
+            [PyGUI.Column(elevation_col1, pad=(9, 7)),
+             PyGUI.Column(elevation_col2)],
         ]
 
         framedatalayoutcol2 = [
@@ -213,7 +221,9 @@ class GUI:
             [PyGUI.Combo(values=self.aircraft_name, readonly=True, enable_events=True,
                          key='aircraftSelector', size=(18,1))] ,
             [PyGUI.Text("Name")],
-            [PyGUI.InputText(size=(20, 1), key="msnName", pad=(5, (3, 10)))],
+            [PyGUI.InputText(size=(20, 1), key="msnName", pad=(5, (2, 2)))],
+            [PyGUI.Text("Grid Reference")],
+            [PyGUI.InputText(size=(20, 1), key="mgrs", enable_events=True, pad=(5, (2, 6)))],
         ]
 
         framepresetlayout = [
@@ -243,43 +253,33 @@ class GUI:
              PyGUI.Combo(values=("None", 1, 2, 3), default_value="None",
                          auto_size_text=False, size=(5, 1), readonly=True,
                          key="sequence", enable_events=True)],
-            [PyGUI.Button("Quick Capture", disabled=self.capture_button_disabled, key="quick_capture",
+            [PyGUI.Button("Capture Coordinates", disabled=self.capture_button_disabled, key="capture",
                 size=(22, 1), pad=(10, (10, 3)))],
-            [PyGUI.Button("Capture from DCS F10 map", disabled=self.capture_button_disabled, key="capture",
-                size=(22, 1), pad=(10, (0, 3)))],
-            [PyGUI.Button("Capture from The Way", disabled=(not self.enable_the_way), key="cam_capture",
-                size=(22, 1), pad=(10, (0, 3)))],
+            [PyGUI.Button("Capture To Profile", disabled=self.capture_button_disabled, key="quick_capture",
+                size=(22, 1), pad=(10, (3, 3)))],
+            [PyGUI.Button("Capture F10/F11 View", disabled=(not self.enable_the_way), key="camera_capture",
+                size=(22, 1), pad=(10, (3, 3)))],
             [PyGUI.Text(self.capture_status, key="capture_status", auto_size_text=False, 
                 size=(20, 1), pad=(10, 3))],
-        ]
-
-        lattype_col = [
-            [PyGUI.Radio("N", group_id="lat_type", default=True, enable_events=True, key="North")],
-            [PyGUI.Radio("S", group_id="lat_type", enable_events=True, key="South")]
-        ]
-
-        lontype_col = [
-            [PyGUI.Radio("E", group_id="lon_type", default=True, enable_events=True, key="East")],
-            [PyGUI.Radio("W", group_id="lon_type", enable_events=True, key="West")]
         ]
 
         framelongitude = PyGUI.Frame("Longitude", [
             [PyGUI.Column(lontype_col), PyGUI.Column(longitude_col1),
              PyGUI.Column(longitude_col2), PyGUI.Column(longitude_col3)]
         ])
+
         framelatitude = PyGUI.Frame("Latitude", [
             [PyGUI.Column(lattype_col), PyGUI.Column(latitude_col1),
              PyGUI.Column(latitude_col2), PyGUI.Column(latitude_col3)]
         ])
+
         frameelevation = PyGUI.Frame(
-            "Elevation", frameelevationlayout, pad=(5, (3, 10)))
+            "Elevation", frameelevationlayout)
 
         framepositionlayout = [
-            [framelatitude],
-            [framelongitude],
-            [frameelevation,
-             PyGUI.Frame("MGRS", framemgrslayout, pad=(5, (3, 10))),
-            ]
+            [framelatitude,
+             framelongitude,
+             frameelevation],
         ]
 
         frameposition = PyGUI.Frame("Position", framepositionlayout)
@@ -292,11 +292,10 @@ class GUI:
             [PyGUI.Text("Select profile:")],
             [PyGUI.Combo(values=[""] + sorted(self.get_profile_names()), readonly=True,
                          enable_events=True, key='profileSelector', size=(30, 1))],
-            [PyGUI.Listbox(values=list(), size=(33, 30),
+            [PyGUI.Listbox(values=list(), size=(33, 14),
                            enable_events=True, key='activesList')],
             # [PyGUI.Button("Move up", size=(12, 1)),
             # PyGUI.Button("Move down", size=(12, 1))],
-            [PyGUI.Text(f"Version: {self.software_version}")]
         ]
 
         col1 = [
@@ -306,7 +305,6 @@ class GUI:
              PyGUI.Button("Update", size=(8, 1)),
              PyGUI.Button("Remove", size=(8, 1)),
              PyGUI.Button("Enter into aircraft", size=(14, 1), key="enter")],
-            [frameposition],
         ]
 
         menudef = [['&File',
@@ -326,6 +324,8 @@ class GUI:
 
         layout = [
             [PyGUI.Column(col0), PyGUI.Column(colmain1)],
+            [frameposition],
+            [PyGUI.Text(f"Version: {self.software_version}")]
         ]
 
         return PyGUI.Window('DCS Waypoint Editor', layout, finalize=True)
@@ -684,7 +684,7 @@ class GUI:
                     if not added:
                         self.stop_capture()
 
-    def add_cam_coords(self):
+    def add_camera_coords(self):
         UDP_IP = "127.0.0.1"
         UDP_PORT = 42069
         BUFFER_SIZE = 65508
@@ -729,11 +729,23 @@ class GUI:
                 self.quick_capture = True
                 self.start_capture()
 
+    def toggle_camera_capture(self):
+        if self.values:
+            winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
+            if self.capturing:
+                self.stop_capture()
+            else:
+                self.start_camera_capture()
+
     def start_capture(self):
         self.disable_coords_input()
-        self.window.Element('capture').Update(text="Stop capturing")
-        self.window.Element('quick_capture').Update(disabled=True)
-        self.window.Element('cam_capture').Update(disabled=True)
+        if self.quick_capture:
+            self.window.Element('quick_capture').Update(text="Stop capturing")
+            self.window.Element('capture').Update(disabled=True)
+        else:
+            self.window.Element('capture').Update(text="Stop capturing")
+            self.window.Element('quick_capture').Update(disabled=True)
+        self.window.Element('camera_capture').Update(disabled=True)
         self.window.Element('capture_status').Update("Status: Capturing...")
         self.window.Refresh()
         keyboard.add_hotkey(self.capture_key, self.add_parsed_coords, timeout=1)
@@ -746,23 +758,25 @@ class GUI:
             pass
 
         self.enable_coords_input()
-        self.window.Element('capture').Update(text="Capture from DCS F10 map")
+        self.window.Element('capture').Update(text="Capture Coordinates")
+        self.window.Element('quick_capture').Update(text="Capture To Profile")
+        self.window.Element('camera_capture').Update(text="Capture F10/F11 View")
         self.window.Element('quick_capture').Update(disabled=self.capture_button_disabled)
         self.window.Element('capture').Update(disabled=self.capture_button_disabled)
-        self.window.Element('cam_capture').Update(disabled=(not self.enable_the_way))
+        self.window.Element('camera_capture').Update(disabled=(not self.enable_the_way))
         self.window.Element('capture_status').Update("Status: Not capturing")
         self.capturing = False
         self.quick_capture = False
 
-    def start_cam_capture(self):
+    def start_camera_capture(self):
         self.disable_coords_input()
-        self.window.Element('capture').Update(text="Stop capturing")
+        self.window.Element('camera_capture').Update(text="Stop capturing")
         self.window.Element('quick_capture').Update(disabled=True)
-        self.window.Element('capture').Update(disabled=False)
-        self.window.Element('cam_capture').Update(disabled=True)
+        self.window.Element('capture').Update(disabled=True)
+        self.window.Element('camera_capture').Update(disabled=False)
         self.window.Element('capture_status').Update("Status: Capturing...")
         self.window.Refresh()
-        keyboard.add_hotkey(self.capture_key, self.add_cam_coords, timeout=1)
+        keyboard.add_hotkey(self.capture_key, self.add_camera_coords, timeout=1)
         self.capturing = True
 
     def update_altitude_elements(self, elevation_unit):
@@ -1005,11 +1019,17 @@ class GUI:
                     self.stop_capture()
 
             elif event == "quick_capture":
-                self.quick_capture = True
-                self.start_capture()
+                if not self.capturing:
+                    self.quick_capture = True
+                    self.start_capture()
+                else:
+                    self.stop_capture()
 
-            elif event == "cam_capture":
-                self.start_cam_capture()
+            elif event == "camera_capture":
+                if not self.capturing:
+                    self.start_camera_capture()
+                else:
+                    self.stop_capture()
 
             elif event == "baseSelector":
                 base = self.editor.default_bases.get(
