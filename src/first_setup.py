@@ -88,11 +88,14 @@ def first_time_setup_gui(settings):
          PyGUI.Input(settings.get(section, 'tesseract_path'), key="tesseract_path"),
          PyGUI.Button("Browse...", button_type=PyGUI.BUTTON_TYPE_BROWSE_FILE, target="tesseract_path")],
 
-        [PyGUI.Text("F10 Map Capture Hotkey:"),
+        [PyGUI.Text("Capture Hotkey:"),
          PyGUI.Input(settings.get(section, 'capture_key'), key="capture_key")],
 
-        [PyGUI.Text("Quick Capture Toggle Hotkey:"),
+        [PyGUI.Text("Capture To Profile Toggle Hotkey:"),
          PyGUI.Input(settings.get(section, "quick_capture_hotkey"), key="quick_capture_hotkey")],
+
+        [PyGUI.Text("Capture F10/F11 Toggle Hotkey:"),
+         PyGUI.Input(settings.get(section, "camera_capture_hotkey"), key="camera_capture_hotkey")],
 
         [PyGUI.Text("Enter into Aircraft Hotkey (Optional):"),
          PyGUI.Input(settings.get(section, 'enter_aircraft_hotkey'), key="enter_aircraft_hotkey")],
@@ -134,6 +137,7 @@ def first_time_setup(settings):
         settings.set(section, "db_name", "profiles_new.db")
         settings.set(section, "capture_key", "ctrl+t")
         settings.set(section, "quick_capture_hotkey", "ctrl+shift+t")
+        settings.set(section, "camera_capture_hotkey", "ctrl+shift+u")
         settings.set(section, "enter_aircraft_hotkey", '')
         settings.set(section, "log_raw_tesseract_output", "false")
         settings.set(section, "pysimplegui_theme", PyGUI.theme())
@@ -205,6 +209,7 @@ def first_time_setup(settings):
     settings.set(section, "tesseract_path", values.get("tesseract_path") or default_tesseract_path)
     settings.set(section, "capture_key", values.get("capture_key") or "ctrl+t")
     settings.set(section, "quick_capture_hotkey", values.get("quick_capture_hotkey") or "ctrl+shift+t")
+    settings.set(section, "camera_capture_hotkey", values.get("camera_capture_hotkey") or "ctrl+shift+u")
     settings.set(section, "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
     settings.set(section, "pysimplegui_theme", values.get("pysimplegui_theme") or PyGUI.theme())
     settings.set(section, "default_aircraft", aircraft[aircraft_name.index(values.get("default_aircraft"))] or "hornet")
