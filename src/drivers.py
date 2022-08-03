@@ -1,8 +1,12 @@
 import socket
 import re
+import json
+import winsound
 from time import sleep
 from configparser import NoOptionError
 
+UX_SND_ERROR = "data/ux_error.wav"
+UX_SND_SUCCESS = "data/ux_success.wav"
 
 class DriverException(Exception):
     pass
@@ -67,6 +71,7 @@ class Driver:
         self.host, self.port = host, port
         self.config = config
         self.limits = dict()
+        self.keylist = list()
 
         try:
             self.short_delay = float(self.config.get("PREFERENCES", "button_release_short_delay"))
@@ -84,7 +89,7 @@ class Driver:
         if delay_release is None:
             delay_release = self.short_delay
 
-        encoded_str = key.encode("utf-8")                                                              
+        encoded_str = key.encode("utf-8")
         if not raw:
             sent = self.s.sendto(f"{key} 1\n".encode("utf-8"), (self.host, self.port))
             sleep(delay_release)
@@ -97,6 +102,29 @@ class Driver:
 
         sleep(delay_after)
         return sent == strlen
+
+    def enter_keypress (self, keylist):
+        host = "127.0.0.1"
+        port = 42070
+
+        commands = list()
+        for key in keylist:
+            commands.append(self.cmdlist.get(key))
+        commandstr = json.dumps(commands) + "\n"
+#        self.logger.info(keylist)
+#        self.logger.info(commandstr)
+
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((host, port))
+            s.settimeout(2.0)
+            s.send(commandstr.encode('utf-8'))
+            winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
+            s.close()
+        except Exception as e:
+            s.close()
+            self.logger.error("Failed to connect socket: %s" % e)
+            winsound.PlaySound(UX_SND_ERROR, flags=winsound.SND_FILENAME)
 
     def validate_waypoint(self, waypoint):
         try:
@@ -121,18 +149,27 @@ class HornetDriver(Driver):
 
     def ufc(self, num, delay_after=None, delay_release=None):
         key = f"UFC_{num}"
-        self.press_with_delay(key, delay_after=delay_after,
-                              delay_release=delay_release)
+        if self.method == "DCS-BIOS":
+            self.press_with_delay(key, delay_after=delay_after,
+                                  delay_release=delay_release)
+        else:
+            self.keylist.append(key)
 
     def lmdi(self, pb, delay_after=None, delay_release=None):
         key = f"LEFT_DDI_PB_{pb.zfill(2)}"
-        self.press_with_delay(key, delay_after=delay_after,
-                              delay_release=delay_release)
+        if self.method == "DCS-BIOS":
+            self.press_with_delay(key, delay_after=delay_after,
+                                  delay_release=delay_release)
+        else:
+            self.keylist.append(key)
 
     def ampcd(self, pb, delay_after=None, delay_release=None):
         key = f"AMPCD_PB_{pb.zfill(2)}"
-        self.press_with_delay(key, delay_after=delay_after,
-                              delay_release=delay_release)
+        if self.method == "DCS-BIOS":
+            self.press_with_delay(key, delay_after=delay_after,
+                                  delay_release=delay_release)
+        else:
+            self.keylist.append(key)
 
     def enter_number(self, number, two_enters=False):
         for num in str(number):
@@ -154,7 +191,7 @@ class HornetDriver(Driver):
 
     def enter_coords(self, latlong, elev, pp, decimal_minutes_mode=False):
         lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=decimal_minutes_mode)
-        self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
+        self.logger.debug(f"{self.method}, Entering coords string: {lat_str}, {lon_str}")
 
         if not pp:
             if latlong.lat.degree > 0:
@@ -290,9 +327,12 @@ class HornetDriver(Driver):
         self.lmdi("19")
 
     def enter_all(self, profile):
+        self.keylist = []
         self.enter_missions(self.validate_waypoints(profile.msns_as_list))
         sleep(1)
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list), profile.sequences_dict)
+        if self.method != "DCS-BIOS":
+            self.enter_keypress(self.keylist)
 
 
 class HarrierDriver(Driver):
