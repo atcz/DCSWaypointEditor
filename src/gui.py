@@ -115,6 +115,7 @@ class GUI:
         self.save_debug_images = try_get_setting(self.editor.settings, "save_debug_images", "false")
         self.pysimplegui_theme = try_get_setting(self.editor.settings, "pysimplegui_theme", PyGUI.theme())
         self.default_aircraft = try_get_setting(self.editor.settings, "default_aircraft", "hornet")
+        self.enter_method = try_get_setting(self.editor.settings, "enter_method", "DCS-BIOS")
         self.software_version = software_version
         self.is_focused = True
         self.scaled_dcs_gui = False
@@ -875,7 +876,7 @@ class GUI:
 
     def enter_coords_to_aircraft(self):
         self.window.Element('enter').Update(disabled=True)
-        self.editor.enter_all(self.profile)
+        self.editor.enter_all(self.profile, self.enter_method)
         self.window.Element('enter').Update(disabled=False)
 
     def run(self):
@@ -892,6 +893,7 @@ class GUI:
             elif event == "Settings":
                 first_time_setup(self.editor.settings)
                 self.default_aircraft = try_get_setting(self.editor.settings, "default_aircraft", "hornet")
+                self.enter_method = try_get_setting(self.editor.settings, "enter_method", "DCS-BIOS") 
 
             elif event == "Run Target Jar":
                 if os.path.exists('.\Target-jar-with-dependencies.jar'):

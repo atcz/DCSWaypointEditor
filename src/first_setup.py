@@ -114,6 +114,10 @@ def first_time_setup_gui(settings):
          PyGUI.Button("Update to v" + DCS_BIOS_VERSION, key="update_button", disabled=dcs_bios_detected == "Not Detected")],
 
         [PyGUI.Text("The Way:"), PyGUI.Text(the_way_detected, key="the_way")],
+
+        [PyGUI.Text("Send To Aircraft Via:"),
+         PyGUI.Combo(values=["DCS-BIOS", "TheWay.lua"], readonly=True, default_value=settings.get(section, 'enter_method'),
+            enable_events=True, key='enter_method', size=(30, 1))],
     ]
 
     return PyGUI.Window("DCS Waypoint Editor Settings", [[PyGUI.Frame("Settings", layout)],
@@ -142,6 +146,7 @@ def first_time_setup(settings):
         settings.set(section, "log_raw_tesseract_output", "false")
         settings.set(section, "pysimplegui_theme", PyGUI.theme())
         settings.set(section, "default_aircraft", "hornet")
+        settings.set(section, "enter_method", "DCS-BIOS")
 
     setup_logger = get_logger("setup")
     setup_logger.info("Running first time setup...")
@@ -213,6 +218,7 @@ def first_time_setup(settings):
     settings.set(section, "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
     settings.set(section, "pysimplegui_theme", values.get("pysimplegui_theme") or PyGUI.theme())
     settings.set(section, "default_aircraft", aircraft[aircraft_name.index(values.get("default_aircraft"))] or "hornet")
+    settings.set(section, "enter_method", values.get("enter_method") or "DCS-BIOS")
 
     with open("settings.ini", "w+") as f:
         settings.write(f)
