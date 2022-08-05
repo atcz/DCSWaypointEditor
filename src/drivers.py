@@ -83,25 +83,29 @@ class Driver:
         if not key:
             return False
 
-        if delay_after is None:
-            delay_after = self.short_delay
-
-        if delay_release is None:
-            delay_release = self.short_delay
-
-        encoded_str = key.encode("utf-8")
-        if not raw:
-            sent = self.s.sendto(f"{key} 1\n".encode("utf-8"), (self.host, self.port))
-            sleep(delay_release)
-
-            self.s.sendto(f"{key} 0\n".encode("utf-8"), (self.host, self.port))
-            strlen = len(encoded_str) + 3
+        if self.method == "DCS-BIOS":
+            if delay_after is None:
+                delay_after = self.short_delay
+    
+            if delay_release is None:
+                delay_release = self.short_delay
+    
+            encoded_str = key.encode("utf-8")
+            if not raw:
+                sent = self.s.sendto(f"{key} 1\n".encode("utf-8"), (self.host, self.port))
+                sleep(delay_release)
+    
+                self.s.sendto(f"{key} 0\n".encode("utf-8"), (self.host, self.port))
+                strlen = len(encoded_str) + 3
+            else:
+                sent = self.s.sendto(f"{key}\n".encode("utf-8"), (self.host, self.port))
+                strlen = len(encoded_str) + 1
+    
+            sleep(delay_after)
+            return sent == strlen
         else:
-            sent = self.s.sendto(f"{key}\n".encode("utf-8"), (self.host, self.port))
-            strlen = len(encoded_str) + 1
-
-        sleep(delay_after)
-        return sent == strlen
+            self.keylist.append(key)
+            return True
 
     def enter_keypress (self, keylist):
         host = "127.0.0.1"
@@ -111,7 +115,7 @@ class Driver:
         for key in keylist:
             commands.append(self.cmdlist.get(key))
         commandstr = json.dumps(commands) + "\n"
-#        self.logger.info(keylist)
+        self.logger.info(keylist)
 #        self.logger.info(commandstr)
 
         try:
@@ -149,27 +153,18 @@ class HornetDriver(Driver):
 
     def ufc(self, num, delay_after=None, delay_release=None):
         key = f"UFC_{num}"
-        if self.method == "DCS-BIOS":
-            self.press_with_delay(key, delay_after=delay_after,
-                                  delay_release=delay_release)
-        else:
-            self.keylist.append(key)
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
 
     def lmdi(self, pb, delay_after=None, delay_release=None):
         key = f"LEFT_DDI_PB_{pb.zfill(2)}"
-        if self.method == "DCS-BIOS":
-            self.press_with_delay(key, delay_after=delay_after,
-                                  delay_release=delay_release)
-        else:
-            self.keylist.append(key)
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
 
     def ampcd(self, pb, delay_after=None, delay_release=None):
         key = f"AMPCD_PB_{pb.zfill(2)}"
-        if self.method == "DCS-BIOS":
-            self.press_with_delay(key, delay_after=delay_after,
-                                  delay_release=delay_release)
-        else:
-            self.keylist.append(key)
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
 
     def enter_number(self, number, two_enters=False):
         for num in str(number):
@@ -554,7 +549,8 @@ class WarthogDriver(Driver):
 
     def cdu(self, num, delay_after=None, delay_release=None):
         key = f"CDU_{num}"
-        self.press_with_delay(key, delay_after=delay_after, delay_release=delay_release)
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
 
     def clear_input(self, repeat=3):
         for i in range(0, repeat):
@@ -580,7 +576,7 @@ class WarthogDriver(Driver):
 
     def enter_coords(self, latlong):
         lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=3)
-        self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
+        self.logger.debug(f"{self.method}, Entering coords string: {lat_str}, {lon_str}")
 
         self.clear_input(repeat=2)
 
@@ -618,13 +614,16 @@ class WarthogDriver(Driver):
 
             # if the elevation is exactly 0ft we don't enter it an the CDU will automatically set it to 0ft AGL
 #            if wp.elevation != 0:
-            self.logger.debug("Entering elevation: " + str(wp.elevation))
+            self.logger.debug(f"{self.method}, Entering elevation: " + str(wp.elevation))
             self.enter_elevation(wp.elevation)
 #            else:
 #                self.logger.debug("Not entering elevation because it is 0")
 
     def enter_all(self, profile):
+        self.keylist = []
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
+        if self.method != "DCS-BIOS":
+            self.enter_keypress(self.keylist)
 
 
 class ViperDriver(Driver):
@@ -754,7 +753,7 @@ class ApachePilotDriver(Driver):
 
     def enter_coords(self, latlong, elev=None):
         lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=2, dfill=True)
-        self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
+        self.logger.debug(f"{self.method}, Entering coords string: {lat_str}, {lon_str}")
 
         if latlong.lat.degree > 0:
             self.kbu("N", delay_release=self.medium_delay)
@@ -805,7 +804,10 @@ class ApachePilotDriver(Driver):
             self.enter_coords(wp.position, wp.elevation)
 
     def enter_all(self, profile):
+        self.keylist = []
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
+        if self.method != "DCS-BIOS":
+            self.enter_keypress(self.keylist)
 
 
 class ApacheGunnerDriver(Driver):
@@ -835,7 +837,7 @@ class ApacheGunnerDriver(Driver):
 
     def enter_coords(self, latlong, elev=None):
         lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=2, dfill=True)
-        self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
+        self.logger.debug(f"{self.method}, Entering coords string: {lat_str}, {lon_str}")
 
         if latlong.lat.degree > 0:
             self.kbu("N", delay_release=self.medium_delay)
@@ -886,4 +888,7 @@ class ApacheGunnerDriver(Driver):
             self.enter_coords(wp.position, wp.elevation)
 
     def enter_all(self, profile):
+        self.keylist = []
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
+        if self.method != "DCS-BIOS":
+            self.enter_keypress(self.keylist)
