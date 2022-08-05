@@ -205,35 +205,35 @@
 	"UFC_OS1": {
 		"device": "25",
 		"code": "3010",
-		"delay": "20",
+		"delay": "5",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_OS2": {
 		"device": "25",
 		"code": "3011",
-		"delay": "20",
+		"delay": "5",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_OS3": {
 		"device": "25",
 		"code": "3012",
-		"delay": "20",
+		"delay": "5",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_OS4": {
 		"device": "25",
 		"code": "3013",
-		"delay": "20",
+		"delay": "5",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_OS5": {
 		"device": "25",
 		"code": "3014",
-		"delay": "20",
+		"delay": "5",
 		"activate": "1",
 		"addDepress": "true"
 	},
@@ -324,7 +324,7 @@
 	"UFC_CLR": {
 		"device": "25",
 		"code": "3028",
-		"delay": "0",
+		"delay": "30",
 		"activate": "1",
 		"addDepress": "true"
 	},
