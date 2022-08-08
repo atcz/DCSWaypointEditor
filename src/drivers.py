@@ -173,6 +173,8 @@ class HornetDriver(Driver):
             if elev or elev == 0:
                 self.ufc("OS3")
                 self.ufc("OS1")
+                if elev < 0:
+                    self.ufc("0")
                 self.enter_number(elev)
         else:
             self.ufc("OS1")
@@ -196,8 +198,9 @@ class HornetDriver(Driver):
 
             if elev or elev == 0:
                 self.ufc("OS4")
-                self.ufc("OS4")
-                elev = round(float(elev) / 3.2808)
+                self.ufc("OS3")
+                if elev < 0:
+                    self.ufc("0")
                 self.enter_number(elev)
 
     def enter_waypoints(self, wps, sequences):
