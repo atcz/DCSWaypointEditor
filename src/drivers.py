@@ -170,7 +170,7 @@ class HornetDriver(Driver):
                 self.ufc("4", delay_release=self.medium_delay)
             self.enter_number(lon_str, two_enters=True)
 
-            if elev:
+            if elev or elev == 0:
                 self.ufc("OS3")
                 self.ufc("OS1")
                 self.enter_number(elev)
@@ -194,7 +194,7 @@ class HornetDriver(Driver):
             self.lmdi("14")
             self.lmdi("14")
 
-            if elev:
+            if elev or elev == 0:
                 self.ufc("OS4")
                 self.ufc("OS4")
                 elev = round(float(elev) / 3.2808)
