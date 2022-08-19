@@ -23,7 +23,7 @@ Currently supported aircraft:
 
 Waypoints and JDAM/SLAM preplanned missions can be added by either manually entering a set of coordinates or capturing them
 from the DCS F10 map via optical text recognition. If "DCSTheWay" is installed, the coordinates can be captured from the
-current camera view.
+F10 or F11 view.
 
 #### Manual coordinates entry
 
@@ -44,7 +44,7 @@ current camera view.
 1. Make sure your F10 map is in [DD MM SS.ss](https://i.imgur.com/9GIU7pJ.png) or [MGRS](https://i.imgur.com/T7lBvlx.png) coordinate format.
  You may cycle coordinate formats with `LAlt+Y`.
 
-2. Click `Capture from DCS F10 map`
+2. Click `Capture Coordinates`
 
 3. In the DCS F10 map, hover your mouse over your desired position
 
@@ -57,9 +57,9 @@ in the capture status textbox.
 
 #### F10 map quick capture
 
-`Quick Capture` and `Capture from The Way` work in a similar way to regular coordinates capturing, except it will automatically add a waypoint
-at the desired position every time the F10 map capture keybind is pressed.  `Quick Capture` can be toggled on/off with a
-hotkey (default is `LCtrl+LShift+T`).
+`Capture To Profile` and `Capture F10/F11 View` work in a similar way to regular coordinates capturing, except it will automatically add a waypoint
+at the desired position every time the F10 map capture keybind is pressed.  `Capture To Profile` and `Capture F10/F11 View` can be toggled on/off with a
+hotkey (default is `LCtrl+LShift+T` and `LCtrl+LShift+U`).
 
 #### Preset coordinates
 
@@ -69,8 +69,8 @@ and BlueFlag FARPS are included.
 #### Hornet JDAM/SLAM preplanned missions
 
 Hornet JDAM/SLAM preplanned missions work in a similar way to waypoints, however, you **must** select the correct station
-for the mission to be assigned using the station selector.  Aircraft entry does not skip stations, so if you select stations
-8 and 7, stations will be entered in order 8-2-7-3.
+for the mission to be assigned using the station selector.  Aircraft entry does not skip stations, and available stations
+will be entered in order 8-2-7-3. JDAM and SLAM missions must be entered separately.
 
 #### Entering a list of waypoints into your aircraft
 
@@ -82,11 +82,10 @@ of the application.
 1. Make sure the main HSI page is on the AMPCD (bottom screen) if you are entering waypoints.
  
 2. If you are entering JDAM/SLAM preplanned missions, make sure to select the MSN preplanned missions page on the left DDI.
-JDAM and SLAM missions must be entered separately.
 
 ![pages](https://i.imgur.com/Nxr9qKX.png)
 
-3. With a list of active waypoints and/or JDAM preplanned missions, click `Enter into aircraft`
+3. With a list of active waypoints and/or JDAM preplanned missions, click `Send To Aircraft`
 
 4. Tab back into DCS and let it enter everything
 
@@ -94,13 +93,13 @@ JDAM and SLAM missions must be entered separately.
 
 1. Make sure the main EHSD page is on the left AMPCD (left screen).
 
-2. With a list of active waypoints, click `Enter into aircraft`
+2. With a list of active waypoints, click `Send To Aircraft`
 
 3. Tab back into DCS and let it enter everything
 
 ##### M-2000C
 
-1. With a list of active waypoints, click `Enter into aircraft`
+1. With a list of active waypoints, click `Send To Aircraft`
 
 2. Tab back into DCS and let it enter everything
 
@@ -111,16 +110,20 @@ will overwrite it with the current list.
 
 #### Export to file
 
-If you wish to share your current profile, click `Save as Encoded file` and give it a descriptive name.
+If you wish to share your current profile, select `Save as Encoded file` and give it a descriptive name.
 
 #### Import from file
 
-Profiles may be imported from a file that was previously exported.
+Profiles may be imported from a file that was previously exported by selecting `Load from Encoded file`.
+
+#### Import from NS430
+
+ Waypoint data can be imported from an NS430 data file by selecting `Import NS430 from clipboard` or `Import NS430 from file`.
 
 #### Creating your own preset locations
 
 You may add more preset locations by adding more JSON formatted files in the data folder,
-following the format in `pg.json` and `cauc.json`.												  
+following the format in `pg.json` and `cauc.json`.
 
 #### Exporting to encoded string
 
@@ -137,12 +140,6 @@ a new profile and a pop-up should appear letting you know import was successful.
 ## Known issues
 
 * Attempting to enter sequence #2 or #3 without sequence #1 will not work.
-
-## Donate
-
-If you'd like to support my work, it is very much appreciated!
-
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=U6ZGEE7PF6KAG&source=url)
 
 ## About DCS-BIOS
 DCS-BIOS is redistributed under GPLv3 license.
