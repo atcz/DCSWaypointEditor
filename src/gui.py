@@ -304,7 +304,7 @@ class GUI:
             [PyGUI.Button("Add", size=(8, 1)),
              PyGUI.Button("Update", size=(8, 1)),
              PyGUI.Button("Remove", size=(8, 1)),
-             PyGUI.Button("Enter into aircraft", size=(14, 1), key="enter")],
+             PyGUI.Button("Send To Aircraft", size=(14, 1), key="enter")],
         ]
 
         menudef = [['&File',
