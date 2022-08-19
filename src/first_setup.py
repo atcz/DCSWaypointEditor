@@ -80,44 +80,44 @@ def first_time_setup_gui(settings):
     the_way_detected = "Detected" if detect_the_way(settings.get(section, 'dcs_path')) else "Not Detected"
 
     layout = [
-        [PyGUI.Text("DCS User Folder Path:"),
+        [PyGUI.Text("DCS User Folder Path:", (20,1), justification="right"),
          PyGUI.Input(settings.get(section, 'dcs_path'), key="dcs_path", enable_events=True),
          PyGUI.Button("Browse...", button_type=PyGUI.BUTTON_TYPE_BROWSE_FOLDER, target="dcs_path")],
 
-        [PyGUI.Text("Tesseract.exe Path:"),
+        [PyGUI.Text("Tesseract.exe Path:", (20,1), justification="right"),
          PyGUI.Input(settings.get(section, 'tesseract_path'), key="tesseract_path"),
          PyGUI.Button("Browse...", button_type=PyGUI.BUTTON_TYPE_BROWSE_FILE, target="tesseract_path")],
 
-        [PyGUI.Text("Capture Hotkey:"),
+        [PyGUI.Text("Capture Hotkey:", (20,1), justification="right"),
          PyGUI.Input(settings.get(section, 'capture_key'), key="capture_key")],
 
-        [PyGUI.Text("Capture To Profile Toggle Hotkey:"),
+        [PyGUI.Text("Capture To Profile Hotkey:", (20,1), justification="right"),
          PyGUI.Input(settings.get(section, "quick_capture_hotkey"), key="quick_capture_hotkey")],
 
-        [PyGUI.Text("Capture F10/F11 Toggle Hotkey:"),
+        [PyGUI.Text("Capture F10/F11 Hotkey:", (20,1), justification="right"),
          PyGUI.Input(settings.get(section, "camera_capture_hotkey"), key="camera_capture_hotkey")],
 
-        [PyGUI.Text("Enter into Aircraft Hotkey (Optional):"),
+        [PyGUI.Text("Send To Aircraft Hotkey:", (20,1), justification="right"),
          PyGUI.Input(settings.get(section, 'enter_aircraft_hotkey'), key="enter_aircraft_hotkey")],
 
-        [PyGUI.Text("Default Aircraft:"),
+        [PyGUI.Text("Default Aircraft:", (20,1), justification="right"),
          PyGUI.Combo(values=aircraft_name, readonly=True,
             default_value=aircraft_name[aircraft.index(settings.get(section, 'default_aircraft'))],
             enable_events=True, key='default_aircraft', size=(30, 1))],
 
-        [PyGUI.Text("Select PySimpleGUI theme:"),
+        [PyGUI.Text("PySimpleGUI Theme:", (20,1), justification="right"),
          PyGUI.Combo(values=PyGUI.theme_list(), readonly=True, default_value=settings.get(section, 'pysimplegui_theme'),
             enable_events=True, key='pysimplegui_theme', size=(30, 1))],
 
-        [PyGUI.Text("DCS-BIOS:"), PyGUI.Text(dcs_bios_detected, key="dcs_bios"),
+        [PyGUI.Text("DCS-BIOS:", (20,1), justification="right"), PyGUI.Text(dcs_bios_detected, key="dcs_bios"),
          PyGUI.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected"),
          PyGUI.Button("Update to v" + DCS_BIOS_VERSION, key="update_button", disabled=dcs_bios_detected == "Not Detected")],
 
-        [PyGUI.Text("The Way:"), PyGUI.Text(the_way_detected, key="the_way")],
+        [PyGUI.Text("The Way:", (20,1), justification="right"), PyGUI.Text(the_way_detected, key="the_way")],
     ]
 
     return PyGUI.Window("DCS Waypoint Editor Settings", [[PyGUI.Frame("Settings", layout)],
-                                             [PyGUI.Button("Accept", key="accept_button", pad=((250, 1), 1),
+                                             [PyGUI.Button("Accept", key="accept_button", pad=((270, 1), 1),
                                                            disabled=dcs_bios_detected != "Detected")]])
 
 
