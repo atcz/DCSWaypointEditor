@@ -105,7 +105,7 @@ class Driver:
             return False
 
     def validate_waypoints(self, waypoints):
-        for waypoint in waypoints:
+        for waypoint in waypoints[:]:
             if not self.validate_waypoint(waypoint):
                 waypoints.remove(waypoint)
         return sorted(waypoints, key=lambda wp: wp.wp_type)
