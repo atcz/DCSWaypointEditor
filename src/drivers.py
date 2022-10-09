@@ -606,27 +606,25 @@ class ViperDriver(Driver):
             delay_release = self.short_delay
 
         if num == "DN":
-            self.s.sendto(f"ICP_DED_SW 0\n".encode("utf-8"), (self.host, self.port))
+            self.press_with_delay("ICP_DED_SW 0", raw=True)
         elif num == "UP":
-            self.s.sendto(f"ICP_DED_SW 2\n".encode("utf-8"), (self.host, self.port))
+            self.press_with_delay("ICP_DED_SW 2", raw=True)
 
-        sleep(delay_release)
-        self.s.sendto(f"ICP_DED_SW 1\n".encode("utf-8"), (self.host, self.port))
+        self.press_with_delay("ICP_DED_SW 1", raw=True)
 
     def icp_data(self, num, delay_after=None, delay_release=None):
         if delay_release is None:
             delay_release = self.short_delay
 
         if num == "DN":
-            self.s.sendto(f"ICP_DATA_UP_DN_SW 0\n".encode("utf-8"), (self.host, self.port))
+            self.press_with_delay("ICP_DATA_UP_DN_SW 0", raw=True)
         elif num == "UP":
-            self.s.sendto(f"ICP_DATA_UP_DN_SW 2\n".encode("utf-8"), (self.host, self.port))
+            self.press_with_delay("ICP_DATA_UP_DN_SW 2", raw=True)
         elif num == "RTN":
-            self.s.sendto(f"ICP_DATA_RTN_SEQ_SW 0\n".encode("utf-8"), (self.host, self.port))
+            self.press_with_delay("ICP_DATA_RTN_SEQ_SW 0", raw=True)
 
-        sleep(delay_release)
-        self.s.sendto(f"ICP_DATA_UP_DN_SW 1\n".encode("utf-8"), (self.host, self.port))
-        self.s.sendto(f"ICP_DATA_RTN_SEQ_SW 1\n".encode("utf-8"), (self.host, self.port))
+        self.press_with_delay("ICP_DATA_UP_DN_SW 1", raw=True)
+        self.press_with_delay("ICP_DATA_RTN_SEQ_SW 1", raw=True)
 
     def enter_number(self, number):
         for num in str(number):
@@ -891,7 +889,7 @@ class BlackSharkDriver(Driver):
             return
 
         #Set NAV Master Mode ENT
-        self.s.sendto(f"PVI_MODES 2\n".encode("utf-8"), (self.host, self.port))
+        self.press_with_delay("PVI_MODES 2", raw=True)
         self.pvi("WAYPOINTS_BTN")
         for i, wp in enumerate(wps):
             if not wp.name:
@@ -901,7 +899,7 @@ class BlackSharkDriver(Driver):
             self.pvi(i+1)
             self.enter_coords(wp.position)
         #Set NAV Master Mode OPER
-        self.s.sendto(f"PVI_MODES 3\n".encode("utf-8"), (self.host, self.port))
+        self.press_with_delay("PVI_MODES 3", raw=True)
 
     def enter_all(self, profile):
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
