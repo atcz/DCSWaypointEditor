@@ -850,3 +850,59 @@ class ApacheGunnerDriver(Driver):
 
     def enter_all(self, profile):
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
+
+
+class BlackSharkDriver(Driver):
+    def __init__(self, logger, config):
+        super().__init__(logger, config)
+        self.limits = dict(WP=6)
+
+    def pvi(self, num, delay_after=None, delay_release=None):
+        key = f"PVI_{num}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
+
+    def enter_number(self, number):
+        for num in str(number):
+            if num != ".":
+                self.pvi(num)
+
+    def enter_coords(self, latlong, elev=None):
+        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=1)
+        self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
+
+        if latlong.lat.degree > 0:
+            self.pvi("0", delay_release=self.medium_delay)
+        else:
+            self.pvi("1", delay_release=self.medium_delay)
+        self.enter_number(lat_str)
+        sleep(0.5)
+
+        if latlong.lon.degree > 0:
+            self.pvi("0", delay_release=self.medium_delay)
+        else:
+            self.pvi("1", delay_release=self.medium_delay)
+        self.enter_number(lon_str)
+
+        self.pvi("ENTER_BTN")
+
+    def enter_waypoints(self, wps):
+        if not wps:
+            return
+
+        #Set NAV Master Mode ENT
+        self.s.sendto(f"PVI_MODES 2\n".encode("utf-8"), (self.host, self.port))
+        for i, wp in enumerate(wps):
+            if not wp.name:
+                self.logger.info(f"Entering waypoint {i+1}")
+            else:
+                self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
+            self.pvi("WAYPOINTS_BTN")
+            self.pvi(i+1)
+            self.enter_coords(wp.position)
+            self.pvi("WAYPOINTS_BTN")
+        #Set NAV Master Mode OPER
+        self.s.sendto(f"PVI_MODES 3\n".encode("utf-8"), (self.host, self.port))
+
+    def enter_all(self, profile):
+        self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
