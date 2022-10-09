@@ -395,6 +395,11 @@ class MirageDriver(Driver):
 
         self.press_with_delay(key, delay_after=delay_after, delay_release=delay_release)
 
+    def ins_param(self, num, delay_after=None, delay_release=None):
+        key = f"INS_PARAM_SEL {num}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release, raw=True)
+
     def enter_number(self, number):
         for num in str(number):
             if num == ".":
@@ -403,32 +408,44 @@ class MirageDriver(Driver):
             self.pcn(num)
         self.pcn("ENTER")
 
-    def enter_coords(self, latlong):
-        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3)
-        self.logger.debug(f"Entering coords string: {lat_str[:-2]}, {lon_str[:-2]}")
+    def enter_coords(self, latlong, elev=None):
+        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=3)
+        self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
 
         self.pcn("1")
         if latlong.lat.degree > 0:
             self.pcn("2", delay_release=self.medium_delay)
         else:
             self.pcn("8", delay_release=self.medium_delay)
-        self.enter_number(lat_str[:-2])
+        self.enter_number(lat_str)
 
         self.pcn("3")
-
         if latlong.lon.degree > 0:
             self.pcn("6", delay_release=self.medium_delay)
         else:
             self.pcn("4", delay_release=self.medium_delay)
-        self.enter_number(lon_str[:-2])
+        self.enter_number(lon_str)
+
+        if elev or elev == 0:
+            self.ins_param("3")
+            self.pcn("1")
+            if elev < 0:
+                self.pcn("7")
+            else:
+                self.pcn("1")
+            self.enter_number(elev)
 
     def enter_waypoints(self, wps):
         for i, wp in enumerate(wps, 1):
+            if not wp.name:
+                self.logger.info(f"Entering waypoint {i}")
+            else:
+                self.logger.info(f"Entering waypoint {i} - {wp.name}")
+            self.ins_param("4")
             self.pcn("PREP")
             self.pcn("0")
             self.pcn(str(i))
-            self.enter_coords(wp.position)
-            self.pcn("ENTER")
+            self.enter_coords(wp.position, wp.elevation)
 
     def enter_all(self, profile):
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
@@ -602,29 +619,31 @@ class ViperDriver(Driver):
         self.press_with_delay(key, delay_after=delay_after, delay_release=delay_release)
 
     def icp_ded(self, num, delay_after=None, delay_release=None):
-        if delay_release is None:
-            delay_release = self.short_delay
-
         if num == "DN":
-            self.press_with_delay("ICP_DED_SW 0", raw=True)
+            self.press_with_delay("ICP_DED_SW 0", delay_after=delay_after,
+                                  delay_release=delay_release, raw=True)
         elif num == "UP":
-            self.press_with_delay("ICP_DED_SW 2", raw=True)
+            self.press_with_delay("ICP_DED_SW 2", delay_after=delay_after,
+                                  delay_release=delay_release, raw=True)
 
-        self.press_with_delay("ICP_DED_SW 1", raw=True)
+        self.press_with_delay("ICP_DED_SW 1", delay_after=delay_after,
+                              delay_release=delay_release, raw=True)
 
     def icp_data(self, num, delay_after=None, delay_release=None):
-        if delay_release is None:
-            delay_release = self.short_delay
-
         if num == "DN":
-            self.press_with_delay("ICP_DATA_UP_DN_SW 0", raw=True)
+            self.press_with_delay("ICP_DATA_UP_DN_SW 0", delay_after=delay_after,
+                                  delay_release=delay_release, raw=True)
         elif num == "UP":
-            self.press_with_delay("ICP_DATA_UP_DN_SW 2", raw=True)
+            self.press_with_delay("ICP_DATA_UP_DN_SW 2", delay_after=delay_after,
+                                  delay_release=delay_release, raw=True)
         elif num == "RTN":
-            self.press_with_delay("ICP_DATA_RTN_SEQ_SW 0", raw=True)
+            self.press_with_delay("ICP_DATA_RTN_SEQ_SW 0", delay_after=delay_after,
+                                  delay_release=delay_release, raw=True)
 
-        self.press_with_delay("ICP_DATA_UP_DN_SW 1", raw=True)
-        self.press_with_delay("ICP_DATA_RTN_SEQ_SW 1", raw=True)
+        self.press_with_delay("ICP_DATA_UP_DN_SW 1", delay_after=delay_after,
+                              delay_release=delay_release, raw=True)
+        self.press_with_delay("ICP_DATA_RTN_SEQ_SW 1", delay_after=delay_after,
+                              delay_release=delay_release, raw=True)
 
     def enter_number(self, number):
         for num in str(number):
@@ -860,6 +879,11 @@ class BlackSharkDriver(Driver):
         self.press_with_delay(key, delay_after=delay_after,
                               delay_release=delay_release)
 
+    def pvi_mode(self, num, delay_after=None, delay_release=None):
+        key = f"PVI_MODES {num}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release, raw=True)
+
     def enter_number(self, number):
         for num in str(number):
             if num != ".":
@@ -870,16 +894,16 @@ class BlackSharkDriver(Driver):
         self.logger.debug(f"Entering coords string: {lat_str}, {lon_str}")
 
         if latlong.lat.degree > 0:
-            self.pvi("0", delay_release=self.medium_delay)
+            self.pvi("0")
         else:
-            self.pvi("1", delay_release=self.medium_delay)
+            self.pvi("1")
         self.enter_number(lat_str)
-        sleep(0.5)
+        sleep(0.2)
 
         if latlong.lon.degree > 0:
-            self.pvi("0", delay_release=self.medium_delay)
+            self.pvi("0")
         else:
-            self.pvi("1", delay_release=self.medium_delay)
+            self.pvi("1")
         self.enter_number(lon_str)
 
         self.pvi("ENTER_BTN")
@@ -889,17 +913,17 @@ class BlackSharkDriver(Driver):
             return
 
         #Set NAV Master Mode ENT
-        self.press_with_delay("PVI_MODES 2", raw=True)
+        self.pvi_mode("2")
         self.pvi("WAYPOINTS_BTN")
-        for i, wp in enumerate(wps):
+        for i, wp in enumerate(wps, 1):
             if not wp.name:
-                self.logger.info(f"Entering waypoint {i+1}")
+                self.logger.info(f"Entering waypoint {i}")
             else:
-                self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
-            self.pvi(i+1)
+                self.logger.info(f"Entering waypoint {i} - {wp.name}")
+            self.pvi(str(i))
             self.enter_coords(wp.position)
         #Set NAV Master Mode OPER
-        self.press_with_delay("PVI_MODES 3", raw=True)
+        self.pvi_mode("3")
 
     def enter_all(self, profile):
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
