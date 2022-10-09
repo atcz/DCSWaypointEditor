@@ -892,15 +892,14 @@ class BlackSharkDriver(Driver):
 
         #Set NAV Master Mode ENT
         self.s.sendto(f"PVI_MODES 2\n".encode("utf-8"), (self.host, self.port))
+        self.pvi("WAYPOINTS_BTN")
         for i, wp in enumerate(wps):
             if not wp.name:
                 self.logger.info(f"Entering waypoint {i+1}")
             else:
                 self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
-            self.pvi("WAYPOINTS_BTN")
             self.pvi(i+1)
             self.enter_coords(wp.position)
-            self.pvi("WAYPOINTS_BTN")
         #Set NAV Master Mode OPER
         self.s.sendto(f"PVI_MODES 3\n".encode("utf-8"), (self.host, self.port))
 
