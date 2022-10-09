@@ -230,7 +230,7 @@ class GUI:
             [PyGUI.Text("Select preset location")],
             [PyGUI.Combo(values=[""] + sorted([base.name for _, base in self.editor.default_bases.items()],),
                          readonly=False, enable_events=True, key='baseSelector'),
-             PyGUI.Button(button_text="F", key="filter")]
+             PyGUI.Button(button_text="F", key="presetFilter")]
         ]
         frameregionlayout = [
             [PyGUI.Radio("CA", group_id="preset_type",
@@ -290,8 +290,9 @@ class GUI:
 
         col0 = [
             [PyGUI.Text("Select profile:")],
-            [PyGUI.Combo(values=[""] + sorted(self.get_profile_names()), readonly=True,
-                         enable_events=True, key='profileSelector', size=(30, 1))],
+            [PyGUI.Combo(values=[""] + sorted(self.get_profile_names()), readonly=False,
+                         enable_events=True, key='profileSelector', size=(29, 1)),
+             PyGUI.Button(button_text="F", key="profileFilter")],
             [PyGUI.Listbox(values=list(), size=(33, 14),
                            enable_events=True, key='activesList')],
             # [PyGUI.Button("Move up", size=(12, 1)),
@@ -447,9 +448,15 @@ class GUI:
     def filter_preset_waypoints_dropdown(self):
         text = self.values["baseSelector"]
         self.window.Element("baseSelector").\
-            Update(values=[""] + [base.name for _, base in self.editor.default_bases.items() if
-                                  text.lower() in base.name.lower()],
+            Update(values=[""] + sorted([base.name for _, base in self.editor.default_bases.items() if
+                                  text.lower() in base.name.lower()]),
                    set_to_index=0)
+
+    def filter_profile_dropdown(self):
+        text = self.values["profileSelector"]
+        self.window.Element("profileSelector").\
+            Update(values=[""] + sorted([profile.name for profile in Profile.list_all() if
+                           text.lower() in profile.name.lower()]), set_to_index=0)
 
     def add_waypoint(self, position, elevation, name=None):
         if name is None:
@@ -1089,8 +1096,11 @@ class GUI:
                 self.editor.set_driver(selected)
                 self.update_waypoints_list()
 
-            elif event == "filter":
+            elif event == "presetFilter":
                 self.filter_preset_waypoints_dropdown()
+
+            elif event == "profileFilter":
+                self.filter_profile_dropdown()
 
         self.close()
 
