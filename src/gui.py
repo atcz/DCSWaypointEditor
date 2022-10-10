@@ -305,7 +305,7 @@ class GUI:
             [PyGUI.Button("Add", size=(8, 1)),
              PyGUI.Button("Update", size=(8, 1)),
              PyGUI.Button("Remove", size=(8, 1)),
-             PyGUI.Button("Send To Aircraft", size=(14, 1), key="enter")],
+             PyGUI.Button("Send To Aircraft", size=(14, 1), key="Send")],
         ]
 
         menudef = [['&File',
@@ -437,12 +437,12 @@ class GUI:
 
     def disable_coords_input(self):
         for element_name in\
-                ("latDeg", "latMin", "latSec", "lonDeg", "lonMin", "lonSec", "mgrs", "elevFeet", "elevMeters"):
+                ("latDeg", "latMin", "latSec", "lonDeg", "lonMin", "lonSec", "mgrs", "elevFeet", "elevMeters", "Send"):
             self.window.Element(element_name).Update(disabled=True)
 
     def enable_coords_input(self):
         for element_name in\
-                ("latDeg", "latMin", "latSec", "lonDeg", "lonMin", "lonSec", "mgrs", "elevFeet", "elevMeters"):
+                ("latDeg", "latMin", "latSec", "lonDeg", "lonMin", "lonSec", "mgrs", "elevFeet", "elevMeters", "Send"):
             self.window.Element(element_name).Update(disabled=False)
 
     def filter_preset_waypoints_dropdown(self):
@@ -881,9 +881,9 @@ class GUI:
                 self.profile.waypoints.remove(wp)
 
     def enter_coords_to_aircraft(self):
-        self.window.Element('enter').Update(disabled=True)
+        self.window.Element('Send').Update(disabled=True)
         self.editor.enter_all(self.profile)
-        self.window.Element('enter').Update(disabled=False)
+        self.window.Element('Send').Update(disabled=False)
 
     def run(self):
         self.window.Element("aircraftSelector").Update(value=self.aircraft_name[self.aircraft.index(self.default_aircraft)])
@@ -903,11 +903,6 @@ class GUI:
             elif event == "Run Target Jar":
                 if os.path.exists('.\Target-jar-with-dependencies.jar'):
                     subprocess.Popen(['java', '-jar', '.\Target-jar-with-dependencies.jar'], shell=True)
-
-            elif event == "Add":
-                position, elevation, name = self.validate_coords()
-                if position is not None:
-                    self.add_waypoint(position, elevation, name)
 
             elif event == "Copy as String to clipboard":
                 self.export_to_string()
@@ -929,6 +924,11 @@ class GUI:
                     importdata = f.read()
                 self.import_NS430(importdata)
 
+            elif event == "Add":
+                position, elevation, name = self.validate_coords()
+                if position is not None:
+                    self.add_waypoint(position, elevation, name)
+
             elif event == "Update":
                 if self.values['activesList']:
                     waypoint = self.find_selected_waypoint()
@@ -943,6 +943,9 @@ class GUI:
                 if self.values['activesList']:
                     self.remove_selected_waypoint()
                     self.update_waypoints_list()
+
+            elif event == "Send":
+                self.enter_coords_to_aircraft()
 
             elif event == "activesList":
                 if self.values['activesList']:
@@ -1051,9 +1054,6 @@ class GUI:
                 self.window.Element("baseSelector").\
                     Update(values=[""] + sorted([base.name for _, base in self.editor.default_bases.items()]),
                       set_to_index=0)
-
-            elif event == "enter":
-                self.enter_coords_to_aircraft()
 
             elif event == "wpType":
                 self.select_wp_type(self.values.get("wpType"))
