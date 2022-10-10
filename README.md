@@ -12,18 +12,27 @@ Currently supported aircraft:
 * F-16C
 * AH-64D Pilot
 * AH-64D CPG
+* Ka-50
 
 ## Installation
 
 1. Download and install [Google Tesseract](https://github.com/UB-Mannheim/tesseract/wiki)
-2. Unzip the contents of the DCS-Waypoint-Editor ZIP to a folder
-3. Run `dcs_wp_editor.exe` and perform the first time setup.
+2. Optional (Recommended) - Download and install [DCSTheWay](https://github.com/aronCiucu/DCSTheway)
+3. Unzip the contents of DCS-Waypoint-Editor.zip to a folder
+4. Run `dcs_wp_editor.exe` and perform the first time setup.
+
+## How It Works
+
+DCS Waypoint Editor uses a screen capture to search for the map coordinates in the top left corner of the F10 map using Tesseract
+OCR. Any screen overlay or screen scaling that obsucures or modifies the captured image will result in a "No matching pattern"
+error. Capturing using `DCSTheWay` (`Capture F10/F11 View`) will capture coordinates directly from DCS without using OCR. 
 
 ## Usage
 
-Waypoints and JDAM/SLAM preplanned missions can be added by either manually entering a set of coordinates or capturing them
-from the DCS F10 map via optical text recognition. If "DCSTheWay" is installed, the coordinates can be captured from the
-F10 or F11 view.
+Waypoints and JDAM/SLAM preplanned missions can be added by either manually entering a set of coordinates or by one of the
+coordinate capture methods. When capturing from `DCSTheWay`, coordinates are captured from the current camera view. From the
+F10 map, it captures the coordinates of the center of the map. A target dot in the center of the map can be displayed using
+`DCSTheWay`, or with the included Target-jar-with-dependencies.jar which requires Java JRE.
 
 #### Manual coordinates entry
 
@@ -33,33 +42,33 @@ F10 or F11 view.
 
 3. Enter the elevation in feet (optional for regular waypoints, mandatory for JDAM/SLAM preplanned missions)
 
-5. (Optional) Choose a sequence to assign the waypoint to.
+4. (Optional) Choose a sequence to assign the waypoint to.
 
-6. (Optional) Assign a name to the waypoint.
+5. (Optional) Assign a name to the waypoint.
 
-7. Click `Add` to add the waypoint to the list of active waypoints
+6. Click `Add` to add the waypoint to the list of active waypoints
 
 #### F10 map captured coordinates entry
 
 1. Make sure your F10 map is in [DD MM SS.ss](https://i.imgur.com/9GIU7pJ.png) or [MGRS](https://i.imgur.com/T7lBvlx.png) coordinate format.
  You may cycle coordinate formats with `LAlt+Y`.
 
-2. Click `Capture Coordinates`
+2. Click `Capture Coordinates` or `Capture To Profile`
 
 3. In the DCS F10 map, hover your mouse over your desired position
 
-5. Press the key you bound to F10 map capture during first time setup (default is `LCtrl+T`). The results will be indicated
+4. Press the key you bound to F10 map capture during first time setup (default is `LCtrl+T`). The results will be indicated
 in the capture status textbox.
 
-6. (Optional) Assign a name to the waypoint.
+5. (Optional) Assign a name to the waypoint.
 
-7. Click `Add` to add the waypoint to the list of active waypoints
+6. Click `Add` to add the waypoint to the list of active waypoints
 
 #### F10 map quick capture
 
-`Capture To Profile` and `Capture F10/F11 View` work in a similar way to regular coordinates capturing, except it will automatically add a waypoint
-at the desired position every time the F10 map capture keybind is pressed.  `Capture To Profile` and `Capture F10/F11 View` can be toggled on/off with a
-hotkey (default is `LCtrl+LShift+T` and `LCtrl+LShift+U`).
+`Capture To Profile` and `Capture F10/F11 View` work in a similar way to regular coordinates capturing, except it will automatically
+add a waypoint  at the desired position every time the map capture keybind is pressed.  `Capture To Profile` and `Capture F10/F11 View`
+can be toggled on/off with a hotkey (default is `LCtrl+LShift+T` and `LCtrl+LShift+U`).
 
 #### Preset coordinates
 
@@ -70,7 +79,7 @@ and BlueFlag FARPS are included.
 
 Hornet JDAM/SLAM preplanned missions work in a similar way to waypoints, however, you **must** select the correct station
 for the mission to be assigned using the station selector.  Aircraft entry does not skip stations, and available stations
-will be entered in order 8-2-7-3. JDAM and SLAM missions must be entered separately.
+will be entered in order 8-2-7-3. Missions for different weapons (JSA, J-84, J-109, SLMR, etc.) must be entered separately.
 
 #### Entering a list of waypoints into your aircraft
 
@@ -79,13 +88,14 @@ of the application.
 
 ##### F/A-18C
 
-1. Make sure the main HSI page is on the AMPCD (bottom screen) if you are entering waypoints.
+1. Make sure the main HSI page is on the AMPCD (bottom screen) if you are entering waypoints. HSI Precise mode is selected automatically
+and must not be turned on in advance.
  
 2. If you are entering JDAM/SLAM preplanned missions, make sure to select the MSN preplanned missions page on the left DDI.
 
 ![pages](https://i.imgur.com/Nxr9qKX.png)
 
-3. With a list of active waypoints and/or JDAM preplanned missions, click `Send To Aircraft`
+3. With a list of active waypoints and/or JDAM/SLAM preplanned missions, click `Send To Aircraft`
 
 4. Tab back into DCS and let it enter everything
 
@@ -97,7 +107,7 @@ of the application.
 
 3. Tab back into DCS and let it enter everything
 
-##### M-2000C
+##### All Other Aircraft
 
 1. With a list of active waypoints, click `Send To Aircraft`
 
