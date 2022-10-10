@@ -212,12 +212,8 @@ class HornetDriver(Driver):
         self.ufc("CLR")
         self.ufc("CLR")
 
-        for i, wp in enumerate(wps):
-            if not wp.name:
-                self.logger.info(f"Entering waypoint {i+1}")
-            else:
-                self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
-
+        for wp in wps:
+            self.logger.info(f"Entering waypoint: {wp}")
             self.ampcd("12")
             self.ampcd("5")
             self.ufc("OS1")
@@ -288,7 +284,8 @@ class HornetDriver(Driver):
             for msn in msns:
                 self.enter_pp_msn(msn, n)
                 n += 1
-
+            if n > 2:
+                self.lmdi("6")
             self.lmdi("13")
         self.lmdi("19")
 
@@ -367,6 +364,7 @@ class HarrierDriver(Driver):
         self.lmpcd("2")
 
         for wp in wps:
+            self.logger.info(f"Entering waypoint: {wp}")
             self.ufc("7")
             self.ufc("7")
             self.ufc("ENT")
@@ -437,10 +435,7 @@ class MirageDriver(Driver):
 
     def enter_waypoints(self, wps):
         for i, wp in enumerate(wps, 1):
-            if not wp.name:
-                self.logger.info(f"Entering waypoint {i}")
-            else:
-                self.logger.info(f"Entering waypoint {i} - {wp.name}")
+            self.logger.info(f"Entering waypoint: {wp}")
             self.ins_param("4")
             self.pcn("PREP")
             self.pcn("0")
@@ -515,6 +510,7 @@ class TomcatDriver(Driver):
         )
         self.cap("TAC")
         for wp in wps:
+            self.logger.info(f"Entering waypoint: {wp}")
             if wp.wp_type == "WP":
                 self.cap(f"BTN_{wp.number}")
             else:
@@ -591,7 +587,7 @@ class WarthogDriver(Driver):
         self.cdu("LSK_3L", self.medium_delay)
         self.logger.debug("Number of waypoints: " + str(len(wps)))
         for wp in wps:
-            self.logger.debug(f"Entering WP: {wp}")
+            self.logger.info(f"Entering waypoint: {wp}")
             self.cdu("LSK_7R", self.short_delay)
             self.enter_waypoint_name(wp)
             self.enter_coords(wp.position)
@@ -681,11 +677,8 @@ class ViperDriver(Driver):
         self.icp_data("RTN")
         self.icp_btn("4", delay_release=1)
 
-        for i, wp in enumerate(wps):
-            if not wp.name:
-                self.logger.info(f"Entering waypoint {i+1}")
-            else:
-                self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
+        for wp in wps:
+            self.logger.info(f"Entering waypoint: {wp}")
 
             self.icp_data("DN")                     # To MAN/AUTO
             self.icp_data("DN")                     # To LAT
@@ -765,12 +758,8 @@ class ApachePilotDriver(Driver):
         self.rmpd("TSD")
         self.rmpd("B6") # POINT
 
-        for i, wp in enumerate(wps):
-            if not wp.name:
-                self.logger.info(f"Entering waypoint {i+1}")
-            else:
-                self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
-
+        for wp in wps:
+            self.logger.info(f"Entering waypoint: {wp}")
             self.rmpd("L2") # ADD
             self.rmpd(wp_type_buttons[wp.wp_type]) # WP TYPE
             self.rmpd("L1") # IDENT
@@ -846,12 +835,8 @@ class ApacheGunnerDriver(Driver):
         self.rmpd("TSD")
         self.rmpd("B6") # POINT
 
-        for i, wp in enumerate(wps):
-            if not wp.name:
-                self.logger.info(f"Entering waypoint {i+1}")
-            else:
-                self.logger.info(f"Entering waypoint {i+1} - {wp.name}")
-
+        for wp in wps:
+            self.logger.info(f"Entering waypoint: {wp}")
             self.rmpd("L2") # ADD
             self.rmpd(wp_type_buttons[wp.wp_type]) # WP TYPE
             self.rmpd("L1") # IDENT
@@ -872,7 +857,7 @@ class ApacheGunnerDriver(Driver):
 class BlackSharkDriver(Driver):
     def __init__(self, logger, config):
         super().__init__(logger, config)
-        self.limits = dict(WP=6)
+        self.limits = dict(WP=6, TG=9)
 
     def pvi(self, num, delay_after=None, delay_release=None):
         key = f"PVI_{num}"
@@ -909,18 +894,19 @@ class BlackSharkDriver(Driver):
         self.pvi("ENTER_BTN")
 
     def enter_waypoints(self, wps):
+        wp_type_buttons = dict(WP='WAYPOINTS', TG='TARGETS')
+        prev_type = None
         if not wps:
             return
 
         #Set NAV Master Mode ENT
         self.pvi_mode("2")
-        self.pvi("WAYPOINTS_BTN")
-        for i, wp in enumerate(wps, 1):
-            if not wp.name:
-                self.logger.info(f"Entering waypoint {i}")
-            else:
-                self.logger.info(f"Entering waypoint {i} - {wp.name}")
-            self.pvi(str(i))
+        for wp in wps:
+            self.logger.info(f"Entering waypoint: {wp}")
+            if wp.wp_type != prev_type:
+                self.pvi(f"{wp_type_buttons[wp.wp_type]}_BTN")
+                prev_type = wp.wp_type
+            self.pvi(str(wp.number))
             self.enter_coords(wp.position)
         #Set NAV Master Mode OPER
         self.pvi_mode("3")
