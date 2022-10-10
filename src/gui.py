@@ -331,7 +331,7 @@ class GUI:
 
         return PyGUI.Window('DCS Waypoint Editor', layout, finalize=True)
 
-    def set_sequence_station_selector(self, mode):
+    def set_sequence_station_selector(self, mode, station=None):
         if mode is None:
             self.window.Element("sequence_text").Update(value="Sequence:")
             self.window.Element("sequence").Update(
@@ -342,13 +342,17 @@ class GUI:
                 values=("None", 1, 2, 3), value="None", disabled=False)
             self.values["sequence"] = "None"
         elif mode == "station":
+            if station is not None:
+                select = station
+            else:
+                select = 8
             self.window.Element("sequence_text").Update(value="    Station:")
             self.window.Element("sequence").Update(
-                values=(8, 2, 7, 3), value=8, disabled=False)
-            self.values["sequence"] = 8
+                values=(8, 2, 7, 3), value=select, disabled=False)
+            self.values["sequence"] = select
 
     def update_position(self, position=None, elevation=None, name=None, update_mgrs=True, aircraft=None,
-                        waypoint_type=None):
+                        waypoint_type=None, station=None):
 
         if position is not None:
             latdeg = round(position.lat.degree)
@@ -415,6 +419,9 @@ class GUI:
 
         if waypoint_type is not None:
             self.select_wp_type(waypoint_type)
+
+        if station is not None:
+            self.set_sequence_station_selector('station', station=station)
 
     def update_waypoints_list(self, set_to_first=False):
         values = list()
@@ -950,8 +957,13 @@ class GUI:
             elif event == "activesList":
                 if self.values['activesList']:
                     waypoint = self.find_selected_waypoint()
-                    self.update_position(
-                        waypoint.position, waypoint.elevation, waypoint.name, waypoint_type=waypoint.wp_type)
+                    if waypoint.wp_type == "MSN":
+                        station = waypoint.station
+                    else:
+                        station = None
+                    self.logger.info(station)
+                    self.update_position(waypoint.position, waypoint.elevation, waypoint.name,
+                                         waypoint_type=waypoint.wp_type, station=station)
 
             elif event == "Save Profile":
                 if self.profile.waypoints:
