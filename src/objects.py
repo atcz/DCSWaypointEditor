@@ -10,6 +10,7 @@ from src.models import ProfileModel, WaypointModel, SequenceModel, IntegrityErro
 
 
 default_bases = dict()
+base_files = dict()
 
 logger = get_logger(__name__)
 
@@ -26,15 +27,11 @@ def update_base_data(url, file):
             f2.write(html.decode('utf-8'))
     return True
 
-def load_base_file(id, basedict):
-    ids = ["CA", "MA", "NV", "PG", "SY"]
-    files = ["cauc.json", "ma.json", "nv.json", "pg.json", "sy.json"]
-    
-    filename = files[ids.index(id)]
+def load_base_file(filename, basedict):
     basedict.clear()
     with open(".\\data\\" + filename, "r") as f:
         try:
-            load_base_data(json.load(f), basedict)
+            load_base_data(filename, json.load(f), basedict, base_files)
             logger.info(
                 f"Default base data built succesfully from file: {filename}")
         except AttributeError:
@@ -42,8 +39,12 @@ def load_base_file(id, basedict):
                 f"Failed to build default base data from file: {filename}", exc_info=True)
 
 
-def load_base_data(basedata, basedict):
+def load_base_data(filename, basedata, basedict, filedict):
     waypoints_list = basedata.get("waypoints")
+    region = basedata.get("region")
+    if region:
+        logger.info(f"{filename} {region[0]['name']}")
+        filedict[region[0]['name']] = filename
 
     if type(waypoints_list) == list:
         basedata = {i: wp for i, wp in enumerate(waypoints_list)}
@@ -81,7 +82,7 @@ def generate_default_bases():
             if ".json" in filename:
                 with open(".\\data\\" + filename, "r") as f:
                     try:
-                        load_base_data(json.load(f), default_bases)
+                        load_base_data(filename, json.load(f), default_bases, base_files)
                         logger.info(
                             f"Default base data built succesfully from file: {filename}")
                     except AttributeError:

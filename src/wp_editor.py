@@ -1,5 +1,5 @@
 from time import sleep
-from src.objects import default_bases
+from src.objects import base_files, default_bases
 from src.db import DatabaseInterface
 from src.logger import get_logger
 from src.drivers import HornetDriver, HarrierDriver, MirageDriver, TomcatDriver, DriverException,\
@@ -13,6 +13,7 @@ class WaypointEditor:
         self.settings = settings
         self.db = DatabaseInterface(settings['PREFERENCES'].get("DB_Name", "profiles.db"))
         self.default_bases = default_bases
+        self.base_files = base_files
         self.drivers = dict(hornet=HornetDriver(self.logger, settings),
                             harrier=HarrierDriver(self.logger, settings),
                             mirage=MirageDriver(self.logger, settings),

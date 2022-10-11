@@ -1,4 +1,4 @@
-from src.objects import Profile, Waypoint, MSN, load_base_file
+from src.objects import Profile, Waypoint, MSN, load_base_file, generate_default_bases
 from src.first_setup import first_time_setup, detect_the_way
 from src.logger import get_logger
 from peewee import DoesNotExist
@@ -227,22 +227,16 @@ class GUI:
         ]
 
         framepresetlayout = [
-            [PyGUI.Text("Select preset location")],
-            [PyGUI.Combo(values=[""] + sorted([base.name for _, base in self.editor.default_bases.items()],),
+            [PyGUI.Text("Select preset location:")],
+            [PyGUI.Combo(values=[""] + sorted(self.editor.default_bases),
                          readonly=False, enable_events=True, key='baseSelector'),
              PyGUI.Button(button_text="F", key="presetFilter")]
         ]
+
         frameregionlayout = [
-            [PyGUI.Radio("CA", group_id="preset_type",
-                         default=False, key="CA", enable_events=True),
-             PyGUI.Radio("MA", group_id="preset_type",
-                         default=False, key="MA", enable_events=True),
-             PyGUI.Radio("NV", group_id="preset_type",
-                         disabled=False, key="NV", enable_events=True)],
-            [PyGUI.Radio("PG", group_id="preset_type",
-                         disabled=False, key="PG", enable_events=True),
-             PyGUI.Radio("SY", group_id="preset_type",
-                         disabled=False, key="SY", enable_events=True)]
+            [PyGUI.Text("Select region:")],
+            [PyGUI.Combo(values=[""] + sorted(self.editor.base_files), readonly=True,
+                         enable_events=True, key='regionSelector', size=(19,1), pad=(6, 6))],
         ]
 
         framewptypelayout = [
@@ -961,7 +955,6 @@ class GUI:
                         station = waypoint.station
                     else:
                         station = None
-                    self.logger.info(station)
                     self.update_position(waypoint.position, waypoint.elevation, waypoint.name,
                                          waypoint_type=waypoint.wp_type, station=station)
 
@@ -1061,11 +1054,15 @@ class GUI:
                     self.update_position(
                         base.position, base.elevation, base.name)
 
-            elif event in ("CA", "MA", "NV", "PG", "SY"):
-                load_base_file(event, self.editor.default_bases)
+            elif event == "regionSelector":
+                if self.values[event]:
+                    load_base_file(self.editor.base_files[self.values[event]], self.editor.default_bases)
+                else:
+                    generate_default_bases()
+
                 self.window.Element("baseSelector").\
-                    Update(values=[""] + sorted([base.name for _, base in self.editor.default_bases.items()]),
-                      set_to_index=0)
+                    Update(values=[""] + sorted(self.editor.default_bases),
+                           set_to_index=0)
 
             elif event == "wpType":
                 self.select_wp_type(self.values.get("wpType"))
