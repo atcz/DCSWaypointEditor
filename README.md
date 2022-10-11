@@ -24,7 +24,7 @@ Currently supported aircraft:
 ## How It Works
 
 DCS Waypoint Editor uses a screen capture to search for the map coordinates in the top left corner of the F10 map using Tesseract
-OCR. Any screen overlay or screen scaling that obsucures or modifies the captured image will result in a "No matching pattern"
+OCR. Any screen overlay or screen scaling that obscures or modifies the captured image will result in a "No matching pattern"
 error. Capturing using `DCSTheWay` (`Capture F10/F11 View`) will capture coordinates directly from DCS without using OCR. 
 
 ## Usage
@@ -32,7 +32,8 @@ error. Capturing using `DCSTheWay` (`Capture F10/F11 View`) will capture coordin
 Waypoints and JDAM/SLAM preplanned missions can be added by either manually entering a set of coordinates or by one of the
 coordinate capture methods. When capturing from `DCSTheWay`, coordinates are captured from the current camera view. From the
 F10 map, it captures the coordinates of the center of the map. A target dot in the center of the map can be displayed using
-`DCSTheWay`, or with the included Target-jar-with-dependencies.jar which requires Java JRE.
+the included Target-jar-with-dependencies.jar which requires Java JRE. `DCSTheWay` can not be running when using F10/F11 
+View capture.
 
 #### Manual coordinates entry
 
