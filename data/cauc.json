@@ -1,5 +1,10 @@
 {
-    "waypoints": [
+	"region": [
+		{
+			"name": "Caucasus"
+		}
+	],
+	"waypoints": [
         {
             "latitude": 42.535901035417,
             "longitude": 43.111341987483,

@@ -1,4 +1,9 @@
 {
+	"region": [
+		{
+			"name": "Syria"
+		}
+	],
         "waypoints": [
             {
                 "name": "Abu Al-Duhur",

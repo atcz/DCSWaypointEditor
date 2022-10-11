@@ -1,4 +1,9 @@
 {
+	"region": [
+		{
+			"name": "Persian Gulf"
+		}
+	],
     "waypoints": [
         {
             "latitude": 24.45370833333333,

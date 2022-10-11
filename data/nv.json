@@ -1,4 +1,9 @@
 {
+	"region": [
+		{
+			"name": "Nevada"
+		}
+	],
     "waypoints": [
 		{
 			"latitude": 36.861138888889,

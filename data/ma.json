@@ -1,4 +1,9 @@
 {
+	"region": [
+		{
+			"name": "Marianas"
+		}
+	],
     "waypoints": [
 		{
 			"latitude": 13.583886111111,
