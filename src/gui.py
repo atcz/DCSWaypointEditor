@@ -1022,6 +1022,7 @@ class GUI:
 
                 with open(filename, "r") as f:
                     self.profile = Profile.from_string(f.read())
+                self.editor.set_driver(self.profile.aircraft)
                 self.update_waypoints_list()
 
                 if self.profile.profilename:
