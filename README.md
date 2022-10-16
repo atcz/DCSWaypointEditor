@@ -157,8 +157,7 @@ DCS-BIOS is redistributed under GPLv3 license.
 
 DCS-BIOS: https://github.com/DCSFlightpanels/dcs-bios
 
-DCSTheWay: https://github.com/aronCiucu/DCSTheWay
-
 ## Other credits
-
 [PyMGRS](https://github.com/aydink/pymgrs) by aydink
+
+DCSTheWay: https://github.com/aronCiucu/DCSTheWay
