@@ -441,6 +441,7 @@ class MirageDriver(Driver):
             self.pcn("0")
             self.pcn(str(i))
             self.enter_coords(wp.position, wp.elevation)
+        self.ins_param("4")
 
     def enter_all(self, profile):
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
