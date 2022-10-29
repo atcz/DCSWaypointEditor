@@ -239,32 +239,10 @@ class HornetDriver(Driver):
         self.ampcd("19")
         self.ampcd("10")
 
-    def enter_pp_msn(self, msn, n):
-        if msn.name:
-            self.logger.info(f"Entering PP mission {n} - {msn.name}")
-        else:
-            self.logger.info(f"Entering PP mission {n}")
-
-        if n > 1:
-            self.lmdi(f"{n + 5}")
-        self.lmdi("14")
-        self.ufc("OS3")
-
-        self.enter_coords(msn.position, msn.elevation, pp=True)
-
-        self.ufc("CLR")
-        self.ufc("CLR")
-
     def enter_missions(self, missions):
         def stations_order(x):
-            if x == 8:
-                return 0
-            elif x == 2:
-                return 1
-            elif x == 7:
-                return 2
-            elif x == 3:
-                return 3
+            order = [8, 2, 7, 3]
+            return order.index(x)
 
         sorted_stations = list()
         stations = dict()
@@ -282,7 +260,14 @@ class HornetDriver(Driver):
 
             n = 1
             for msn in msns:
-                self.enter_pp_msn(msn, n)
+                self.logger.info(f"Entering PP mission: {msn}")
+                if n > 1:
+                    self.lmdi(f"{n + 5}")
+                self.lmdi("14")
+                self.ufc("OS3")
+                self.enter_coords(msn.position, msn.elevation, pp=True)
+                self.ufc("CLR")
+                self.ufc("CLR")
                 n += 1
             if n > 2:
                 self.lmdi("6")
