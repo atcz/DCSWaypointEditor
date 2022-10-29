@@ -459,6 +459,11 @@ class GUI:
             Update(values=[""] + sorted([profile.name for profile in Profile.list_all() if
                            text.lower() in profile.name.lower()]), set_to_index=0)
 
+    def next_station(self, station):
+        station_list = [3, 7, 2, 8]
+        station_idx = station_list.index(station)
+        self.set_sequence_station_selector('station', station_list[station_idx - 1])
+
     def add_waypoint(self, position, elevation, name=None):
         if name is None:
             name = str()
@@ -469,6 +474,7 @@ class GUI:
                 number = len(self.profile.stations_dict.get(station, list()))+1
                 wp = MSN(position=position, elevation=int(elevation) or 0, name=name,
                          station=station, number=number)
+                self.next_station(station)
 
             else:
                 sequence = self.values["sequence"]
