@@ -1,10 +1,10 @@
 from src.objects import Profile, Waypoint, MSN, load_base_file, generate_default_bases
 from src.first_setup import first_time_setup, detect_the_way
+from src.capture import capture_map_coords, parse_map_coords_string
 from src.logger import get_logger
 from peewee import DoesNotExist
-from LatLon23 import LatLon, Longitude, Latitude, string2latlon
-from PIL import ImageGrab, ImageEnhance, ImageOps
-from pathlib import Path
+from LatLon23 import LatLon, Longitude, Latitude
+import src.pymgrs as mgrs
 import pytesseract
 import keyboard
 import os
@@ -17,15 +17,9 @@ import webbrowser
 import base64
 import pyperclip
 from slpp import slpp as lua
-import src.pymgrs as mgrs
 import PySimpleGUI as PyGUI
 import winsound
 import zlib
-from desktopmagic.screengrab_win32 import getDisplaysAsImages
-import cv2
-import numpy
-import re
-import datetime
 
 UX_SND_ERROR = "data/ux_error.wav"
 UX_SND_SUCCESS = "data/ux_success.wav"
@@ -500,73 +494,6 @@ class GUI:
 
         return True
 
-    def capture_map_coords(self, x_start=101, x_width=269, y_start=5, y_height=27):
-        self.logger.debug("Attempting to capture map coords")
-        gui_mult = 2 if self.scaled_dcs_gui else 1
-
-        dt = datetime.datetime.now()
-        debug_dirname = dt.strftime("%Y-%m-%d-%H-%M-%S")
-
-        if self.save_debug_images == "true":
-            os.mkdir(debug_dirname)
-
-        map_image = cv2.imread("data/map.bin")
-        arrow_image = cv2.imread("data/arrow.bin")
-
-        for display_number, image in enumerate(getDisplaysAsImages(), 1):
-            self.logger.debug("Looking for map on screen " + str(display_number))
-
-            if self.save_debug_images == "true":
-                image.save(debug_dirname + "/screenshot-"+str(display_number)+".png")
-
-            screen_image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)  # convert it to OpenCV format
-
-            search_result = cv2.matchTemplate(screen_image, map_image, cv2.TM_CCOEFF_NORMED)  # search for the "MAP" text in the screenshot
-            # matchTemplate returns a new greyscale image where the brightness of each pixel corresponds to how good a match there was at that point
-            # so now we search for the 'whitest' pixel
-            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(search_result)
-            self.logger.debug("Minval: " + str(min_val) + " Maxval: " + str(max_val) + " Minloc: " + str(min_loc) + " Maxloc: " + str(max_loc))
-            start_x = max_loc[0] + map_image.shape[0]
-            start_y = max_loc[1]
-
-            if max_val > 0.9:  # better than a 90% match means we are on to something
-
-                search_result = cv2.matchTemplate(screen_image, arrow_image, cv2.TM_CCOEFF_NORMED)  # now we search for the arrow icon
-                min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(search_result)
-                self.logger.debug("Minval: " + str(min_val) + " Maxval: " + str(max_val) + " Minloc: " + str(min_loc) + " Maxloc: " + str(max_loc))
-
-                end_x = max_loc[0]
-                end_y = max_loc[1] + map_image.shape[1]
-
-                self.logger.debug("Capturing " + str(start_x) + "x" + str(start_y) + " to " + str(end_x) + "x" + str(end_y) )
-
-                lat_lon_image = image.crop([start_x, start_y, end_x, end_y])
-
-                if self.save_debug_images == "true":
-                    lat_lon_image.save(debug_dirname + "/lat_lon_image.png")
-
-                enhancer = ImageEnhance.Contrast(lat_lon_image)
-                enhanced = enhancer.enhance(6)
-                if self.save_debug_images == "true":
-                    enhanced.save(debug_dirname + "/lat_lon_image_enhanced.png")
-
-                inverted = ImageOps.invert(enhanced)
-                if self.save_debug_images == "true":
-                    inverted.save(debug_dirname + "/lat_lon_image_inverted.png")
-
-                captured_map_coords = pytesseract.image_to_string(inverted)
-#                                        Whitelist / Blacklist test
-#                                        config='''-c tessedit_char_whitelist=0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-ftm°,.\\'\\" -c preserve_interword_spaces=1''')
-#                                        config='-c tessedit_char_blacklist=abcdeghijklnopqrsuvwxyz()£')
-
-                self.logger.debug("Raw captured text: " + captured_map_coords.rstrip())
-                return captured_map_coords
-
-        self.logger.debug("Raise exception (could not find the map anywhere i guess)")
-        self.window.Element('capture_status').Update(
-            "Status: F10 map not found")
-        raise ValueError("F10 map not found")
-
     def export_to_string(self):
         dump = str(self.profile)
         encoded = json_zip(dump)
@@ -607,80 +534,12 @@ class GUI:
     def load_new_profile(self):
         self.profile = Profile('')
 
-    def parse_map_coords_string(self, coords_string, tomcat_mode=False):
-        coords_string = coords_string.upper().replace(")", "J").replace("]", "J").replace("}", "J").replace("£", "E")
-        # "X-00199287 Z+00523070, 0 ft"   Not sure how to convert this yet
-
-        # "37 T FJ 36255 11628, 5300 ft"  MGRS
-        res = re.search("(\d+\s?[a-zA-Z\)]\s?[a-zA-Z\)][a-zA-Z\)] \d+ \d+), (-?\d+) (FT|M)$", coords_string)
-        if res is not None:
-            mgrs_string = res.group(1).replace(" ", "")
-            self.logger.debug("MGRS input found: " + mgrs_string)
-            decoded_mgrs = mgrs.UTMtoLL(mgrs.decode(mgrs_string))
-            position = LatLon(Latitude(degree=decoded_mgrs["lat"]), Longitude(
-                degree=decoded_mgrs["lon"]))
-            elevation = max(0, float(res.group(2)))
-
-            if res.group(3) == "M":
-                elevation = elevation * 3.281
-
-            return position, elevation
-
-        # "N43°10.244 E40°40.204, 477 ft"  Degrees and decimal minutes
-        res = re.search("([NS])(\d+)[°'](\d+\.\d+) ([EW])(\d+)[°'](\d+\.\d+), (-?\d+) (FT|M)$", coords_string)
-        if res is not None:
-            lat_str = res.group(2) + " " + res.group(3) + " " + res.group(1)
-            lon_str = res.group(5) + " " + res.group(6) + " " + res.group(4)
-            self.logger.debug("DD MM.MMM input found: " + lat_str + " " + lon_str)
-            position = string2latlon(lat_str, lon_str, "d% %M% %H")
-            elevation = max(0, float(res.group(7)))
-
-            if res.group(8) == "M":
-                elevation = elevation * 3.281
-
-            return position, elevation
-
-        # "N42-43-17.55 E40-38-21.69, 0 ft" Degrees, minutes and decimal seconds
-        res = re.search("([NS])(\d+)-(\d+)-(\d+\.\d+) ([EW])(\d+)-(\d+)-(\d+\.\d+), (-?\d+) (FT|M)$", coords_string)
-        if res is not None:
-            lat_str = res.group(2) + " " + res.group(3) + " " + res.group(4) + " " + res.group(1)
-            lon_str = res.group(6) + " " + res.group(7) + " " + res.group(8) + " " + res.group(5)
-            self.logger.debug("DD MM SS.SS input found: " + lat_str + " " + lon_str)
-            position = string2latlon(lat_str, lon_str, "d% %m% %S% %H")
-            elevation = max(0, float(res.group(9)))
-
-            if res.group(10) == "M":
-                elevation = elevation * 3.281
-
-            return position, elevation
-
-        # "43°34'37"N 29°11'18"E, 0 ft" Degrees minutes and seconds
-        res = re.search("(\d+)[°'](\d+)[°'](\d+)[\"\*°]([NS]) (\d+)[°'](\d+)[°'](\d+)[\"\*°]([EW]), (-?\d+) (FT|M)$", coords_string)
-        if res is not None:
-            lat_str = res.group(1) + " " + res.group(2) + " " + res.group(3) + " " + res.group(4)
-            lon_str = res.group(5) + " " + res.group(6) + " " + res.group(7) + " " + res.group(8)
-            position = string2latlon(lat_str, lon_str, "d% %m% %S% %H")
-            self.logger.debug("DD MM SS input found: " + lat_str + " " + lon_str)
-            elevation = max(0, float(res.group(9)))
-
-            if res.group(10) == "M":
-                elevation = elevation * 3.281
-
-            return position, elevation
-
-        # Could not find any matching text
-        self.logger.debug("Text found " + coords_string.rstrip() + " but did not match any known pattern.")
-        self.window.Element('capture_status').Update(
-            "Status: No matching pattern")
-        raise ValueError("No matching pattern")
-        return None, None
-
     def add_parsed_coords(self):
         position = None
         name = self.window.Element("msnName").Get()
         try:
-            captured_coords = self.capture_map_coords()
-            position, elevation = self.parse_map_coords_string(captured_coords)
+            captured_coords = capture_map_coords(self)
+            position, elevation = parse_map_coords_string(self, captured_coords)
             self.logger.debug("Parsed text as coords succesfully: " + str(position))
             winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
         except (IndexError, ValueError, TypeError):
