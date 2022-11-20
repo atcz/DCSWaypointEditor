@@ -1,0 +1,128 @@
+{
+	"INS_NEXT_WP_BTN": {
+		"device": "9",
+		"code": "3110",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_PREV_WP_BTN": {
+		"device": "9",
+		"code": "3111",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_PREP_SW": {
+		"device": "9",
+		"code": "3570",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_DEST_SW": {
+		"device": "9",
+		"code": "3572",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_PARAM_SEL 3": {
+		"device": "9",
+		"code": "3574",
+		"delay": "10",
+		"activate": "0.3",
+		"addDepress": "true"
+	},
+	"INS_PARAM_SEL 4": {
+		"device": "9",
+		"code": "3574",
+		"delay": "10",
+		"activate": "0.4",
+		"addDepress": "true"
+	},
+	"INS_BTN_1": {
+		"device": "9",
+		"code": "3584",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_BTN_2": {
+		"device": "9",
+		"code": "3585",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_BTN_3": {
+		"device": "9",
+		"code": "3586",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_BTN_4": {
+		"device": "9",
+		"code": "3587",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_BTN_5": {
+		"device": "9",
+		"code": "3588",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_BTN_6": {
+		"device": "9",
+		"code": "3589",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_BTN_7": {
+		"device": "9",
+		"code": "3590",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_BTN_8": {
+		"device": "9",
+		"code": "3591",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_BTN_9": {
+		"device": "9",
+		"code": "3592",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_BTN_0": {
+		"device": "9",
+		"code": "3593",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_CLR_BTN": {
+		"device": "9",
+		"code": "3594",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"INS_ENTER_BTN": {
+		"device": "9",
+		"code": "3596",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	}
+}

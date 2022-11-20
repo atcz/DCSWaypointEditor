@@ -1,0 +1,779 @@
+{
+	"PLT_MPD_L_T1": {
+		"device": "42",
+		"code": "3001",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_T2": {
+		"device": "42",
+		"code": "3002",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_T3": {
+		"device": "42",
+		"code": "3003",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_T4": {
+		"device": "42",
+		"code": "3004",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_T5": {
+		"device": "42",
+		"code": "3005",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_T6": {
+		"device": "42",
+		"code": "3006",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_R1": {
+		"device": "42",
+		"code": "3007",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_R2": {
+		"device": "42",
+		"code": "3008",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_R3": {
+		"device": "42",
+		"code": "3009",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_R4": {
+		"device": "42",
+		"code": "3010",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_R5": {
+		"device": "42",
+		"code": "3011",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_R6": {
+		"device": "42",
+		"code": "3012",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_B1": {
+		"device": "42",
+		"code": "3018",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_B2": {
+		"device": "42",
+		"code": "3017",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_B3": {
+		"device": "42",
+		"code": "3016",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_B4": {
+		"device": "42",
+		"code": "3015",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_B5": {
+		"device": "42",
+		"code": "3014",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_B6": {
+		"device": "42",
+		"code": "3013",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_L1": {
+		"device": "42",
+		"code": "3024",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_L2": {
+		"device": "42",
+		"code": "3023",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_L3": {
+		"device": "42",
+		"code": "3022",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_L4": {
+		"device": "42",
+		"code": "3021",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_L5": {
+		"device": "42",
+		"code": "3020",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_L6": {
+		"device": "42",
+		"code": "3019",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_AST": {
+		"device": "42",
+		"code": "3025",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_VID": {
+		"device": "42",
+		"code": "3026",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_COM": {
+		"device": "42",
+		"code": "3027",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_AC": {
+		"device": "42",
+		"code": "3028",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_TSD": {
+		"device": "42",
+		"code": "3029",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_WPN": {
+		"device": "42",
+		"code": "3030",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_L_FCR": {
+		"device": "42",
+		"code": "3031",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_T1": {
+		"device": "43",
+		"code": "3001",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_T2": {
+		"device": "43",
+		"code": "3002",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_T3": {
+		"device": "43",
+		"code": "3003",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_T4": {
+		"device": "43",
+		"code": "3004",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_T5": {
+		"device": "43",
+		"code": "3005",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_T6": {
+		"device": "43",
+		"code": "3006",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_R1": {
+		"device": "43",
+		"code": "3007",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_R2": {
+		"device": "43",
+		"code": "3008",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_R3": {
+		"device": "43",
+		"code": "3009",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_R4": {
+		"device": "43",
+		"code": "3010",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_R5": {
+		"device": "43",
+		"code": "3011",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_R6": {
+		"device": "43",
+		"code": "3012",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_B1": {
+		"device": "43",
+		"code": "3018",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_B2": {
+		"device": "43",
+		"code": "3017",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_B3": {
+		"device": "43",
+		"code": "3016",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_B4": {
+		"device": "43",
+		"code": "3015",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_B5": {
+		"device": "43",
+		"code": "3014",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_B6": {
+		"device": "43",
+		"code": "3013",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_L1": {
+		"device": "43",
+		"code": "3024",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_L2": {
+		"device": "43",
+		"code": "3023",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_L3": {
+		"device": "43",
+		"code": "3022",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_L4": {
+		"device": "43",
+		"code": "3021",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_L5": {
+		"device": "43",
+		"code": "3020",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_L6": {
+		"device": "43",
+		"code": "3019",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_AST": {
+		"device": "43",
+		"code": "3025",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_VID": {
+		"device": "43",
+		"code": "3026",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_COM": {
+		"device": "43",
+		"code": "3027",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_AC": {
+		"device": "43",
+		"code": "3028",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_TSD": {
+		"device": "43",
+		"code": "3029",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_WPN": {
+		"device": "43",
+		"code": "3030",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_MPD_R_FCR": {
+		"device": "43",
+		"code": "3031",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_A": {
+		"device": "29",
+		"code": "3007",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_B": {
+		"device": "29",
+		"code": "3008",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_C": {
+		"device": "29",
+		"code": "3009",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_D": {
+		"device": "29",
+		"code": "3010",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_E": {
+		"device": "29",
+		"code": "3011",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_F": {
+		"device": "29",
+		"code": "3012",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_G": {
+		"device": "29",
+		"code": "3013",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_H": {
+		"device": "29",
+		"code": "3014",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_I": {
+		"device": "29",
+		"code": "3015",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_J": {
+		"device": "29",
+		"code": "3016",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_K": {
+		"device": "29",
+		"code": "3017",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_L": {
+		"device": "29",
+		"code": "3018",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_M": {
+		"device": "29",
+		"code": "3019",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_N": {
+		"device": "29",
+		"code": "3020",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_O": {
+		"device": "29",
+		"code": "3021",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_P": {
+		"device": "29",
+		"code": "3022",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_Q": {
+		"device": "29",
+		"code": "3023",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_R": {
+		"device": "29",
+		"code": "3024",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_S": {
+		"device": "29",
+		"code": "3025",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_T": {
+		"device": "29",
+		"code": "3026",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_U": {
+		"device": "29",
+		"code": "3027",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_V": {
+		"device": "29",
+		"code": "3028",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_W": {
+		"device": "29",
+		"code": "3029",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_X": {
+		"device": "29",
+		"code": "3030",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_Y": {
+		"device": "29",
+		"code": "3031",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_Z": {
+		"device": "29",
+		"code": "3032",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_SLASH": {
+		"device": "29",
+		"code": "3045",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_0": {
+		"device": "29",
+		"code": "3043",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_1": {
+		"device": "29",
+		"code": "3033",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_2": {
+		"device": "29",
+		"code": "3034",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_3": {
+		"device": "29",
+		"code": "3035",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_4": {
+		"device": "29",
+		"code": "3036",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_5": {
+		"device": "29",
+		"code": "3037",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_6": {
+		"device": "29",
+		"code": "3038",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_7": {
+		"device": "29",
+		"code": "3039",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_8": {
+		"device": "29",
+		"code": "3040",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_9": {
+		"device": "29",
+		"code": "3041",
+		"delay": "1",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_DOT": {
+		"device": "29",
+		"code": "3042",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_SIGN": {
+		"device": "29",
+		"code": "3044",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_BKS": {
+		"device": "29",
+		"code": "3002",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_SPC": {
+		"device": "29",
+		"code": "3003",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_MULTI": {
+		"device": "29",
+		"code": "3049",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_DIV": {
+		"device": "29",
+		"code": "3048",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_PLUS": {
+		"device": "29",
+		"code": "3046",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_MINUS": {
+		"device": "29",
+		"code": "3047",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_CLR": {
+		"device": "29",
+		"code": "3001",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_LEFT": {
+		"device": "29",
+		"code": "3004",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_RIGHT": {
+		"device": "29",
+		"code": "3005",
+		"delay": "3",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"PLT_KU_ENT": {
+		"device": "29",
+		"code": "3006",
+		"delay": "10",
+		"activate": "1",
+		"addDepress": "true"
+	}
+}
