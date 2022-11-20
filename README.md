@@ -23,9 +23,12 @@ Currently supported aircraft:
 
 ## How It Works
 
-DCS Waypoint Editor uses a screen capture to search for the map coordinates in the top left corner of the F10 map using Tesseract
-OCR. Any screen overlay or screen scaling that obscures or modifies the captured image will result in a "No matching pattern"
-error. Capturing using `DCSTheWay` (`Capture F10/F11 View`) will capture coordinates directly from DCS without using OCR. 
+DCS Waypoint Editor uses a screen capture to search for the map coordinates in the top left corner of the F10 map using 
+Tesseract OCR. When a unit is selected from the F10 map, the coordinates are captured from the unit information box in the 
+bottom left corner.  Any screen overlay or screen scaling that obscures or modifies the captured image will result in a 
+"F10 map not found" error. A "No matching pattern" error means the OCR captured text was not successfully converted into 
+coordinates. Capturing using `DCSTheWay` (`Capture F10/F11 View`) will capture coordinates directly from DCS without using 
+OCR. 
 
 ## Usage
 
@@ -51,8 +54,8 @@ View capture.
 
 #### F10 map captured coordinates entry
 
-1. Make sure your F10 map is in [DD MM SS.ss](https://i.imgur.com/9GIU7pJ.png) or [MGRS](https://i.imgur.com/T7lBvlx.png) coordinate format.
- You may cycle coordinate formats with `LAlt+Y`.
+1. Make sure your F10 map is in [DD MM SS.ss](https://i.imgur.com/9GIU7pJ.png) or [MGRS](https://i.imgur.com/T7lBvlx.png) 
+coordinate format. You may cycle coordinate formats with `LAlt+Y`.
 
 2. Click `Capture Coordinates` or `Capture To Profile`
 
@@ -67,14 +70,14 @@ in the capture status textbox.
 
 #### F10 map quick capture
 
-`Capture To Profile` and `Capture F10/F11 View` work in a similar way to regular coordinates capturing, except it will automatically
-add a waypoint  at the desired position every time the map capture keybind is pressed.  `Capture To Profile` and `Capture F10/F11 View`
-can be toggled on/off with a hotkey (default is `LCtrl+LShift+T` and `LCtrl+LShift+U`).
+`Capture To Profile` and `Capture F10/F11 View` work in a similar way to regular coordinates capturing, except it will 
+automatically add a waypoint at the desired position every time the map capture keybind is pressed. `Capture To Profile` 
+and `Capture F10/F11 View` can be toggled on/off with a hotkey (default is `LCtrl+LShift+T` and `LCtrl+LShift+U`).
 
 #### Preset coordinates
 
-You may select a position from a list of preset coordinates. Coordinates for all Caucasus, Persian Gulf, Marianas, Nevada and Syria airfields
-and BlueFlag FARPS are included.
+You may select a position from a list of preset coordinates. Coordinates for all Caucasus, Persian Gulf, Marianas, Nevada 
+and Syria airfields and BlueFlag FARPS are included.
 
 #### Hornet JDAM/SLAM preplanned missions
 
@@ -84,13 +87,13 @@ will be entered in order 8-2-7-3. Missions for different weapons (JSA, J-84, J-1
 
 #### Entering a list of waypoints into your aircraft
 
-An optional hotkey can be assigned to enter coordinates into the aircraft.  This is done during initial setup
-of the application.
+An optional hotkey can be assigned to enter coordinates into the aircraft.  This is done during initial setup of the 
+application.
 
 ##### F/A-18C
 
-1. Make sure the main HSI page is on the AMPCD (bottom screen) if you are entering waypoints. HSI Precise mode is selected automatically
-and must not be turned on in advance.
+1. Make sure the main HSI page is on the AMPCD (bottom screen) if you are entering waypoints. HSI Precise mode is selected 
+automatically and must not be turned on in advance.
  
 2. If you are entering JDAM/SLAM preplanned missions, make sure to select the MSN preplanned missions page on the left DDI.
 
@@ -116,7 +119,7 @@ and must not be turned on in advance.
 
 #### Profile saving
 
-You may save your current list of waypoints as a profile and then load it later. Selecting "Save Profile" with a profile active
+You may save your current list of waypoints as a profile and then load it later. Selecting "Save Profile" with a profile active 
 will overwrite it with the current list.
 
 #### Export to file
@@ -133,8 +136,8 @@ Profiles may be imported from a file that was previously exported by selecting `
 
 #### Creating your own preset locations
 
-You may add more preset locations by adding more JSON formatted files in the data folder,
-following the format in `pg.json` and `cauc.json`.
+You may add more preset locations by adding more JSON formatted files in the data folder, following the format in `pg.json` 
+and `cauc.json`.
 
 #### Exporting to encoded string
 
