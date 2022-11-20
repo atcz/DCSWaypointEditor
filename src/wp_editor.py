@@ -4,6 +4,7 @@ from src.db import DatabaseInterface
 from src.logger import get_logger
 from src.drivers import HornetDriver, HarrierDriver, MirageDriver, TomcatDriver, DriverException,\
                         WarthogDriver, ViperDriver, ApachePilotDriver, ApacheGunnerDriver, BlackSharkDriver
+import json
 
 
 class WaypointEditor:
@@ -24,14 +25,25 @@ class WaypointEditor:
                             apacheg=ApacheGunnerDriver(self.logger, settings),
                             blackshark=BlackSharkDriver(self.logger, settings))
         self.driver = self.drivers["hornet"]
+        self.driverCmd = dict()
 
     def set_driver(self, driver_name):
         try:
             self.driver = self.drivers[driver_name]
+            with open(".\\cmd\\" + driver_name + ".json", "r") as f:
+                try:
+                    self.driverCmd = json.load(f)
+                    self.logger.info(f"Commands loaded for {driver_name}: {driver_name}.json")
+                except AttributeError:
+                    self.logger.warning(f"Failed to read aircraft cmd: {driver_name}", exc_info=True)
         except KeyError:
             raise DriverException(f"Undefined driver: {driver_name}")
+        except FileNotFoundError:
+            self.logger.warning(f"No command file found for {driver_name} - use DCS-BIOS")
 
-    def enter_all(self, profile):
+    def enter_all(self, profile, method):
+        self.driver.method = method
+        self.driver.cmdlist = self.driverCmd
         self.logger.info(f"Entering waypoints for aircraft: {profile.aircraft}")
         sleep(int(self.settings['PREFERENCES'].get('Grace_Period', 5)))
         self.driver.enter_all(profile)
