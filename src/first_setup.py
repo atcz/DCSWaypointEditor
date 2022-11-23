@@ -122,7 +122,7 @@ def first_time_setup_gui(settings):
 
     return PyGUI.Window("DCS Waypoint Editor Settings", [[PyGUI.Frame("Settings", layout)],
                                              [PyGUI.Button("Accept", key="accept_button", pad=((270, 1), 1),
-                                                           disabled=dcs_bios_detected != "Detected")]])
+                                                           disabled=dcs_bios_detected != "Detected")]], modal=True)
 
 
 def first_time_setup(settings):
