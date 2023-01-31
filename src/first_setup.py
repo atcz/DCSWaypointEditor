@@ -8,7 +8,7 @@ import tempfile
 import requests
 import zipfile
 
-DCS_BIOS_VERSION = '0.7.45'
+DCS_BIOS_VERSION = '0.7.47'
 DCS_BIOS_URL = "https://github.com/DCSFlightpanels/dcs-bios/releases/download/v{}/DCS-BIOS_{}.zip"
 aircraft = ["warthog", "apacheg", "apachep", "harrier", "hornet", "tomcat", "viper", "blackshark", "mirage"]
 aircraft_name = ["A-10C", "AH-64D CPG", "AH-64D Pilot", "AV-8B", "F/A-18C", "F-14A/B", "F-16C", "Ka-50", "M-2000C"]
@@ -109,6 +109,10 @@ def first_time_setup_gui(settings):
          PyGUI.Combo(values=PyGUI.theme_list(), readonly=True, default_value=settings.get(section, 'pysimplegui_theme'),
             enable_events=True, key='pysimplegui_theme', size=(30, 1))],
 
+        [PyGUI.Text("Send To Aircraft Via:", (20,1), justification="right"),
+         PyGUI.Combo(values=["DCS-BIOS", "TheWay.lua"], readonly=True, default_value=settings.get(section, 'enter_method'),
+            enable_events=True, key='enter_method', size=(30, 1))],
+
         [PyGUI.Text("DCS-BIOS:", (20,1), justification="right"), PyGUI.Text(dcs_bios_detected, key="dcs_bios"),
          PyGUI.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected"),
          PyGUI.Button("Update to v" + DCS_BIOS_VERSION, key="update_button", disabled=dcs_bios_detected == "Not Detected")],
@@ -118,7 +122,7 @@ def first_time_setup_gui(settings):
 
     return PyGUI.Window("DCS Waypoint Editor Settings", [[PyGUI.Frame("Settings", layout)],
                                              [PyGUI.Button("Accept", key="accept_button", pad=((270, 1), 1),
-                                                           disabled=dcs_bios_detected != "Detected")]])
+                                                           disabled=dcs_bios_detected != "Detected")]], modal=True)
 
 
 def first_time_setup(settings):
@@ -142,6 +146,7 @@ def first_time_setup(settings):
         settings.set(section, "log_raw_tesseract_output", "false")
         settings.set(section, "pysimplegui_theme", PyGUI.theme())
         settings.set(section, "default_aircraft", "hornet")
+        settings.set(section, "enter_method", "DCS-BIOS")
 
     setup_logger = get_logger("setup")
     setup_logger.info("Running first time setup...")
@@ -213,6 +218,7 @@ def first_time_setup(settings):
     settings.set(section, "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
     settings.set(section, "pysimplegui_theme", values.get("pysimplegui_theme") or PyGUI.theme())
     settings.set(section, "default_aircraft", aircraft[aircraft_name.index(values.get("default_aircraft"))] or "hornet")
+    settings.set(section, "enter_method", values.get("enter_method") or "DCS-BIOS")
 
     with open("settings.ini", "w+") as f:
         settings.write(f)
