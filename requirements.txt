@@ -1,13 +1,13 @@
-auto_mix_prep==0.2.0
 Desktopmagic==14.3.11
 keyboard==0.13.5
 LatLon23==1.0.7
 numpy==1.22.2
 opencv_python==4.5.5.62
 peewee==3.14.9
-Pillow==9.2.0
+Pillow==9.4.0
 pyperclip==1.8.2
-PySimpleGUI==4.60.1
+pyproj==3.3.0
+PySimpleGUI==4.60.4
 pytesseract==0.3.9
 requests==2.27.1
 SLPP==1.2.3
