@@ -565,12 +565,13 @@ class WarthogDriver(Driver):
             self.cdu("CLR")
 
     def enter_waypoint_name(self, wp):
-        result = re.sub(r'[^A-Za-z0-9]', '', wp.name)
+        result = re.sub(r'[^A-Za-z0-9 ]', '', wp.name)
         if result == "":
             result = f"WP{wp.number}"
         self.logger.debug("Waypoint name: " + result)
         self.clear_input()
         for character in result[0:12].upper():
+            character = character.replace(" ", "SPC")
             self.cdu(character, delay_after=self.short_delay)
 
         self.cdu("LSK_3R")
