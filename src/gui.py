@@ -576,6 +576,7 @@ class GUI:
         except Exception as e:
             s.close()
             self.logger.error("Failed to connect socket: %s" % e)
+            self.window.Element('capture_status').Update("Status: Failed to connect")
             winsound.PlaySound(UX_SND_ERROR, flags=winsound.SND_FILENAME)
         finally:
             if data:
