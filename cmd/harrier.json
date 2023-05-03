@@ -2,273 +2,273 @@
 	"UFC_B1": {
 		"device": "23",
 		"code": "3302",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_B2": {
 		"device": "23",
 		"code": "3303",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_B3": {
 		"device": "23",
 		"code": "3304",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_B4": {
 		"device": "23",
 		"code": "3306",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_B5": {
 		"device": "23",
 		"code": "3307",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_B6": {
 		"device": "23",
 		"code": "3308",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"UFC_B7": {
 		"device": "23",
 		"code": "3310",
-		"delay": "10",
+		"delay": "100",
 		"activate": "2",
 		"addDepress": "true"
 	},
 	"UFC_B8": {
 		"device": "23",
 		"code": "3311",
-		"delay": "10",
+		"delay": "100",
 		"activate": "3",
 		"addDepress": "true"
 	},
 	"UFC_B9": {
 		"device": "23",
 		"code": "3312",
-		"delay": "10",
+		"delay": "100",
 		"activate": "4",
 		"addDepress": "true"
 	},
 	"UFC_B0": {
 		"device": "23",
 		"code": "3315",
-		"delay": "10",
+		"delay": "100",
 		"activate": "5",
 		"addDepress": "true"
 	},
 	"UFC_DOT": {
 		"device": "23",
 		"code": "3316",
-		"delay": "10",
+		"delay": "100",
 		"activate": "6",
 		"addDepress": "true"
 	},
 	"UFC_DASH": {
 		"device": "23",
 		"code": "3313",
-		"delay": "10",
+		"delay": "100",
 		"activate": "7",
 		"addDepress": "true"
 	},
 	"UFC_ENTER": {
 		"device": "23",
 		"code": "3314",
-		"delay": "30",
+		"delay": "100",
 		"activate": "8",
 		"addDepress": "true"
 	},
 	"UFC_CLEAR": {
 		"device": "23",
 		"code": "3305",
-		"delay": "10",
+		"delay": "100",
 		"activate": "9",
 		"addDepress": "true"
 	},
 	"ODU_OPT1": {
 		"device": "24",
 		"code": "3250",
-		"delay": "10",
+		"delay": "100",
 		"activate": "10",
 		"addDepress": "true"
 	},
 	"ODU_OPT2": {
 		"device": "24",
 		"code": "3251",
-		"delay": "10",
+		"delay": "100",
 		"activate": "11",
 		"addDepress": "true"
 	},
 	"ODU_OPT3": {
 		"device": "24",
 		"code": "3252",
-		"delay": "10",
+		"delay": "100",
 		"activate": "12",
 		"addDepress": "true"
 	},
 	"ODU_OPT4": {
 		"device": "24",
 		"code": "3248",
-		"delay": "10",
+		"delay": "100",
 		"activate": "13",
 		"addDepress": "true"
 	},
 	"ODU_OPT5": {
 		"device": "24",
 		"code": "3249",
-		"delay": "10",
+		"delay": "100",
 		"activate": "14",
 		"addDepress": "true"
 	},
 	"MPCD_L_1": {
 		"device": "26",
 		"code": "3200",
-		"delay": "10",
+		"delay": "100",
 		"activate": "15",
 		"addDepress": "true"
 	},
 	"MPCD_L_2": {
 		"device": "26",
 		"code": "3201",
-		"delay": "10",
+		"delay": "100",
 		"activate": "16",
 		"addDepress": "true"
 	},
 	"MPCD_L_3": {
 		"device": "26",
 		"code": "3202",
-		"delay": "10",
+		"delay": "100",
 		"activate": "17",
 		"addDepress": "true"
 	},
 	"MPCD_L_4": {
 		"device": "26",
 		"code": "3203",
-		"delay": "10",
+		"delay": "100",
 		"activate": "18",
 		"addDepress": "true"
 	},
 	"MPCD_L_5": {
 		"device": "26",
 		"code": "3204",
-		"delay": "10",
+		"delay": "100",
 		"activate": "19",
 		"addDepress": "true"
 	},
 	"MPCD_L_6": {
 		"device": "26",
 		"code": "3205",
-		"delay": "10",
+		"delay": "100",
 		"activate": "20",
 		"addDepress": "true"
 	},
 	"MPCD_L_7": {
 		"device": "26",
 		"code": "3206",
-		"delay": "10",
+		"delay": "100",
 		"activate": "21",
 		"addDepress": "true"
 	},
 	"MPCD_L_8": {
 		"device": "26",
 		"code": "3207",
-		"delay": "10",
+		"delay": "100",
 		"activate": "22",
 		"addDepress": "true"
 	},
 	"MPCD_L_9": {
 		"device": "26",
 		"code": "3208",
-		"delay": "10",
+		"delay": "100",
 		"activate": "23",
 		"addDepress": "true"
 	},
 	"MPCD_L_10": {
 		"device": "26",
 		"code": "3209",
-		"delay": "10",
+		"delay": "100",
 		"activate": "24",
 		"addDepress": "true"
 	},
 	"MPCD_L_11": {
 		"device": "26",
 		"code": "3210",
-		"delay": "10",
+		"delay": "100",
 		"activate": "25",
 		"addDepress": "true"
 	},
 	"MPCD_L_12": {
 		"device": "26",
 		"code": "3211",
-		"delay": "10",
+		"delay": "100",
 		"activate": "26",
 		"addDepress": "true"
 	},
 	"MPCD_L_13": {
 		"device": "26",
 		"code": "3212",
-		"delay": "10",
+		"delay": "100",
 		"activate": "27",
 		"addDepress": "true"
 	},
 	"MPCD_L_14": {
 		"device": "26",
 		"code": "3213",
-		"delay": "10",
+		"delay": "100",
 		"activate": "28",
 		"addDepress": "true"
 	},
 	"MPCD_L_15": {
 		"device": "26",
 		"code": "3214",
-		"delay": "10",
+		"delay": "100",
 		"activate": "29",
 		"addDepress": "true"
 	},
 	"MPCD_L_16": {
 		"device": "26",
 		"code": "3215",
-		"delay": "10",
+		"delay": "100",
 		"activate": "30",
 		"addDepress": "true"
 	},
 	"MPCD_L_17": {
 		"device": "26",
 		"code": "3216",
-		"delay": "10",
+		"delay": "100",
 		"activate": "31",
 		"addDepress": "true"
 	},
 	"MPCD_L_18": {
 		"device": "26",
 		"code": "3217",
-		"delay": "10",
+		"delay": "100",
 		"activate": "32",
 		"addDepress": "true"
 	},
 	"MPCD_L_19": {
 		"device": "26",
 		"code": "3218",
-		"delay": "10",
+		"delay": "100",
 		"activate": "33",
 		"addDepress": "true"
 	},
 	"MPCD_L_20": {
 		"device": "26",
 		"code": "3219",
-		"delay": "10",
+		"delay": "100",
 		"activate": "34",
 		"addDepress": "true"
 	}

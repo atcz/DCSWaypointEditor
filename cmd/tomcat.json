@@ -2,189 +2,189 @@
 	"RIO_CAP_BTN_1": {
 		"device": "24",
 		"code": "3518",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_2": {
 		"device": "24",
 		"code": "3519",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_3": {
 		"device": "24",
 		"code": "3520",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_4": {
 		"device": "24",
 		"code": "3521",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_5": {
 		"device": "24",
 		"code": "3522",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_6": {
 		"device": "24",
 		"code": "3523",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_7": {
 		"device": "24",
 		"code": "3524",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_8": {
 		"device": "24",
 		"code": "3525",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_9": {
 		"device": "24",
 		"code": "3526",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_10": {
 		"device": "24",
 		"code": "3527",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_TNG": {
 		"device": "24",
 		"code": "3528",
-		"delay": "20",
+		"delay": "200",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BTN_PGM_RESTRT": {
 		"device": "24",
 		"code": "3529",
-		"delay": "20",
+		"delay": "200",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_CATRGORY 3": {
 		"device": "24",
 		"code": "3530",
-		"delay": "20",
+		"delay": "200",
 		"activate": "3",
 		"addDepress": "false"
 	},
 	"RIO_CAP_CLEAR": {
 		"device": "24",
 		"code": "3531",
-		"delay": "10",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_SW": {
 		"device": "24",
 		"code": "3532",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_NE": {
 		"device": "24",
 		"code": "3533",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_ENTER": {
 		"device": "24",
 		"code": "3534",
-		"delay": "20",
+		"delay": "200",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_BRG_0": {
 		"device": "24",
 		"code": "3535",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_LAT_1": {
 		"device": "24",
 		"code": "3536",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_NBR_2": {
 		"device": "24",
 		"code": "3537",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_SPD_3": {
 		"device": "24",
 		"code": "3538",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_ALT_4": {
 		"device": "24",
 		"code": "3539",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_RNG_5": {
 		"device": "24",
 		"code": "3540",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_LONG_6": {
 		"device": "24",
 		"code": "3541",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_7": {
 		"device": "24",
 		"code": "3542",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_HDG_8": {
 		"device": "24",
 		"code": "3543",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	},
 	"RIO_CAP_9": {
 		"device": "24",
 		"code": "3544",
-		"delay": "1",
+		"delay": "100",
 		"activate": "1",
 		"addDepress": "true"
 	}
