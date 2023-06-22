@@ -205,16 +205,12 @@ class HornetDriver(Driver):
                 self.enter_number(elev)
         else:
             self.ufc("OS1")
-            self.ufc("OS1")
-            self.ufc("OS1")
             if latlong.lat.degree > 0:
                 self.ufc("2", delay_release=self.medium_delay)
             else:
                 self.ufc("8", delay_release=self.medium_delay)
             self.enter_number(lat_str, two_enters=True)
 
-            self.ufc("OS3")
-            self.ufc("OS3")
             self.ufc("OS3")
             if latlong.lon.degree > 0:
                 self.ufc("6", delay_release=self.medium_delay)
@@ -263,7 +259,6 @@ class HornetDriver(Driver):
 
         self.ufc("CLR")
         self.ufc("CLR")
-        self.ufc("CLR")
         self.ampcd("19")
         self.ampcd("10")
 
@@ -292,7 +287,6 @@ class HornetDriver(Driver):
                 if n > 1:
                     self.lmdi(f"{n + 5}")
                 self.lmdi("14")
-                self.ufc("OS3")
                 self.ufc("OS3")
                 self.enter_coords(msn.position, msn.elevation, pp=True)
                 self.ufc("CLR")
