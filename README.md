@@ -13,6 +13,7 @@ Currently supported aircraft:
 * AH-64D Pilot
 * AH-64D CPG
 * Ka-50
+* F-15E
 
 ## Installation
 
@@ -156,7 +157,8 @@ a new profile and a pop-up should appear letting you know import was successful.
 * Attempting to enter sequence #2 or #3 without sequence #1 will not work.
 
 ## About DCS-BIOS
-DCS-BIOS is redistributed under GPLv3 license.
+DCS-BIOS is released under a slightly modified Simple Public License 2.0 (think "a version of the GPL readable by 
+mere mortals"). Please see DCS-BIOS-License.txt.
 
 DCS-BIOS: https://github.com/DCSFlightpanels/dcs-bios
 
