@@ -95,8 +95,8 @@ class GUI:
         self.editor = editor
         self.captured_map_coords = None
         self.profile = Profile('')
-        self.aircraft = ["warthog", "apacheg", "apachep", "harrier", "hornet", "tomcat", "viper", "blackshark", "mirage"]
-        self.aircraft_name = ["A-10C", "AH-64D CPG", "AH-64D Pilot", "AV-8B", "F/A-18C", "F-14A/B", "F-16C", "Ka-50", "M-2000C"]
+        self.aircraft = ["warthog", "apacheg", "apachep", "harrier", "hornet", "tomcat", "strikeeagle", "viper", "blackshark", "mirage"]
+        self.aircraft_name = ["A-10C", "AH-64D CPG", "AH-64D Pilot", "AV-8B", "F/A-18C", "F-14A/B", "F-15E", "F-16C", "Ka-50", "M-2000C"]
         self.wp_types = ["WP", "MSN", "FP", "ST", "IP", "DP", "HA", "HB", "HZ", "CM", "TG"]
         self.quick_capture = False
         self.values = None

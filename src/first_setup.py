@@ -8,10 +8,10 @@ import tempfile
 import requests
 import zipfile
 
-DCS_BIOS_VERSION = '0.7.47'
+DCS_BIOS_VERSION = '0.7.48'
 DCS_BIOS_URL = "https://github.com/DCSFlightpanels/dcs-bios/releases/download/v{}/DCS-BIOS_{}.zip"
-aircraft = ["warthog", "apacheg", "apachep", "harrier", "hornet", "tomcat", "viper", "blackshark", "mirage"]
-aircraft_name = ["A-10C", "AH-64D CPG", "AH-64D Pilot", "AV-8B", "F/A-18C", "F-14A/B", "F-16C", "Ka-50", "M-2000C"]
+aircraft = ["warthog", "apacheg", "apachep", "harrier", "hornet", "tomcat", "strikeeagle", "viper", "blackshark", "mirage"]
+aircraft_name = ["A-10C", "AH-64D CPG", "AH-64D Pilot", "AV-8B", "F/A-18C", "F-14A/B", "F-15E", "F-16C", "Ka-50", "M-2000C"]
 
 logger = get_logger(__name__)
 

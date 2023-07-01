@@ -3,7 +3,8 @@ from src.objects import base_files, default_bases
 from src.db import DatabaseInterface
 from src.logger import get_logger
 from src.drivers import HornetDriver, HarrierDriver, MirageDriver, TomcatDriver, DriverException,\
-                        WarthogDriver, ViperDriver, ApachePilotDriver, ApacheGunnerDriver, BlackSharkDriver
+                        WarthogDriver, ViperDriver, ApachePilotDriver, ApacheGunnerDriver, BlackSharkDriver,\
+                        StrikeEagleDriver
 import json
 
 
@@ -23,7 +24,8 @@ class WaypointEditor:
                             viper=ViperDriver(self.logger, settings),
                             apachep=ApachePilotDriver(self.logger, settings),
                             apacheg=ApacheGunnerDriver(self.logger, settings),
-                            blackshark=BlackSharkDriver(self.logger, settings))
+                            blackshark=BlackSharkDriver(self.logger, settings),
+                            strikeeagle=StrikeEagleDriver(self.logger, settings))
         self.driver = self.drivers["hornet"]
         self.driverCmd = dict()
 

@@ -944,3 +944,83 @@ class BlackSharkDriver(Driver):
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
         if self.method != "DCS-BIOS":
             self.enter_keypress(self.keylist)
+
+class StrikeEagleDriver(Driver):
+    def __init__(self, logger, config):
+        super().__init__(logger, config)
+        self.limits = dict(WP=None)
+
+    def ufc(self, num, delay_after=None, delay_release=None):
+        ufc_key_names = {
+            "1": "F_UFC_KEY_A",
+            "2": "F_UFC_KEY_N",
+            "3": "F_UFC_KEY_B",
+            "4": "F_UFC_KEY_W",
+            "5": "F_UFC_KEY_M",
+            "6": "F_UFC_KEY_E",
+            "7": "F_UFC_KEY__",
+            "8": "F_UFC_KEY_S",
+            "9": "F_UFC_KEY_C",
+            "0": "F_UFC_KEY__",
+        }
+
+        key = f"{ufc_key_names.get(num, 'F_UFC_KEY_')}{num}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
+
+    def ufc_pb(self, num, delay_after=None, delay_release=None):
+        key = f"F_UFC_B{num}"
+        self.press_with_delay(key, delay_after=delay_after,
+                              delay_release=delay_release)
+        
+    def enter_number(self, number):
+        for num in str(number):
+            if num != ".":
+                self.ufc(num)
+
+    def enter_coords(self, latlong, elev=None):
+        lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=3)
+        self.logger.debug(f"{self.method} - Entering coords string: {lat_str}, {lon_str}")
+
+        self.ufc("SHF")
+        if latlong.lat.degree > 0:
+            self.ufc("2")
+        else:
+            self.ufc("8")
+        self.enter_number(lat_str)
+        self.ufc_pb("2")
+        sleep(0.2)
+
+        self.ufc("SHF")
+        if latlong.lon.degree > 0:
+            self.ufc("6")
+        else:
+            self.ufc("4")
+        self.enter_number(lon_str)
+        self.ufc_pb("3")
+
+        if elev:
+            self.enter_number(elev)
+            self.ufc_pb("7")
+
+    def enter_waypoints(self, wps):
+        if not wps:
+            return
+
+        #Select Steerpoints
+        self.ufc("CLR")
+        self.ufc("CLR")
+        self.ufc("DATA")
+        self.ufc_pb("10")
+        for wp in wps:
+            self.logger.info(f"Entering waypoint: {wp}")
+            self.ufc(str(wp.number+1))
+            self.ufc_pb("1")
+            self.enter_coords(wp.position, wp.elevation)
+        self.ufc("MENU")
+
+    def enter_all(self, profile):
+        self.keylist = []
+        self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
+        if self.method != "DCS-BIOS":
+            self.enter_keypress(self.keylist)
