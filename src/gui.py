@@ -304,8 +304,10 @@ class GUI:
                         "&Import", ["Paste as &String from clipboard", "Load from &Encoded file", "---",
                                     "Import NS430 from clipboard", "Import NS430 from file"],
                         "&Export", ["Copy as &String to clipboard", "Copy plain &Text to clipboard",
-                                    "Save as &Encoded file"],
-                    ]]]
+                                    "Save as &Encoded file"]]],
+                   ['&?',
+                    ['&About']]
+                  ]
 
         colmain1 = [
             [PyGUI.MenuBar(menudef)],
@@ -979,6 +981,48 @@ class GUI:
 
             elif event == "profileFilter":
                 self.filter_profile_dropdown()
+
+            elif event == 'About':
+                # Define the layout for the information popup window
+                text = f"DCS Waypoint Editor {self.software_version}"
+                gpltext = "This program is free software; you can redistribute it and/or \n"\
+                          "modify it under the terms of the GNU General Public License as \n"\
+                          "published by the Free Software Foundation; either version 3 of \n"\
+                          "the License, or at your option any later version. \n\n"\
+                          "This program is distributed in the hope that it will be useful, but \n"\
+                          "WITHOUT ANY WARRANTY; without even the implied warranty \n"\
+                          "of MERCHANTABILITY or FITNESS FOR A PARTICULAR \n"\
+                          "PURPOSE. See the GNU General Public License for more details. \n\n"\
+                          "You should have received a copy of the GNU General Public License\n"\
+                          "along with this program. If not, see <https://www.gnu.org/licenses/>."
+                url = 'https://github.com/atcz/DCSWaypointEditor'
+                layout = [
+                    [PyGUI.Column([
+                        [PyGUI.Text(f"{' '*10}{text}", justification='center')],
+                        [PyGUI.Text(url, enable_events=True, text_color='blue', key='-LINK-')]
+                    ], vertical_alignment='center', justification='center')],
+                [PyGUI.Frame("GNU General Public License", [
+                    [PyGUI.Text(gpltext, pad=(40,(10,20)))],
+                    ])
+                ],
+                    [PyGUI.Column([
+                        [PyGUI.Button('OK', size=(10, 1), pad=(10, 20), bind_return_key=True)]
+                    ], vertical_alignment='center', justification='center')]
+                ]
+
+                # Create the window
+                window = PyGUI.Window('Information', layout, finalize=True, modal=True)
+
+                # Event loop
+                while True:
+                    event, _ = window.read()
+                    if event == PyGUI.WINDOW_CLOSED or event == 'OK':
+                        break
+                    elif event == '-LINK-':
+                        webbrowser.open(url)
+                        break
+                # Close the window
+                window.close()
 
         self.close()
 
