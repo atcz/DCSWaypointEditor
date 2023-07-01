@@ -1,0 +1,233 @@
+{
+	"F_UFC_B1": {
+		"device": "56",
+		"code": "3001",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_B2": {
+		"device": "56",
+		"code": "3002",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_B3": {
+		"device": "56",
+		"code": "3003",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_B4": {
+		"device": "56",
+		"code": "3004",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_B5": {
+		"device": "56",
+		"code": "3005",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_B10": {
+		"device": "56",
+		"code": "3010",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_B9": {
+		"device": "56",
+		"code": "3009",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_B8": {
+		"device": "56",
+		"code": "3008",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_B7": {
+		"device": "56",
+		"code": "3007",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_B6": {
+		"device": "56",
+		"code": "3006",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_EMISL_BTN": {
+		"device": "56",
+		"code": "3018",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_L_GUARD": {
+		"device": "56",
+		"code": "3019",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_A1": {
+		"device": "56",
+		"code": "3020",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_N2": {
+		"device": "56",
+		"code": "3021",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_B3": {
+		"device": "56",
+		"code": "3022",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_R_GUARD": {
+		"device": "56",
+		"code": "3023",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_MARK": {
+		"device": "56",
+		"code": "3024",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_W4": {
+		"device": "56",
+		"code": "3025",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_M5": {
+		"device": "56",
+		"code": "3026",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_E6": {
+		"device": "56",
+		"code": "3027",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_IP": {
+		"device": "56",
+		"code": "3028",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_DOT": {
+		"device": "56",
+		"code": "3029",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY__7": {
+		"device": "56",
+		"code": "3030",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_S8": {
+		"device": "56",
+		"code": "3031",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_C9": {
+		"device": "56",
+		"code": "3032",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_SHF": {
+		"device": "56",
+		"code": "3033",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_AP": {
+		"device": "56",
+		"code": "3034",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_CLR": {
+		"device": "56",
+		"code": "3035",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY__0": {
+		"device": "56",
+		"code": "3036",
+		"delay": "100",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_DATA": {
+		"device": "56",
+		"code": "3037",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_KEY_MENU": {
+		"device": "56",
+		"code": "3038",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_PRE_CHAN_L_PULL": {
+		"device": "56",
+		"code": "3055",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	},
+	"F_UFC_PRE_CHAN_R_PULL": {
+		"device": "56",
+		"code": "3056",
+		"delay": "200",
+		"activate": "1",
+		"addDepress": "true"
+	}
+}
