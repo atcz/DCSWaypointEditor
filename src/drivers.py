@@ -1011,12 +1011,24 @@ class StrikeEagleDriver(Driver):
         self.ufc("CLR")
         self.ufc("CLR")
         self.ufc("DATA")
+        #Select B
+        self.ufc("SHF")
+        self.ufc("3")
+        self.ufc_pb("10")
         self.ufc_pb("10")
         for wp in wps:
             self.logger.info(f"Entering waypoint: {wp}")
-            self.ufc(str(wp.number+1))
+            self.ufc(str(wp.number))
+            self.ufc("SHF")
+            self.ufc("1")
             self.ufc_pb("1")
             self.enter_coords(wp.position, wp.elevation)
+        #Select 1A
+        self.ufc("DATA")
+        self.ufc("1")
+        self.ufc("SHF")
+        self.ufc("1")
+        self.ufc_pb("10")
         self.ufc("MENU")
 
     def enter_all(self, profile):
