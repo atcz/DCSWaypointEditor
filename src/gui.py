@@ -139,6 +139,7 @@ class GUI:
 
         self.logger.info(f"Tesseract version is: {self.tesseract_version}")
         self.window = self.create_gui()
+        self.winsize = self.window.Size
         keyboard.add_hotkey(self.quick_capture_hotkey, self.toggle_quick_capture)
         keyboard.add_hotkey(self.camera_capture_hotkey, self.toggle_camera_capture)
         if self.enter_aircraft_hotkey != '':
@@ -147,6 +148,16 @@ class GUI:
     @staticmethod
     def get_profile_names():
         return [profile.name for profile in Profile.list_all()]
+
+    def calculate_popup_position(self, popup_window_size):
+        main_x, main_y = self.window.CurrentLocation()
+        main_width, main_height = self.winsize
+        popup_width, popup_height = popup_window_size
+
+        popup_x = main_x + (main_width - popup_width) // 2
+        popup_y = main_y + (main_height - popup_height) // 2
+
+        return popup_x, popup_y
 
     def create_gui(self):
         self.logger.debug("Creating GUI")
@@ -493,7 +504,9 @@ class GUI:
             self.profile.waypoints.append(wp)
             self.update_waypoints_list()
         except ValueError:
-            PyGUI.Popup("Error: missing data or invalid data format")
+            psize = (273, 101)
+            pposition = self.calculate_popup_position(psize)
+            PyGUI.Popup("Error: missing data or invalid data format.", location=pposition)
 
         return True
 
@@ -501,23 +514,26 @@ class GUI:
         dump = str(self.profile)
         encoded = json_zip(dump)
         pyperclip.copy(encoded)
-        PyGUI.Popup('Encoded string copied to clipboard, paste away!')
+        psize = (313, 101)
+        pposition = self.calculate_popup_position(psize)
+        PyGUI.Popup('Encoded string copied to clipboard, paste away!', location=pposition)
 
     def import_from_string(self):
         # Load the encoded string from the clipboard
         encoded = pyperclip.paste()
+        psize = (313, 101)
+        pposition = self.calculate_popup_position(psize)
         try:
             decoded = json_unzip(encoded)
             self.profile = Profile.from_string(decoded)
-            self.profile.profilename = ""
             self.logger.debug(self.profile.to_dict())
             self.editor.set_driver(self.profile.aircraft)
             self.update_waypoints_list(set_to_first=True)
-            self.window.Element("profileSelector").Update(set_to_index=0)
-            PyGUI.Popup('Loaded waypoint data from encoded string successfully')
+            self.update_profiles_list(self.profile.profilename)
+            PyGUI.Popup('Loaded waypoint data from encoded string successfully.', location=pposition)
         except Exception as e:
             self.logger.error(e, exc_info=True)
-            PyGUI.Popup('Failed to parse profile from string')
+            PyGUI.Popup('Failed to parse profile from string.', location=pposition)
 
     def import_NS430(self, text):
         # Load NS430 dat
@@ -532,7 +548,9 @@ class GUI:
                     self.add_waypoint(position, 0, fields[3])
                 except Exception as e:
                     self.logger.error(e, exc_info=True)
-                    PyGUI.Popup('Data error importing NS430 fixes')
+                    psize = (313, 101)
+                    pposition = self.calculate_popup_position(psize)
+                    PyGUI.Popup('Data error importing NS430 fixes.', location=pposition)
 
     def load_new_profile(self):
         self.profile = Profile('')
@@ -713,10 +731,11 @@ class GUI:
     def write_profile(self):
         profiles = self.get_profile_names()
         overwrite = "OK"
-        name = PyGUI.PopupGetText(
-            "Enter profile name", "Saving profile")
+        psize = (351, 133)
+        pposition = self.calculate_popup_position(psize)
+        name = PyGUI.PopupGetText("Enter profile name:", "Saving profile", location=pposition)
         if name in profiles:
-            overwrite = PyGUI.PopupOKCancel("Profile " + name + " already exists, overwrite?")
+            overwrite = PyGUI.PopupOKCancel("Profile " + name + " already exists, overwrite?", location=pposition)
         if name and overwrite == "OK":
             self.profile.save(name)
             self.update_profiles_list(name)
@@ -786,8 +805,9 @@ class GUI:
                 self.import_NS430(importdata)
 
             elif event == "Import NS430 from file":
-                filename = PyGUI.PopupGetFile(
-                    "Enter file name", "Importing NS430 Data")
+                psize = (431, 133)
+                pposition = self.calculate_popup_position(psize)
+                filename = PyGUI.PopupGetFile("Enter file name:", "Importing NS430 Data", location=pposition)
                 if filename is None:
                     continue
 
@@ -844,8 +864,9 @@ class GUI:
             elif event == "Delete Profile":
                 if not self.profile.profilename:
                     continue
-                confirm_delete = PyGUI.PopupOKCancel(
-                                "Confirm delete " + self.profile.profilename + "?")
+                psize = (264, 133)
+                pposition = self.calculate_popup_position(psize)
+                confirm_delete = PyGUI.PopupOKCancel(f"Confirm delete {self.profile.profilename}?", location=pposition)
                 if confirm_delete == "OK":
                     Profile.delete(self.profile.profilename)
                     profiles = sorted(self.get_profile_names())
@@ -866,11 +887,15 @@ class GUI:
                     self.update_waypoints_list()
 
                 except DoesNotExist:
-                    PyGUI.Popup("Profile not found")
+                    psize = (264, 133)
+                    pposition = self.calculate_popup_position(psize)
+                    PyGUI.Popup("Profile not found.", location=pposition)
 
             elif event == "Save as Encoded file":
-                filename = PyGUI.PopupGetFile("Enter file name", "Exporting profile", default_extension=".json",
-                                              save_as=True, file_types=(("JSON File", "*.json"),))
+                psize = (431, 133)
+                pposition = self.calculate_popup_position(psize)
+                filename = PyGUI.PopupGetFile("Enter file name:", "Exporting profile", default_extension=".json",
+                                              save_as=True, location=pposition, file_types=(("JSON File", "*.json"),))
 
                 if filename is None:
                     continue
@@ -881,11 +906,14 @@ class GUI:
             elif event == "Copy plain Text to clipboard":
                 profile_string = self.profile.to_readable_string()
                 pyperclip.copy(profile_string)
-                PyGUI.Popup("Profile copied as plain text to clipboard")
+                psize = (264, 133)
+                pposition = self.calculate_popup_position(psize)
+                PyGUI.Popup("Profile copied as plain text to clipboard", location=pposition)
 
             elif event == "Load from Encoded file":
-                filename = PyGUI.PopupGetFile(
-                    "Enter file name", "Importing profile")
+                psize = (431, 133)
+                pposition = self.calculate_popup_position(psize)
+                filename = PyGUI.PopupGetFile("Enter file name:", "Importing profile", location=pposition)
 
                 if filename is None:
                     continue
@@ -1011,18 +1039,20 @@ class GUI:
                 ]
 
                 # Create the window
-                window = PyGUI.Window('Information', layout, finalize=True, modal=True)
+                psize = (513, 392)
+                pposition = self.calculate_popup_position(psize)
+                pwindow = PyGUI.Window('Information', layout, location=pposition, finalize=True, modal=True)
 
                 # Event loop
                 while True:
-                    event, _ = window.read()
+                    event, _ = pwindow.read()
                     if event == PyGUI.WINDOW_CLOSED or event == 'OK':
                         break
                     elif event == '-LINK-':
                         webbrowser.open(url)
                         break
                 # Close the window
-                window.close()
+                pwindow.close()
 
         self.close()
 
