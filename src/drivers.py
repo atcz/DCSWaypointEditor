@@ -137,6 +137,19 @@ class Driver:
                 waypoints.remove(waypoint)
         return sorted(waypoints, key=lambda wp: wp.wp_type)
 
+    def waypoints_by_sequence(self, waypoints):
+        wpnumber = 1
+        wpsequence = None
+        wplist = list()
+        for wp in sorted(waypoints, key=lambda waypoint: waypoint.sequence):
+            if wp.sequence != wpsequence:
+                wpnumber = 1
+                wpsequence = wp.sequence
+            wp.number = wpnumber
+            wplist.append(wp)
+            wpnumber += 1
+        return wplist
+
     def stop(self):
         self.s.close()
 
@@ -980,7 +993,7 @@ class StrikeEagleDriver(Driver):
 
     def enter_coords(self, latlong, elev=None):
         lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=3)
-        self.logger.debug(f"{self.method} - Entering coords string: {lat_str}, {lon_str}")
+        self.logger.debug(f"{self.method} - Entering coords string: {lat_str}, {lon_str}, {elev}")
 
         self.ufc("SHF")
         if latlong.lat.degree > 0:
@@ -1007,6 +1020,13 @@ class StrikeEagleDriver(Driver):
         if not wps:
             return
 
+        seqmap = {
+            "1": "A1",
+            "2": "B3",
+            "3": "C9"
+        }
+
+        wps = self.waypoints_by_sequence(wps)
         #Select Steerpoints
         self.ufc("CLR")
         self.ufc("CLR")
@@ -1017,10 +1037,11 @@ class StrikeEagleDriver(Driver):
         self.ufc_pb("10")
         self.ufc_pb("10")
         for wp in wps:
+            seq = seqmap[str(wp.sequence)] if wp.sequence > 0 else 'A1'
             self.logger.info(f"Entering waypoint: {wp}")
             self.ufc(str(wp.number))
             self.ufc("SHF")
-            self.ufc("1")
+            self.ufc(seq)
             self.ufc_pb("1")
             self.enter_coords(wp.position, wp.elevation)
         #Select 1A
