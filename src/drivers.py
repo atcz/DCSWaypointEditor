@@ -297,6 +297,7 @@ class HornetDriver(Driver):
             n = 1
             for msn in msns:
                 self.logger.info(f"Entering PP mission: {msn}")
+                msn.elevation = max(1, msn.elevation)
                 if n > 1:
                     self.lmdi(f"{n + 5}")
                 self.lmdi("14")
