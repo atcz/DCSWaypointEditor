@@ -104,6 +104,20 @@ automatically and must not be turned on in advance.
 
 4. Tab back into DCS and let it enter everything
 
+##### F-15E
+
+1. If you are entering JDAM weapon missions, set the left MPD to the SMRT WPNS page from Menu 2, `PB 14`
+
+2. Select the first station to load using NXT STA `PB 2` if necessary.  
+
+3. `PB 7` must be set to Weapon Memory mode (WPN MEM).
+
+![pages](https://github.com/atcz/DCSWaypointEditor/assets/86995996/3199168a-3263-4c7c-be50-df87400a5592)
+
+4. With a list of active waypoints and/or JDAM missions, click `Send To Aircraft`
+
+5. Tab back into DCS and let it enter everything
+
 ##### AV-8B
 
 1. Make sure the main EHSD page is on the left AMPCD (left screen).
