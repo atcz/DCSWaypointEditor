@@ -98,6 +98,10 @@ class GUI:
         self.aircraft = ["warthog", "apacheg", "apachep", "harrier", "hornet", "tomcat", "strikeeagle", "viper", "blackshark", "mirage"]
         self.aircraft_name = ["A-10C", "AH-64D CPG", "AH-64D Pilot", "AV-8B", "F/A-18C", "F-14A/B", "F-15E", "F-16C", "Ka-50", "M-2000C"]
         self.wp_types = ["WP", "MSN", "FP", "ST", "IP", "DP", "HA", "HB", "HZ", "CM", "TG"]
+        self.stations = {
+            "hornet": [8, 2, 7, 3],
+            "strikeeagle": [2, 'L1', 'L2', 'L3', 5, 'R1', 'R2', 'R3', 8]
+        }
         self.quick_capture = False
         self.values = None
         self.capturing = False
@@ -336,22 +340,25 @@ class GUI:
     def set_sequence_station_selector(self, mode, station=None):
         if mode is None:
             self.window.Element("sequence_text").Update(value="Sequence:")
-            self.window.Element("sequence").Update(
-                values=("None", 1, 2, 3), value="None", disabled=True)
+            self.window.Element("sequence").Update(values=("None", 1, 2, 3), value="None", disabled=True)
         if mode == "sequence":
             self.window.Element("sequence_text").Update(value="Sequence:")
             self.window.Element("sequence").Update(
                 values=("None", 1, 2, 3), value="None", disabled=False)
             self.values["sequence"] = "None"
         elif mode == "station":
-            if station is not None:
-                select = station
+            if self.stations.get(self.profile.aircraft):
+                if station is not None:
+                    select = station
+                else:
+                    select = self.stations[self.profile.aircraft][0]
+                self.window.Element("sequence_text").Update(value="    Station:")
+                self.window.Element("sequence").Update(
+                    values=self.stations[self.profile.aircraft], value=select, disabled=False)
+                self.values["sequence"] = select
             else:
-                select = 8
-            self.window.Element("sequence_text").Update(value="    Station:")
-            self.window.Element("sequence").Update(
-                values=(8, 2, 7, 3), value=select, disabled=False)
-            self.values["sequence"] = select
+                self.window.Element("sequence_text").Update(value="Sequence:")
+                self.window.Element("sequence").Update(values=("None", 1, 2, 3), value="None", disabled=True)
 
     def update_position(self, position=None, elevation=None, name=None, update_mgrs=True, aircraft=None,
                         waypoint_type=None, station=None):
@@ -468,7 +475,8 @@ class GUI:
                            text.lower() in profile.name.lower()]), set_to_index=0)
 
     def next_station(self, station):
-        station_list = [3, 7, 2, 8]
+        station_list = self.stations[self.profile.aircraft][:]
+        station_list.reverse()
         station_idx = station_list.index(station)
         self.set_sequence_station_selector('station', station_list[station_idx - 1])
 
@@ -478,7 +486,7 @@ class GUI:
 
         try:
             if self.selected_wp_type == "MSN":
-                station = int(self.values.get("sequence", 0))
+                station = self.values.get("sequence")
                 number = len(self.profile.stations_dict.get(station, list()))+1
                 wp = MSN(position=position, elevation=int(elevation) or 0, name=name,
                          station=station, number=number)
@@ -1002,6 +1010,7 @@ class GUI:
                 selected = self.aircraft[self.aircraft_name.index(self.values.get("aircraftSelector"))]
                 self.profile.aircraft = selected
                 self.editor.set_driver(selected)
+                self.select_wp_type(self.values.get("wpType"))
                 self.update_waypoints_list()
 
             elif event == "presetFilter":

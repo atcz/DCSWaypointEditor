@@ -962,7 +962,7 @@ class BlackSharkDriver(Driver):
 class StrikeEagleDriver(Driver):
     def __init__(self, logger, config):
         super().__init__(logger, config)
-        self.limits = dict(WP=None)
+        self.limits = dict(WP=None, MSN=1)
 
     def ufc(self, num, delay_after=None, delay_release=None):
         ufc_key_names = {
@@ -986,13 +986,19 @@ class StrikeEagleDriver(Driver):
         key = f"F_UFC_B{num}"
         self.press_with_delay(key, delay_after=delay_after,
                               delay_release=delay_release)
-        
+
+    def lmpd(self, num, delay_after=None, delay_release=None, repeat=1):
+        key = f"F_MPD_L_B{num}"
+        for _ in range(repeat):
+            self.press_with_delay(key, delay_after=delay_after,
+                                  delay_release=delay_release)
+
     def enter_number(self, number):
         for num in str(number):
             if num != ".":
                 self.ufc(num)
 
-    def enter_coords(self, latlong, elev=None):
+    def enter_coords(self, latlong, elev, pp):
         lat_str, lon_str = latlon_tostring(latlong, decimal_minutes_mode=True, easting_zfill=3, precision=3)
         self.logger.debug(f"{self.method} - Entering coords string: {lat_str}, {lon_str}, {elev}")
 
@@ -1002,7 +1008,11 @@ class StrikeEagleDriver(Driver):
         else:
             self.ufc("8")
         self.enter_number(lat_str)
-        self.ufc_pb("2")
+        if not pp:
+            self.ufc_pb("2")
+        else:
+            self.lmpd("8")
+            self.lmpd("5")
         sleep(0.2)
 
         self.ufc("SHF")
@@ -1011,11 +1021,18 @@ class StrikeEagleDriver(Driver):
         else:
             self.ufc("4")
         self.enter_number(lon_str)
-        self.ufc_pb("3")
+        if not pp:
+            self.ufc_pb("3")
+        else:
+            self.lmpd("8")
+            self.lmpd("5")
 
         if elev:
             self.enter_number(elev)
-            self.ufc_pb("7")
+            if not pp:
+                self.ufc_pb("7")
+            else:
+                self.lmpd("8")
 
     def enter_waypoints(self, wps):
         if not wps:
@@ -1044,7 +1061,7 @@ class StrikeEagleDriver(Driver):
             self.ufc("SHF")
             self.ufc(seq)
             self.ufc_pb("1")
-            self.enter_coords(wp.position, wp.elevation)
+            self.enter_coords(wp.position, wp.elevation, pp=False)
         #Select 1A
         self.ufc("DATA")
         self.ufc("1")
@@ -1053,8 +1070,46 @@ class StrikeEagleDriver(Driver):
         self.ufc_pb("10")
         self.ufc("MENU")
 
+    def enter_missions(self, missions):
+        def stations_order(x):
+            order = [2, 'L1', 'L2', 'L3', 5, 'R1', 'R2', 'R3', 8]
+            return order.index(x)
+
+        sorted_stations = list()
+        stations = dict()
+        for mission in missions:
+            station_msn_list = stations.get(mission.station, list())
+            station_msn_list.append(mission)
+            stations[mission.station] = station_msn_list
+
+        for k in sorted(stations, key=stations_order):
+            sorted_stations.append(stations[k])
+
+        self.ufc("CLR")
+        self.ufc("CLR")
+        self.ufc("CLR")
+        self.ufc("MENU")
+        self.lmpd("14")
+        self.lmpd("9")
+        self.lmpd("5", repeat=6)
+        for msns in sorted_stations:
+            if not msns:
+                return
+
+            for msn in msns:
+                self.logger.info(f"Entering PP mission: {msn}")
+                msn.elevation = max(1, msn.elevation)
+                self.enter_coords(msn.position, msn.elevation, pp=True)
+                self.lmpd("10", delay_after=self.medium_delay)
+                sleep(1)
+            self.lmpd("2")
+            self.lmpd("4", repeat=2)
+        self.lmpd("14", delay_after=self.medium_delay)
+
     def enter_all(self, profile):
         self.keylist = []
+        self.enter_missions(self.validate_waypoints(profile.msns_as_list))
+        sleep(1)
         self.enter_waypoints(self.validate_waypoints(profile.waypoints_as_list))
         if self.method != "DCS-BIOS":
             self.enter_keypress(self.keylist)
