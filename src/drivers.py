@@ -278,14 +278,20 @@ class HornetDriver(Driver):
     def enter_missions(self, missions):
         def stations_order(x):
             order = [8, 2, 7, 3]
-            return order.index(x)
+            try:
+                return order.index(x)
+            except ValueError:
+                return None
 
         sorted_stations = list()
         stations = dict()
         for mission in missions:
             station_msn_list = stations.get(mission.station, list())
             station_msn_list.append(mission)
-            stations[mission.station] = station_msn_list
+            if stations_order(mission.station) is None:
+                self.logger.info(f"Skipping station {mission.station}")
+            else:
+                stations[mission.station] = station_msn_list
 
         for k in sorted(stations, key=stations_order):
             sorted_stations.append(stations[k])
@@ -1073,14 +1079,20 @@ class StrikeEagleDriver(Driver):
     def enter_missions(self, missions):
         def stations_order(x):
             order = [2, 'L1', 'L2', 'L3', 5, 'R1', 'R2', 'R3', 8]
-            return order.index(x)
+            try:
+                return order.index(x)
+            except ValueError:
+                return None
 
         sorted_stations = list()
         stations = dict()
         for mission in missions:
             station_msn_list = stations.get(mission.station, list())
             station_msn_list.append(mission)
-            stations[mission.station] = station_msn_list
+            if stations_order(mission.station) is None:
+                self.logger.info(f"Skipping station {mission.station}")
+            else:
+                stations[mission.station] = station_msn_list
 
         for k in sorted(stations, key=stations_order):
             sorted_stations.append(stations[k])

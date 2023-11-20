@@ -358,7 +358,7 @@ class GUI:
                 self.values["sequence"] = select
             else:
                 self.window.Element("sequence_text").Update(value="Sequence:")
-                self.window.Element("sequence").Update(values=("None", 1, 2, 3), value="None", disabled=True)
+                self.window.Element("sequence").Update(values=(8, 2, 7, 3), value=8, disabled=False)
 
     def update_position(self, position=None, elevation=None, name=None, update_mgrs=True, aircraft=None,
                         waypoint_type=None, station=None):
@@ -475,7 +475,10 @@ class GUI:
                            text.lower() in profile.name.lower()]), set_to_index=0)
 
     def next_station(self, station):
-        station_list = self.stations[self.profile.aircraft][:]
+        if self.stations.get(self.profile.aircraft):
+            station_list = self.stations[self.profile.aircraft][:]
+        else:
+            station_list = [8, 2, 7, 3]
         station_list.reverse()
         station_idx = station_list.index(station)
         self.set_sequence_station_selector('station', station_list[station_idx - 1])
