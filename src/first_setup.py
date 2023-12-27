@@ -172,7 +172,7 @@ def first_time_setup(settings):
         elif event == "install_button":
             try:
                 setup_logger.info("Installing DCS BIOS...")
-                install_dcs_bios(dcs_path)
+                install_dcs_bios(dcs_path, event)
                 gui.Element("install_button").Update(disabled=True)
                 gui.Element("accept_button").Update(disabled=False)
                 gui.Element("dcs_bios").Update(value="Installed")
