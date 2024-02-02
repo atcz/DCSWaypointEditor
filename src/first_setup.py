@@ -70,8 +70,9 @@ def detect_the_way(dcs_path):
 
     try:
         with open(dcs_path + "\\Scripts\\Export.lua", "r") as f:
-            if r"dofile(TheWayLfs.writedir()..'Scripts/TheWay.lua')" in f.read() and \
-                    os.path.exists(dcs_path + "\Scripts\TheWay.lua"):
+            if r"dofile(TheWayLfs.writedir()..'Scripts/TheWay" in f.read() and \
+                    (os.path.exists(dcs_path + "\Scripts\TheWay.lua") or \
+                     os.path.exists(dcs_path + "\Scripts\TheWay\TheWay.lua")):
                 the_way_detected = True
     except FileNotFoundError:
         pass
