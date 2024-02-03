@@ -1,9 +1,30 @@
+'''
+*
+* first_setup.py: DCS Waypoint Editor - Program Settings Module             *
+*                                                                           *
+* Copyright (C) 2024 Atcz                                                   *
+*                                                                           *
+* This program is free software: you can redistribute it and/or modify it   *
+* under the terms of the GNU General Public License as published by the     *
+* Free Software Foundation, either version 3 of the License, or (at your    *
+* option) any later version.                                                *
+*                                                                           *
+* This program is distributed in the hope that it will be useful, but       *
+* WITHOUT ANY WARRANTY; without even the implied warranty of                *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General  *
+* Public License for more details.                                          *
+*                                                                           *
+* You should have received a copy of the GNU General Public License along   *
+* with this program. If not, see <https://www.gnu.org/licenses/>.           *
+'''
+
 from configparser import ConfigParser
 from shutil import copytree, rmtree
 from src.logger import get_logger
 from pathlib import Path
 import PySimpleGUI as PyGUI
 import os
+import glob
 import tempfile
 import requests
 import zipfile
@@ -56,9 +77,10 @@ def detect_dcs_bios(dcs_path):
     dcs_bios_detected = False
 
     try:
+        dcsbios_path = os.path.join(dcs_path, "Scripts", "DCS-BIOS")
         with open(dcs_path + "\\Scripts\\Export.lua", "r") as f:
             if r"dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])" in f.read() and \
-                    os.path.exists(dcs_path + "\\Scripts\\DCS-BIOS"):
+                    os.path.exists(dcsbios_path):
                 dcs_bios_detected = True
     except FileNotFoundError:
         pass
@@ -69,10 +91,10 @@ def detect_the_way(dcs_path):
     the_way_detected = False
 
     try:
+        theway_path = os.path.join(dcs_path, "Scripts", "**", "TheWay.lua")
         with open(dcs_path + "\\Scripts\\Export.lua", "r") as f:
             if r"dofile(TheWayLfs.writedir()..'Scripts/TheWay" in f.read() and \
-                    (os.path.exists(dcs_path + "\Scripts\TheWay.lua") or \
-                     os.path.exists(dcs_path + "\Scripts\TheWay\TheWay.lua")):
+                    any(glob.glob(theway_path, recursive=True)):
                 the_way_detected = True
     except FileNotFoundError:
         pass
