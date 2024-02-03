@@ -1,3 +1,23 @@
+'''
+*
+* gui.py: DCS Waypoint Editor - Main GUI Module                             *
+*                                                                           *
+* Copyright (C) 2024 Atcz                                                   *
+*                                                                           *
+* This program is free software: you can redistribute it and/or modify it   *
+* under the terms of the GNU General Public License as published by the     *
+* Free Software Foundation, either version 3 of the License, or (at your    *
+* option) any later version.                                                *
+*                                                                           *
+* This program is distributed in the hope that it will be useful, but       *
+* WITHOUT ANY WARRANTY; without even the implied warranty of                *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General  *
+* Public License for more details.                                          *
+*                                                                           *
+* You should have received a copy of the GNU General Public License along   *
+* with this program. If not, see <https://www.gnu.org/licenses/>.           *
+'''
+
 from src.objects import Profile, Waypoint, MSN, load_base_file, generate_default_bases
 from src.first_setup import first_time_setup, detect_the_way
 from src.capture import capture_map_coords, parse_map_coords_string
@@ -52,6 +72,15 @@ def unstrike(text):
 
 def exception_gui(exc_info):
     return PyGUI.PopupOK("An exception occured and the program terminated execution:\n\n" + exc_info)
+
+
+def progress_gui(count, location):
+    progress_layout = [
+        [PyGUI.Text('Processing:')],
+        [PyGUI.ProgressBar(count, orientation='h', size=(20, 20), key='progress')],
+        [PyGUI.Cancel()]
+    ]
+    return PyGUI.Window('Progress Indicator', progress_layout, location=location, modal=True, finalize=True)
 
 
 def check_version(current_version):
@@ -147,7 +176,8 @@ class GUI:
         keyboard.add_hotkey(self.quick_capture_hotkey, self.toggle_quick_capture)
         keyboard.add_hotkey(self.camera_capture_hotkey, self.toggle_camera_capture)
         if self.enter_aircraft_hotkey != '':
-            keyboard.add_hotkey(self.enter_aircraft_hotkey, self.enter_coords_to_aircraft)
+            self.hotkey_ispressed = False
+            keyboard.add_hotkey(self.enter_aircraft_hotkey, self.set_enter_aircraft_flag)
 
     @staticmethod
     def get_profile_names():
@@ -781,290 +811,302 @@ class GUI:
                 self.profile.waypoints.remove(wp)
 
     def enter_coords_to_aircraft(self):
+        psize = (250, 194)
+        self.editor.driver.pposition = self.calculate_popup_position(psize)
         self.window.Element('Send').Update(disabled=True)
         self.editor.enter_all(self.profile, self.enter_method)
         self.window.Element('Send').Update(disabled=False)
 
+    def set_enter_aircraft_flag(self):
+        self.hotkey_ispressed = True
+        winsound.PlaySound(UX_SND_SUCCESS, flags=winsound.SND_FILENAME)
+
     def run(self):
         self.window.Element("aircraftSelector").Update(value=self.aircraft_name[self.aircraft.index(self.default_aircraft)])
         while True:
-            event, self.values = self.window.Read()
-            self.logger.debug(f"Event: {event}")
-            self.logger.debug(f"Values: {self.values}")
+            event, self.values = self.window.Read(timeout=750)
 
-            if event is None or event == 'Exit':
-                self.logger.info("Exiting...")
-                break
-
-            elif event == "Settings":
-                first_time_setup(self.editor.settings)
-                self.default_aircraft = try_get_setting(self.editor.settings, "default_aircraft", "hornet")
-                self.enter_method = try_get_setting(self.editor.settings, "enter_method", "DCS-BIOS")
-
-            elif event == "Run Target Jar":
-                if os.path.exists('.\Target-jar-with-dependencies.jar'):
-                    subprocess.Popen(['java', '-jar', '.\Target-jar-with-dependencies.jar'], shell=True)
-
-            elif event == "Copy as String to clipboard":
-                self.export_to_string()
-
-            elif event == "Paste as String from clipboard":
-                self.import_from_string()
-
-            elif event == "Import NS430 from clipboard":
-                importdata = pyperclip.paste()
-                self.import_NS430(importdata)
-
-            elif event == "Import NS430 from file":
-                psize = (431, 133)
-                pposition = self.calculate_popup_position(psize)
-                filename = PyGUI.PopupGetFile("Enter file name:", "Importing NS430 Data", location=pposition)
-                if filename is None:
-                    continue
-
-                with open(filename, "r") as f:
-                    importdata = f.read()
-                self.import_NS430(importdata)
-
-            elif event == "Add":
-                position, elevation, name = self.validate_coords()
-                if position is not None:
-                    self.add_waypoint(position, elevation, name)
-
-            elif event == "Update":
-                if self.values['activesList']:
-                    waypoint = self.find_selected_waypoint()
-                    position, elevation, name = self.validate_coords()
-                    if position is not None:
-                        waypoint.position = position
-                        waypoint.elevation = elevation
-                        waypoint.name = name
-                        self.update_waypoints_list()
-
-            elif event == "Remove":
-                if self.values['activesList']:
-                    self.remove_selected_waypoint()
-                    self.update_waypoints_list()
-
-            elif event == "Send":
+            if self.hotkey_ispressed:
+                self.hotkey_ispressed = False
                 self.enter_coords_to_aircraft()
 
-            elif event == "activesList":
-                if self.values['activesList']:
-                    waypoint = self.find_selected_waypoint()
-                    if waypoint.wp_type == "MSN":
-                        station = waypoint.station
-                    else:
-                        station = None
-                    self.update_position(waypoint.position, waypoint.elevation, waypoint.name,
-                                         waypoint_type=waypoint.wp_type, station=station)
-
-            elif event == "Save Profile":
-                if self.profile.waypoints:
-                    name = self.profile.profilename
-                    if name:
-                        self.profile.save(name)
-                        self.update_profiles_list(name)
-                    else:
+            if event != "__TIMEOUT__":
+                self.logger.debug(f"Event: {event}")
+                self.logger.debug(f"Values: {self.values}")
+    
+                if event is None or event == 'Exit':
+                    self.logger.info("Exiting...")
+                    break
+    
+                elif event == "Settings":
+                    first_time_setup(self.editor.settings)
+                    self.default_aircraft = try_get_setting(self.editor.settings, "default_aircraft", "hornet")
+                    self.enter_method = try_get_setting(self.editor.settings, "enter_method", "DCS-BIOS")
+    
+                elif event == "Run Target Jar":
+                    if os.path.exists('.\Target-jar-with-dependencies.jar'):
+                        subprocess.Popen(['java', '-jar', '.\Target-jar-with-dependencies.jar'], shell=True)
+    
+                elif event == "Copy as String to clipboard":
+                    self.export_to_string()
+    
+                elif event == "Paste as String from clipboard":
+                    self.import_from_string()
+    
+                elif event == "Import NS430 from clipboard":
+                    importdata = pyperclip.paste()
+                    self.import_NS430(importdata)
+    
+                elif event == "Import NS430 from file":
+                    psize = (431, 133)
+                    pposition = self.calculate_popup_position(psize)
+                    filename = PyGUI.PopupGetFile("Enter file name:", "Importing NS430 Data", location=pposition)
+                    if filename is None:
+                        continue
+    
+                    with open(filename, "r") as f:
+                        importdata = f.read()
+                    self.import_NS430(importdata)
+    
+                elif event == "Add":
+                    position, elevation, name = self.validate_coords()
+                    if position is not None:
+                        self.add_waypoint(position, elevation, name)
+    
+                elif event == "Update":
+                    if self.values['activesList']:
+                        waypoint = self.find_selected_waypoint()
+                        position, elevation, name = self.validate_coords()
+                        if position is not None:
+                            waypoint.position = position
+                            waypoint.elevation = elevation
+                            waypoint.name = name
+                            self.update_waypoints_list()
+    
+                elif event == "Remove":
+                    if self.values['activesList']:
+                        self.remove_selected_waypoint()
+                        self.update_waypoints_list()
+    
+                elif event == "Send":
+                    self.enter_coords_to_aircraft()
+    
+                elif event == "activesList":
+                    if self.values['activesList']:
+                        waypoint = self.find_selected_waypoint()
+                        if waypoint.wp_type == "MSN":
+                            station = waypoint.station
+                        else:
+                            station = None
+                        self.update_position(waypoint.position, waypoint.elevation, waypoint.name,
+                                            waypoint_type=waypoint.wp_type, station=station)
+    
+                elif event == "Save Profile":
+                    if self.profile.waypoints:
+                        name = self.profile.profilename
+                        if name:
+                            self.profile.save(name)
+                            self.update_profiles_list(name)
+                        else:
+                            self.write_profile()
+    
+                elif event == "Save Profile As...":
+                    if self.profile.waypoints:
                         self.write_profile()
-
-            elif event == "Save Profile As...":
-                if self.profile.waypoints:
-                    self.write_profile()
-
-            elif event == "Delete Profile":
-                if not self.profile.profilename:
-                    continue
-                psize = (264, 133)
-                pposition = self.calculate_popup_position(psize)
-                confirm_delete = PyGUI.PopupOKCancel(f"Confirm delete {self.profile.profilename}?", location=pposition)
-                if confirm_delete == "OK":
-                    Profile.delete(self.profile.profilename)
-                    profiles = sorted(self.get_profile_names())
-                    self.window.Element("profileSelector").Update(
-                        values=[""] + profiles)
-                    self.load_new_profile()
-                    self.update_waypoints_list()
-                    self.update_position()
-
-            elif event == "profileSelector":
-                try:
-                    profile_name = self.values['profileSelector']
-                    if profile_name != '':
-                        self.profile = Profile.load(profile_name)
-                    else:
-                        self.profile = Profile('', aircraft=self.profile.aircraft)
-                    self.editor.set_driver(self.profile.aircraft)
-                    self.update_waypoints_list()
-
-                except DoesNotExist:
+    
+                elif event == "Delete Profile":
+                    if not self.profile.profilename:
+                        continue
                     psize = (264, 133)
                     pposition = self.calculate_popup_position(psize)
-                    PyGUI.Popup("Profile not found.", location=pposition)
-
-            elif event == "Save as Encoded file":
-                psize = (431, 133)
-                pposition = self.calculate_popup_position(psize)
-                filename = PyGUI.PopupGetFile("Enter file name:", "Exporting profile", default_extension=".json",
-                                              save_as=True, location=pposition, file_types=(("JSON File", "*.json"),))
-
-                if filename is None:
-                    continue
-
-                with open(filename, "w+") as f:
-                    f.write(str(self.profile))
-
-            elif event == "Copy plain Text to clipboard":
-                profile_string = self.profile.to_readable_string()
-                pyperclip.copy(profile_string)
-                psize = (264, 133)
-                pposition = self.calculate_popup_position(psize)
-                PyGUI.Popup("Profile copied as plain text to clipboard", location=pposition)
-
-            elif event == "Load from Encoded file":
-                psize = (431, 133)
-                pposition = self.calculate_popup_position(psize)
-                filename = PyGUI.PopupGetFile("Enter file name:", "Importing profile", location=pposition)
-
-                if filename is None:
-                    continue
-
-                with open(filename, "r") as f:
-                    self.profile = Profile.from_string(f.read())
-                self.editor.set_driver(self.profile.aircraft)
-                self.update_waypoints_list()
-
-                if self.profile.profilename:
-                    self.update_profiles_list(self.profile.profilename)
-
-            elif event == "capture":
-                if not self.capturing:
-                    self.start_capture()
-                else:
-                    self.stop_capture()
-
-            elif event == "quick_capture":
-                if not self.capturing:
-                    self.quick_capture = True
-                    self.start_capture()
-                else:
-                    self.stop_capture()
-
-            elif event == "camera_capture":
-                if not self.capturing:
-                    self.start_camera_capture()
-                else:
-                    self.stop_capture()
-
-            elif event == "baseSelector":
-                base = self.editor.default_bases.get(
-                    self.values['baseSelector'])
-
-                if base is not None:
-                    self.update_position(
-                        base.position, base.elevation, base.name)
-
-            elif event == "regionSelector":
-                if self.values[event]:
-                    load_base_file(self.editor.base_files[self.values[event]], self.editor.default_bases)
-                else:
-                    generate_default_bases()
-
-                self.window.Element("baseSelector").\
-                    Update(values=[""] + sorted(self.editor.default_bases),
-                           set_to_index=0)
-
-            elif event == "wpType":
-                self.select_wp_type(self.values.get("wpType"))
-
-            elif event == "elevFeet":
-                self.update_altitude_elements("meters")
-
-            elif event == "elevMeters":
-                self.update_altitude_elements("feet")
-
-            elif event in ("latDeg", "latMin", "latSec", "lonDeg", "lonMin", "lonSec",
-                           "North", "South", "East", "West"):
-                position, _, _ = self.validate_coords()
-
-                if position is not None:
-                    m = mgrs.encode(mgrs.LLtoUTM(
-                        position.lat.decimal_degree, position.lon.decimal_degree), 5)
-                    self.window.Element("mgrs").Update(m)
-
-            elif event == "mgrs":
-                mgrs_string = self.window.Element("mgrs").Get().upper()
-                try:
-                    elevation = int(self.window.Element("elevFeet").Get())
-                except:
-                    elevation = 0
-                if mgrs_string:
+                    confirm_delete = PyGUI.PopupOKCancel(f"Confirm delete {self.profile.profilename}?", location=pposition)
+                    if confirm_delete == "OK":
+                        Profile.delete(self.profile.profilename)
+                        profiles = sorted(self.get_profile_names())
+                        self.window.Element("profileSelector").Update(
+                            values=[""] + profiles)
+                        self.load_new_profile()
+                        self.update_waypoints_list()
+                        self.update_position()
+    
+                elif event == "profileSelector":
                     try:
-                        decoded_mgrs = mgrs.UTMtoLL(mgrs.decode(mgrs_string.replace(" ", "")))
-                        position = LatLon(Latitude(degree=decoded_mgrs["lat"]), Longitude(
-                            degree=decoded_mgrs["lon"]))
-                        self.update_position(position, elevation, 
-                                                name=self.window.Element("msnName").Get(), 
-                                                update_mgrs=False)
-                    except (TypeError, ValueError, UnboundLocalError) as e:
-                        self.logger.error(f"Failed to decode MGRS: {e}")
-
-            elif event == "aircraftSelector":
-                selected = self.aircraft[self.aircraft_name.index(self.values.get("aircraftSelector"))]
-                self.profile.aircraft = selected
-                self.editor.set_driver(selected)
-                self.select_wp_type(self.values.get("wpType"))
-                self.update_waypoints_list()
-
-            elif event == "presetFilter":
-                self.filter_preset_waypoints_dropdown()
-
-            elif event == "profileFilter":
-                self.filter_profile_dropdown()
-
-            elif event == 'About':
-                # Define the layout for the information popup window
-                text = f"DCS Waypoint Editor {self.software_version}"
-                gpltext = "This program is free software; you can redistribute it and/or \n"\
-                          "modify it under the terms of the GNU General Public License as \n"\
-                          "published by the Free Software Foundation; either version 3 of \n"\
-                          "the License, or at your option any later version. \n\n"\
-                          "This program is distributed in the hope that it will be useful, but \n"\
-                          "WITHOUT ANY WARRANTY; without even the implied warranty \n"\
-                          "of MERCHANTABILITY or FITNESS FOR A PARTICULAR \n"\
-                          "PURPOSE. See the GNU General Public License for more details. \n\n"\
-                          "You should have received a copy of the GNU General Public License\n"\
-                          "along with this program. If not, see <https://www.gnu.org/licenses/>."
-                url = 'https://github.com/atcz/DCSWaypointEditor'
-                layout = [
-                    [PyGUI.Column([
-                        [PyGUI.Text(f"{' '*10}{text}", justification='center')],
-                        [PyGUI.Text(url, enable_events=True, text_color='blue', key='-LINK-')]
-                    ], vertical_alignment='center', justification='center')],
-                [PyGUI.Frame("GNU General Public License", [
-                    [PyGUI.Text(gpltext, pad=(40,(10,20)))],
-                    ])
-                ],
-                    [PyGUI.Column([
-                        [PyGUI.Button('OK', size=(10, 1), pad=(10, 20), bind_return_key=True)]
-                    ], vertical_alignment='center', justification='center')]
-                ]
-
-                # Create the window
-                psize = (513, 392)
-                pposition = self.calculate_popup_position(psize)
-                pwindow = PyGUI.Window('Information', layout, location=pposition, finalize=True, modal=True)
-
-                # Event loop
-                while True:
-                    event, _ = pwindow.read()
-                    if event == PyGUI.WINDOW_CLOSED or event == 'OK':
-                        break
-                    elif event == '-LINK-':
-                        webbrowser.open(url)
-                        break
-                # Close the window
-                pwindow.close()
+                        profile_name = self.values['profileSelector']
+                        if profile_name != '':
+                            self.profile = Profile.load(profile_name)
+                        else:
+                            self.profile = Profile('', aircraft=self.profile.aircraft)
+                        self.editor.set_driver(self.profile.aircraft)
+                        self.update_waypoints_list()
+    
+                    except DoesNotExist:
+                        psize = (264, 133)
+                        pposition = self.calculate_popup_position(psize)
+                        PyGUI.Popup("Profile not found.", location=pposition)
+    
+                elif event == "Save as Encoded file":
+                    psize = (431, 133)
+                    pposition = self.calculate_popup_position(psize)
+                    filename = PyGUI.PopupGetFile("Enter file name:", "Exporting profile", default_extension=".json",
+                                                save_as=True, location=pposition, file_types=(("JSON File", "*.json"),))
+    
+                    if filename is None:
+                        continue
+    
+                    with open(filename, "w+") as f:
+                        f.write(str(self.profile))
+    
+                elif event == "Copy plain Text to clipboard":
+                    profile_string = self.profile.to_readable_string()
+                    pyperclip.copy(profile_string)
+                    psize = (264, 133)
+                    pposition = self.calculate_popup_position(psize)
+                    PyGUI.Popup("Profile copied as plain text to clipboard", location=pposition)
+    
+                elif event == "Load from Encoded file":
+                    psize = (431, 133)
+                    pposition = self.calculate_popup_position(psize)
+                    filename = PyGUI.PopupGetFile("Enter file name:", "Importing profile", location=pposition)
+    
+                    if filename is None:
+                        continue
+    
+                    with open(filename, "r") as f:
+                        self.profile = Profile.from_string(f.read())
+                    self.editor.set_driver(self.profile.aircraft)
+                    self.update_waypoints_list()
+    
+                    if self.profile.profilename:
+                        self.update_profiles_list(self.profile.profilename)
+    
+                elif event == "capture":
+                    if not self.capturing:
+                        self.start_capture()
+                    else:
+                        self.stop_capture()
+    
+                elif event == "quick_capture":
+                    if not self.capturing:
+                        self.quick_capture = True
+                        self.start_capture()
+                    else:
+                        self.stop_capture()
+    
+                elif event == "camera_capture":
+                    if not self.capturing:
+                        self.start_camera_capture()
+                    else:
+                        self.stop_capture()
+    
+                elif event == "baseSelector":
+                    base = self.editor.default_bases.get(
+                        self.values['baseSelector'])
+    
+                    if base is not None:
+                        self.update_position(
+                            base.position, base.elevation, base.name)
+    
+                elif event == "regionSelector":
+                    if self.values[event]:
+                        load_base_file(self.editor.base_files[self.values[event]], self.editor.default_bases)
+                    else:
+                        generate_default_bases()
+    
+                    self.window.Element("baseSelector").\
+                        Update(values=[""] + sorted(self.editor.default_bases),
+                            set_to_index=0)
+    
+                elif event == "wpType":
+                    self.select_wp_type(self.values.get("wpType"))
+    
+                elif event == "elevFeet":
+                    self.update_altitude_elements("meters")
+    
+                elif event == "elevMeters":
+                    self.update_altitude_elements("feet")
+    
+                elif event in ("latDeg", "latMin", "latSec", "lonDeg", "lonMin", "lonSec",
+                            "North", "South", "East", "West"):
+                    position, _, _ = self.validate_coords()
+    
+                    if position is not None:
+                        m = mgrs.encode(mgrs.LLtoUTM(
+                            position.lat.decimal_degree, position.lon.decimal_degree), 5)
+                        self.window.Element("mgrs").Update(m)
+    
+                elif event == "mgrs":
+                    mgrs_string = self.window.Element("mgrs").Get().upper()
+                    try:
+                        elevation = int(self.window.Element("elevFeet").Get())
+                    except:
+                        elevation = 0
+                    if mgrs_string:
+                        try:
+                            decoded_mgrs = mgrs.UTMtoLL(mgrs.decode(mgrs_string.replace(" ", "")))
+                            position = LatLon(Latitude(degree=decoded_mgrs["lat"]), Longitude(
+                                degree=decoded_mgrs["lon"]))
+                            self.update_position(position, elevation, 
+                                                    name=self.window.Element("msnName").Get(), 
+                                                    update_mgrs=False)
+                        except (TypeError, ValueError, UnboundLocalError) as e:
+                            self.logger.error(f"Failed to decode MGRS: {e}")
+    
+                elif event == "aircraftSelector":
+                    selected = self.aircraft[self.aircraft_name.index(self.values.get("aircraftSelector"))]
+                    self.profile.aircraft = selected
+                    self.editor.set_driver(selected)
+                    self.select_wp_type(self.values.get("wpType"))
+                    self.update_waypoints_list()
+    
+                elif event == "presetFilter":
+                    self.filter_preset_waypoints_dropdown()
+    
+                elif event == "profileFilter":
+                    self.filter_profile_dropdown()
+    
+                elif event == 'About':
+                    # Define the layout for the information popup window
+                    text = f"DCS Waypoint Editor {self.software_version}"
+                    gpltext = "This program is free software; you can redistribute it and/or \n"\
+                            "modify it under the terms of the GNU General Public License as \n"\
+                            "published by the Free Software Foundation; either version 3 of \n"\
+                            "the License, or at your option any later version. \n\n"\
+                            "This program is distributed in the hope that it will be useful, but \n"\
+                            "WITHOUT ANY WARRANTY; without even the implied warranty \n"\
+                            "of MERCHANTABILITY or FITNESS FOR A PARTICULAR \n"\
+                            "PURPOSE. See the GNU General Public License for more details. \n\n"\
+                            "You should have received a copy of the GNU General Public License\n"\
+                            "along with this program. If not, see <https://www.gnu.org/licenses/>."
+                    url = 'https://github.com/atcz/DCSWaypointEditor'
+                    layout = [
+                        [PyGUI.Column([
+                            [PyGUI.Text(f"{' '*10}{text}", justification='center')],
+                            [PyGUI.Text(url, enable_events=True, text_color='blue', key='-LINK-')]
+                        ], vertical_alignment='center', justification='center')],
+                    [PyGUI.Frame("GNU General Public License", [
+                        [PyGUI.Text(gpltext, pad=(40,(10,20)))],
+                        ])
+                    ],
+                        [PyGUI.Column([
+                            [PyGUI.Button('OK', size=(10, 1), pad=(10, 20), bind_return_key=True)]
+                        ], vertical_alignment='center', justification='center')]
+                    ]
+    
+                    # Create the window
+                    psize = (513, 392)
+                    pposition = self.calculate_popup_position(psize)
+                    pwindow = PyGUI.Window('Information', layout, location=pposition, finalize=True, modal=True)
+    
+                    # Event loop
+                    while True:
+                        event, _ = pwindow.read()
+                        if event == PyGUI.WINDOW_CLOSED or event == 'OK':
+                            break
+                        elif event == '-LINK-':
+                            webbrowser.open(url)
+                            break
+                    # Close the window
+                    pwindow.close()
 
         self.close()
 

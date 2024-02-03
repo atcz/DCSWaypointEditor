@@ -1,9 +1,29 @@
+'''
+*
+* drivers.py: DCS Waypoint Editor - DCS-BIOS Interface Module               *
+*                                                                           *
+* Copyright (C) 2024 Atcz                                                   *
+*                                                                           *
+* This program is free software: you can redistribute it and/or modify it   *
+* under the terms of the GNU General Public License as published by the     *
+* Free Software Foundation, either version 3 of the License, or (at your    *
+* option) any later version.                                                *
+*                                                                           *
+* This program is distributed in the hope that it will be useful, but       *
+* WITHOUT ANY WARRANTY; without even the implied warranty of                *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General  *
+* Public License for more details.                                          *
+*                                                                           *
+* You should have received a copy of the GNU General Public License along   *
+* with this program. If not, see <https://www.gnu.org/licenses/>.           *
+'''
+
 import socket
 import re
 import json
 from time import sleep
 from configparser import NoOptionError
-
+from src.gui import progress_gui
 
 class DriverException(Exception):
     pass
@@ -249,13 +269,24 @@ class HornetDriver(Driver):
         self.ufc("CLR")
         self.ufc("CLR")
 
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for wp in wps:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             self.logger.info(f"Entering waypoint: {wp}")
             self.ampcd("12")
             self.ampcd("5")
             self.ufc("OS1")
             self.enter_coords(wp.position, wp.elevation, pp=False, decimal_minutes_mode=True)
             self.ufc("CLR")
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
 
         for sequencenumber, waypointslist in sequences.items():
             if sequencenumber != 1:
@@ -300,8 +331,14 @@ class HornetDriver(Driver):
             if not msns:
                 return
 
+            pwindow = progress_gui(len(wps), self.pposition)
+
             n = 1
             for msn in msns:
+                event, values = pwindow.Read(timeout=20)
+                if event is None or event == 'Cancel':
+                    pwindow.close()
+                    return
                 self.logger.info(f"Entering PP mission: {msn}")
                 msn.elevation = max(1, msn.elevation)
                 if n > 1:
@@ -311,7 +348,10 @@ class HornetDriver(Driver):
                 self.enter_coords(msn.position, msn.elevation, pp=True)
                 self.ufc("CLR")
                 self.ufc("CLR")
+                pwindow['progress'].update(n)
                 n += 1
+
+            pwindow.close()
             if n > 2:
                 self.lmdi("6")
             self.lmdi("13")
@@ -390,7 +430,14 @@ class HarrierDriver(Driver):
     def enter_waypoints(self, wps):
         self.lmpcd("2")
 
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for wp in wps:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             self.logger.info(f"Entering waypoint: {wp}")
             self.ufc("7")
             self.ufc("7")
@@ -398,7 +445,10 @@ class HarrierDriver(Driver):
             self.odu("2")
             self.enter_coords(wp.position, wp.elevation)
             self.odu("1")
+            pwindow['progress'].update(i)
+            i += 1
 
+        pwindow.close()
         self.lmpcd("2")
 
     def enter_all(self, profile):
@@ -464,13 +514,25 @@ class MirageDriver(Driver):
             self.enter_number(elev)
 
     def enter_waypoints(self, wps):
+
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for i, wp in enumerate(wps, 1):
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             self.logger.info(f"Entering waypoint: {wp}")
             self.ins_param("4")
             self.pcn("PREP")
             self.pcn("0")
             self.pcn(str(i))
             self.enter_coords(wp.position, wp.elevation)
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
         self.ins_param("4")
 
     def enter_all(self, profile):
@@ -544,7 +606,15 @@ class TomcatDriver(Driver):
             ST=9
         )
         self.cap("TAC")
+
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for wp in wps:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             self.logger.info(f"Entering waypoint: {wp}")
             if wp.wp_type == "WP":
                 self.cap(f"BTN_{wp.number}")
@@ -552,6 +622,10 @@ class TomcatDriver(Driver):
                 self.cap(f"BTN_{cap_wp_type_buttons[wp.wp_type]}")
 
             self.enter_coords(wp.position, wp.elevation)
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
         self.cap("CLEAR")
 
     def enter_all(self, profile):
@@ -628,12 +702,24 @@ class WarthogDriver(Driver):
         self.cdu("WP", self.short_delay)
         self.cdu("LSK_3L", self.medium_delay)
         self.logger.debug("Number of waypoints: " + str(len(wps)))
+
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for wp in wps:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             self.logger.info(f"Entering waypoint: {wp}")
             self.cdu("LSK_7R", self.short_delay)
             self.enter_waypoint_name(wp)
             self.enter_coords(wp.position)
             self.enter_elevation(wp.elevation)
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
 
     def enter_all(self, profile):
         self.keylist = []
@@ -716,7 +802,14 @@ class ViperDriver(Driver):
         self.icp_data("RTN")
         self.icp_btn("4", delay_release=1)
 
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for wp in wps:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             self.logger.info(f"Entering waypoint: {wp}")
 
             self.icp_data("DN")                     # To MAN/AUTO
@@ -731,6 +824,10 @@ class ViperDriver(Driver):
             self.icp_data("UP")                     # To MAN/AUTO
             self.icp_data("UP")                     # To STPT number
             self.icp_ded("UP")                      # Increment STPT number
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
 
         self.icp_ded("DN")                          # Backup to last STPT
         self.icp_data("RTN")
@@ -800,7 +897,14 @@ class ApachePilotDriver(Driver):
         self.rmpd("TSD")
         self.rmpd("B6") # POINT
 
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for wp in wps:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             self.logger.info(f"Entering waypoint: {wp}")
             self.rmpd("L2") # ADD
             self.rmpd(wp_type_buttons[wp.wp_type]) # WP TYPE
@@ -814,6 +918,10 @@ class ApachePilotDriver(Driver):
             self.kbu("CLR")
 
             self.enter_coords(wp.position, wp.elevation)
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
 
     def enter_all(self, profile):
         self.keylist = []
@@ -880,7 +988,14 @@ class ApacheGunnerDriver(Driver):
         self.rmpd("TSD")
         self.rmpd("B6") # POINT
 
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for wp in wps:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             self.logger.info(f"Entering waypoint: {wp}")
             self.rmpd("L2") # ADD
             self.rmpd(wp_type_buttons[wp.wp_type]) # WP TYPE
@@ -894,6 +1009,10 @@ class ApacheGunnerDriver(Driver):
             self.kbu("CLR")
 
             self.enter_coords(wp.position, wp.elevation)
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
 
     def enter_all(self, profile):
         self.keylist = []
@@ -949,13 +1068,25 @@ class BlackSharkDriver(Driver):
 
         #Set NAV Master Mode ENT
         self.pvi_mode("2")
+
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for wp in wps:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             self.logger.info(f"Entering waypoint: {wp}")
             if wp.wp_type != prev_type:
                 self.pvi(f"{wp_type_buttons[wp.wp_type]}_BTN")
                 prev_type = wp.wp_type
             self.pvi(str(wp.number))
             self.enter_coords(wp.position)
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
         #Set NAV Master Mode OPER
         self.pvi_mode("3")
 
@@ -1060,7 +1191,15 @@ class StrikeEagleDriver(Driver):
         self.ufc("3")
         self.ufc_pb("10")
         self.ufc_pb("10")
+
+        pwindow = progress_gui(len(wps), self.pposition)
+
+        i = 1
         for wp in wps:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
+                return
             seq = seqmap[str(wp.sequence)] if wp.sequence > 0 else 'A1'
             self.logger.info(f"Entering waypoint: {wp}")
             self.ufc(str(wp.number))
@@ -1068,6 +1207,10 @@ class StrikeEagleDriver(Driver):
             self.ufc(seq)
             self.ufc_pb("1")
             self.enter_coords(wp.position, wp.elevation, pp=False)
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
         #Select 1A
         self.ufc("DATA")
         self.ufc("1")
@@ -1084,6 +1227,8 @@ class StrikeEagleDriver(Driver):
             except ValueError:
                 return None
 
+        if not missions:
+            return
         sorted_stations = list()
         stations = dict()
         for mission in missions:
@@ -1097,6 +1242,8 @@ class StrikeEagleDriver(Driver):
         for k in sorted(stations, key=stations_order):
             sorted_stations.append(stations[k])
 
+        if not sorted_stations:
+            return
         self.ufc("CLR")
         self.ufc("CLR")
         self.ufc("CLR")
@@ -1104,8 +1251,14 @@ class StrikeEagleDriver(Driver):
         self.lmpd("14")
         self.lmpd("9")
         self.lmpd("5", repeat=6)
+
+        pwindow = progress_gui(len(sorted_stations), self.pposition)
+
+        i = 1
         for msns in sorted_stations:
-            if not msns:
+            event, values = pwindow.Read(timeout=20)
+            if event is None or event == 'Cancel':
+                pwindow.close()
                 return
 
             for msn in msns:
@@ -1114,8 +1267,12 @@ class StrikeEagleDriver(Driver):
                 self.enter_coords(msn.position, msn.elevation, pp=True)
                 self.lmpd("10", delay_after=self.medium_delay)
                 sleep(1)
+            pwindow['progress'].update(i)
+            i += 1
             self.lmpd("2")
             self.lmpd("4", repeat=2)
+
+        pwindow.close()
         self.lmpd("14", delay_after=self.medium_delay)
 
     def enter_all(self, profile):
