@@ -327,11 +327,12 @@ class HornetDriver(Driver):
         for k in sorted(stations, key=stations_order):
             sorted_stations.append(stations[k])
 
+        pwindow = progress_gui(len(sorted_stations), self.pposition)
+
+        i = 1
         for msns in sorted_stations:
             if not msns:
                 return
-
-            pwindow = progress_gui(len(wps), self.pposition)
 
             n = 1
             for msn in msns:
@@ -348,13 +349,14 @@ class HornetDriver(Driver):
                 self.enter_coords(msn.position, msn.elevation, pp=True)
                 self.ufc("CLR")
                 self.ufc("CLR")
-                pwindow['progress'].update(n)
                 n += 1
-
-            pwindow.close()
             if n > 2:
                 self.lmdi("6")
             self.lmdi("13")
+            pwindow['progress'].update(i)
+            i += 1
+
+        pwindow.close()
         self.lmdi("19")
 
     def enter_all(self, profile):
