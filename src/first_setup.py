@@ -29,16 +29,15 @@ import tempfile
 import requests
 import zipfile
 
-DCS_BIOS_VERSION = '0.7.49'
+DCS_BIOS_VERSION = '0.8.0'
 DCS_BIOS_URL = "https://github.com/DCS-Skunkworks/dcs-bios/releases/download/v{}/DCS-BIOS_{}.zip"
-DCS_BIOS_OPENBETA_URL="https://github.com/DCS-Skunkworks/dcs-bios/releases/download/latest/DCS-BIOS_openbeta.zip"
 aircraft = ["warthog", "apacheg", "apachep", "harrier", "hornet", "tomcat", "strikeeagle", "viper", "blackshark", "mirage"]
 aircraft_name = ["A-10C", "AH-64D CPG", "AH-64D Pilot", "AV-8B", "F/A-18C", "F-14A/B", "F-15E", "F-16C", "Ka-50", "M-2000C"]
 
 logger = get_logger(__name__)
 
 
-def install_dcs_bios(dcs_path, event):
+def install_dcs_bios(dcs_path):
     try:
         with open(dcs_path + "Scripts\\Export.lua", "r") as f:
             filestr = f.read()
@@ -51,10 +50,7 @@ def install_dcs_bios(dcs_path, event):
                 "\ndofile(lfs.writedir()..[[Scripts\\DCS-BIOS\\BIOS.lua]])\n")
 
     with tempfile.TemporaryDirectory() as tmp_dir:
-        if event == "update_button":
-            url = DCS_BIOS_URL.format(DCS_BIOS_VERSION, DCS_BIOS_VERSION)
-        else:
-            url = DCS_BIOS_OPENBETA_URL
+        url = DCS_BIOS_URL.format(DCS_BIOS_VERSION, DCS_BIOS_VERSION)
         response = requests.get(url, stream=True)
         response.raise_for_status()
 
@@ -142,8 +138,7 @@ def first_time_setup_gui(settings):
 
         [PyGUI.Text("DCS-BIOS:", (20,1), justification="right"), PyGUI.Text(dcs_bios_detected, key="dcs_bios"),
          PyGUI.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected"),
-         PyGUI.Button("Update to v" + DCS_BIOS_VERSION, key="update_button", disabled=dcs_bios_detected == "Not Detected"),
-         PyGUI.Button("Update to Openbeta", key="openbeta_button", disabled=dcs_bios_detected == "Not Detected")],
+         PyGUI.Button("Update to v" + DCS_BIOS_VERSION, key="update_button", disabled=dcs_bios_detected == "Not Detected")],
 
         [PyGUI.Text("The Way:", (20,1), justification="right"), PyGUI.Text(the_way_detected, key="the_way")],
     ]
@@ -195,7 +190,7 @@ def first_time_setup(settings):
         elif event == "install_button":
             try:
                 setup_logger.info("Installing DCS BIOS...")
-                install_dcs_bios(dcs_path, event)
+                install_dcs_bios(dcs_path)
                 gui.Element("install_button").Update(disabled=True)
                 gui.Element("accept_button").Update(disabled=False)
                 gui.Element("dcs_bios").Update(value="Installed")
@@ -203,10 +198,11 @@ def first_time_setup(settings):
                 gui.Element("dcs_bios").Update(value="Install failed")
                 setup_logger.error("DCS-BIOS failed to install", exc_info=True)
                 PyGUI.Popup(f"DCS-BIOS failed to install:\n{e}")
-        elif event in ("update_button", "openbeta_button"):
+        elif event == "update_button":
             try:
                 setup_logger.info("Updating DCS BIOS...")
-                install_dcs_bios(dcs_path, event)
+                install_dcs_bios(dcs_path)
+                gui.Element("update_button").Update(disabled=True)
                 gui.Element("dcs_bios").Update(value="Installed")
             except (FileExistsError, FileNotFoundError, requests.HTTPError) as e:
                 gui.Element("dcs_bios").Update(value="Update failed")
