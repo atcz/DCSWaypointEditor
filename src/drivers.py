@@ -1111,10 +1111,10 @@ class StrikeEagleDriver(Driver):
             "4": "F_UFC_KEY_W",
             "5": "F_UFC_KEY_M",
             "6": "F_UFC_KEY_E",
-            "7": "F_UFC_KEY__",
+            "7": "F_UFC_KEY_",
             "8": "F_UFC_KEY_S",
             "9": "F_UFC_KEY_C",
-            "0": "F_UFC_KEY__",
+            "0": "F_UFC_KEY_",
         }
 
         key = f"{ufc_key_names.get(num, 'F_UFC_KEY_')}{num}"
