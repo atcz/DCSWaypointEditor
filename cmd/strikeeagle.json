@@ -153,7 +153,7 @@
 		"activate": "1",
 		"addDepress": "true"
 	},
-	"F_UFC_KEY__7": {
+	"F_UFC_KEY_7": {
 		"device": "56",
 		"code": "3030",
 		"delay": "100",
@@ -195,7 +195,7 @@
 		"activate": "1",
 		"addDepress": "true"
 	},
-	"F_UFC_KEY__0": {
+	"F_UFC_KEY_0": {
 		"device": "56",
 		"code": "3036",
 		"delay": "100",
