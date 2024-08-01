@@ -131,7 +131,11 @@ class Driver:
         commands = list()
         for key in keylist:
             commands.append(self.cmdlist.get(key))
-        commandstr = json.dumps(commands) + "\n"
+        waypoints_obj = {
+            "payload": commands,
+            "type": "waypoints"
+        }
+        commandstr = json.dumps(waypoints_obj) + "\n"
 #        self.logger.info(keylist)
 #        self.logger.info(commandstr)
 
