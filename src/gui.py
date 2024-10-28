@@ -37,7 +37,7 @@ import webbrowser
 import base64
 import pyperclip
 from slpp import slpp as lua
-import PySimpleGUI as PyGUI
+import FreeSimpleGUI as sg
 import winsound
 import zlib
 
@@ -71,16 +71,16 @@ def unstrike(text):
 
 
 def exception_gui(exc_info):
-    return PyGUI.PopupOK("An exception occured and the program terminated execution:\n\n" + exc_info)
+    return sg.PopupOK("An exception occured and the program terminated execution:\n\n" + exc_info)
 
 
 def progress_gui(count, location):
     progress_layout = [
-        [PyGUI.Text('Processing:')],
-        [PyGUI.ProgressBar(count, orientation='h', size=(20, 20), key='progress')],
-        [PyGUI.Cancel()]
+        [sg.Text('Processing:')],
+        [sg.ProgressBar(count, orientation='h', size=(20, 20), key='progress')],
+        [sg.Cancel()]
     ]
-    return PyGUI.Window('Progress Indicator', progress_layout, location=location, modal=True, finalize=True)
+    return sg.Window('Progress Indicator', progress_layout, location=location, modal=True, finalize=True)
 
 
 def check_version(current_version):
@@ -98,7 +98,7 @@ def check_version(current_version):
 
     new_version = html.decode("utf-8")
     if new_version[1:6] > current_version[1:6]:
-        popup_answer = PyGUI.PopupYesNo(
+        popup_answer = sg.PopupYesNo(
             f"New version available: {new_version}\nDo you wish to update?")
 
         if popup_answer == "Yes":
@@ -134,13 +134,14 @@ class GUI:
         self.quick_capture = False
         self.values = None
         self.capturing = False
+        self.hotkey_ispressed = False
         self.enable_the_way = detect_the_way(self.editor.settings.get('PREFERENCES', 'dcs_path'))
         self.capture_key = try_get_setting(self.editor.settings, "capture_key", "ctrl+t")
         self.quick_capture_hotkey = try_get_setting(self.editor.settings, "quick_capture_hotkey", "ctrl+shift+t")
         self.camera_capture_hotkey = try_get_setting(self.editor.settings, "camera_capture_hotkey", "ctrl+shift+u")
         self.enter_aircraft_hotkey = try_get_setting(self.editor.settings, "enter_aircraft_hotkey", "")
         self.save_debug_images = try_get_setting(self.editor.settings, "save_debug_images", "false")
-        self.pysimplegui_theme = try_get_setting(self.editor.settings, "pysimplegui_theme", PyGUI.theme())
+        self.gui_theme = try_get_setting(self.editor.settings, "gui_theme", sg.theme())
         self.default_aircraft = try_get_setting(self.editor.settings, "default_aircraft", "hornet")
         self.enter_method = try_get_setting(self.editor.settings, "enter_method", "DCS-BIOS")
         self.software_version = software_version
@@ -176,7 +177,6 @@ class GUI:
         keyboard.add_hotkey(self.quick_capture_hotkey, self.toggle_quick_capture)
         keyboard.add_hotkey(self.camera_capture_hotkey, self.toggle_camera_capture)
         if self.enter_aircraft_hotkey != '':
-            self.hotkey_ispressed = False
             keyboard.add_hotkey(self.enter_aircraft_hotkey, self.set_enter_aircraft_flag)
 
     @staticmethod
@@ -196,118 +196,118 @@ class GUI:
     def create_gui(self):
         self.logger.debug("Creating GUI")
         
-        PyGUI.theme(self.pysimplegui_theme)
+        sg.theme(self.gui_theme)
 
         lattype_col = [
-            [PyGUI.Radio("N", group_id="lat_type", default=True, enable_events=True, key="North")],
-            [PyGUI.Radio("S", group_id="lat_type", enable_events=True, key="South")]
+            [sg.Radio("N", group_id="lat_type", default=True, enable_events=True, key="North")],
+            [sg.Radio("S", group_id="lat_type", enable_events=True, key="South")]
         ]
 
         latitude_col1 = [
-            [PyGUI.Text("Deg", pad=((9,5),3))],
-            [PyGUI.InputText(size=(5, 1), key="latDeg", 
+            [sg.Text("Deg", pad=((9,5),3))],
+            [sg.InputText(size=(5, 1), key="latDeg", 
                              pad=((9,5),3), enable_events=True)],
         ]
 
         latitude_col2 = [
-            [PyGUI.Text("Min")],
-            [PyGUI.InputText(size=(5, 1), key="latMin", enable_events=True)],
+            [sg.Text("Min")],
+            [sg.InputText(size=(5, 1), key="latMin", enable_events=True)],
         ]
 
         latitude_col3 = [
-            [PyGUI.Text("Sec")],
-            [PyGUI.InputText(size=(5, 1), key="latSec",
+            [sg.Text("Sec")],
+            [sg.InputText(size=(5, 1), key="latSec",
                              pad=(5, 3), enable_events=True)],
         ]
 
         lontype_col = [
-            [PyGUI.Radio("E", group_id="lon_type", default=True, enable_events=True, key="East")],
-            [PyGUI.Radio("W", group_id="lon_type", enable_events=True, key="West")]
+            [sg.Radio("E", group_id="lon_type", default=True, enable_events=True, key="East")],
+            [sg.Radio("W", group_id="lon_type", enable_events=True, key="West")]
         ]
 
         longitude_col1 = [
-            [PyGUI.Text("Deg")],
-            [PyGUI.InputText(size=(5, 1), key="lonDeg", enable_events=True)],
+            [sg.Text("Deg")],
+            [sg.InputText(size=(5, 1), key="lonDeg", enable_events=True)],
         ]
 
         longitude_col2 = [
-            [PyGUI.Text("Min")],
-            [PyGUI.InputText(size=(5, 1), key="lonMin", enable_events=True)],
+            [sg.Text("Min")],
+            [sg.InputText(size=(5, 1), key="lonMin", enable_events=True)],
         ]
 
         longitude_col3 = [
-            [PyGUI.Text("Sec")],
-            [PyGUI.InputText(size=(5, 1), key="lonSec",
+            [sg.Text("Sec")],
+            [sg.InputText(size=(5, 1), key="lonSec",
                              pad=(5, 3), enable_events=True)],
         ]
 
         elevation_col1 = [
-            [PyGUI.Text("Feet")],
-            [PyGUI.InputText(size=(6, 1), key="elevFeet", enable_events=True)]
+            [sg.Text("Feet")],
+            [sg.InputText(size=(6, 1), key="elevFeet", enable_events=True)]
         ]
 
         elevation_col2 = [
-            [PyGUI.Text("Meters")],
-            [PyGUI.InputText(size=(6, 1), key="elevMeters", enable_events=True)]
+            [sg.Text("Meters")],
+            [sg.InputText(size=(6, 1), key="elevMeters", enable_events=True)]
         ]
 
         frameelevationlayout = [
-            [PyGUI.Column(elevation_col1, pad=(9, 7)),
-             PyGUI.Column(elevation_col2)],
+            [sg.Column(elevation_col1, pad=(9, 7)),
+             sg.Column(elevation_col2)],
         ]
 
         framedatalayoutcol2 = [
-            [PyGUI.Text("Aircraft Type")],
-            [PyGUI.Combo(values=self.aircraft_name, readonly=True, enable_events=True,
+            [sg.Text("Aircraft Type")],
+            [sg.Combo(values=self.aircraft_name, readonly=True, enable_events=True,
                          key='aircraftSelector', size=(18,1))] ,
-            [PyGUI.Text("Name")],
-            [PyGUI.InputText(size=(20, 1), key="msnName", pad=(5, (2, 2)))],
-            [PyGUI.Text("Grid Reference")],
-            [PyGUI.InputText(size=(20, 1), key="mgrs", enable_events=True, pad=(5, (2, 6)))],
+            [sg.Text("Name")],
+            [sg.InputText(size=(20, 1), key="msnName", pad=(5, (2, 2)))],
+            [sg.Text("Grid Reference")],
+            [sg.InputText(size=(20, 1), key="mgrs", enable_events=True, pad=(5, (2, 6)))],
         ]
 
         framepresetlayout = [
-            [PyGUI.Text("Select preset location:")],
-            [PyGUI.Combo(values=[""] + sorted(self.editor.default_bases),
+            [sg.Text("Select preset location:")],
+            [sg.Combo(values=[""] + sorted(self.editor.default_bases),
                          readonly=False, enable_events=True, key='baseSelector'),
-             PyGUI.Button(button_text="F", key="presetFilter")]
+             sg.Button(button_text="F", key="presetFilter")]
         ]
 
         frameregionlayout = [
-            [PyGUI.Text("Select region:")],
-            [PyGUI.Combo(values=[""] + sorted(self.editor.base_files), readonly=True,
+            [sg.Text("Select region:")],
+            [sg.Combo(values=[""] + sorted(self.editor.base_files), readonly=True,
                          enable_events=True, key='regionSelector', size=(19,1), pad=(6, 6))],
         ]
 
         framewptypelayout = [
-            [PyGUI.Combo(values=self.wp_types, default_value=self.wp_types[0], readonly=True, enable_events=True,
+            [sg.Combo(values=self.wp_types, default_value=self.wp_types[0], readonly=True, enable_events=True,
                          key='wpType', size=(7,len(self.wp_types))),
-             PyGUI.Text("Sequence:", pad=((0, 1), 3),
+             sg.Text("Sequence:", pad=((0, 1), 3),
                         key="sequence_text", auto_size_text=False, size=(8, 1)),
-             PyGUI.Combo(values=("None", 1, 2, 3), default_value="None",
+             sg.Combo(values=("None", 1, 2, 3), default_value="None",
                          auto_size_text=False, size=(5, 1), readonly=True,
                          key="sequence", enable_events=True)],
-            [PyGUI.Button("Capture Coordinates", disabled=self.capture_button_disabled, key="capture",
+            [sg.Button("Capture Coordinates", disabled=self.capture_button_disabled, key="capture",
                 size=(22, 1), pad=(10, (10, 3)))],
-            [PyGUI.Button("Capture To Profile", disabled=self.capture_button_disabled, key="quick_capture",
+            [sg.Button("Capture To Profile", disabled=self.capture_button_disabled, key="quick_capture",
                 size=(22, 1), pad=(10, (3, 3)))],
-            [PyGUI.Button("Capture F10/F11 View", disabled=(not self.enable_the_way), key="camera_capture",
+            [sg.Button("Capture F10/F11 View", disabled=(not self.enable_the_way), key="camera_capture",
                 size=(22, 1), pad=(10, (3, 3)))],
-            [PyGUI.Text(self.capture_status, key="capture_status", auto_size_text=False, 
+            [sg.Text(self.capture_status, key="capture_status", auto_size_text=False, 
                 size=(20, 1), pad=(10, 3))],
         ]
 
-        framelongitude = PyGUI.Frame("Longitude", [
-            [PyGUI.Column(lontype_col), PyGUI.Column(longitude_col1),
-             PyGUI.Column(longitude_col2), PyGUI.Column(longitude_col3)]
+        framelongitude = sg.Frame("Longitude", [
+            [sg.Column(lontype_col), sg.Column(longitude_col1),
+             sg.Column(longitude_col2), sg.Column(longitude_col3)]
         ])
 
-        framelatitude = PyGUI.Frame("Latitude", [
-            [PyGUI.Column(lattype_col), PyGUI.Column(latitude_col1),
-             PyGUI.Column(latitude_col2), PyGUI.Column(latitude_col3)]
+        framelatitude = sg.Frame("Latitude", [
+            [sg.Column(lattype_col), sg.Column(latitude_col1),
+             sg.Column(latitude_col2), sg.Column(latitude_col3)]
         ])
 
-        frameelevation = PyGUI.Frame(
+        frameelevation = sg.Frame(
             "Elevation", frameelevationlayout)
 
         framepositionlayout = [
@@ -316,30 +316,30 @@ class GUI:
              frameelevation],
         ]
 
-        frameposition = PyGUI.Frame("Position", framepositionlayout)
-        framepreset = PyGUI.Frame("Preset", framepresetlayout)
-        frameregion = PyGUI.Frame("Region", frameregionlayout)
-        framedata = PyGUI.Frame("Data", framedatalayoutcol2)
-        framewptype = PyGUI.Frame("Waypoint", framewptypelayout)
+        frameposition = sg.Frame("Position", framepositionlayout)
+        framepreset = sg.Frame("Preset", framepresetlayout)
+        frameregion = sg.Frame("Region", frameregionlayout)
+        framedata = sg.Frame("Data", framedatalayoutcol2)
+        framewptype = sg.Frame("Waypoint", framewptypelayout)
 
         col0 = [
-            [PyGUI.Text("Select profile:")],
-            [PyGUI.Combo(values=[""] + sorted(self.get_profile_names()), readonly=False,
+            [sg.Text("Select profile:")],
+            [sg.Combo(values=[""] + sorted(self.get_profile_names()), readonly=False,
                          enable_events=True, key='profileSelector', size=(29, 1)),
-             PyGUI.Button(button_text="F", key="profileFilter")],
-            [PyGUI.Listbox(values=list(), size=(33, 14),
+             sg.Button(button_text="F", key="profileFilter")],
+            [sg.Listbox(values=list(), size=(33, 14),
                            enable_events=True, key='activesList')],
-            # [PyGUI.Button("Move up", size=(12, 1)),
-            # PyGUI.Button("Move down", size=(12, 1))],
+            # [sg.Button("Move up", size=(12, 1)),
+            # sg.Button("Move down", size=(12, 1))],
         ]
 
         col1 = [
             [framepreset, frameregion],
             [framedata, framewptype],
-            [PyGUI.Button("Add", size=(8, 1)),
-             PyGUI.Button("Update", size=(8, 1)),
-             PyGUI.Button("Remove", size=(8, 1)),
-             PyGUI.Button("Send To Aircraft", size=(14, 1), key="Send")],
+            [sg.Button("Add", size=(8, 1)),
+             sg.Button("Update", size=(8, 1)),
+             sg.Button("Remove", size=(8, 1)),
+             sg.Button("Send To Aircraft", size=(14, 1), key="Send")],
         ]
 
         menudef = [['&File',
@@ -355,17 +355,17 @@ class GUI:
                   ]
 
         colmain1 = [
-            [PyGUI.MenuBar(menudef)],
-            [PyGUI.Column(col1)],
+            [sg.MenuBar(menudef)],
+            [sg.Column(col1)],
         ]
 
         layout = [
-            [PyGUI.Column(col0), PyGUI.Column(colmain1)],
+            [sg.Column(col0), sg.Column(colmain1)],
             [frameposition],
-            [PyGUI.Text(f"Version: {self.software_version}")]
+            [sg.Text(f"Version: {self.software_version}")]
         ]
 
-        return PyGUI.Window('DCS Waypoint Editor', layout, finalize=True)
+        return sg.Window('DCS Waypoint Editor', layout, finalize=True)
 
     def set_sequence_station_selector(self, mode, station=None):
         if mode is None:
@@ -547,7 +547,7 @@ class GUI:
         except ValueError:
             psize = (273, 101)
             pposition = self.calculate_popup_position(psize)
-            PyGUI.Popup("Error: missing data or invalid data format.", location=pposition)
+            sg.Popup("Error: missing data or invalid data format.", location=pposition)
 
         return True
 
@@ -557,7 +557,7 @@ class GUI:
         pyperclip.copy(encoded)
         psize = (313, 101)
         pposition = self.calculate_popup_position(psize)
-        PyGUI.Popup('Encoded string copied to clipboard, paste away!', location=pposition)
+        sg.Popup('Encoded string copied to clipboard, paste away!', location=pposition)
 
     def import_from_string(self):
         # Load the encoded string from the clipboard
@@ -571,10 +571,10 @@ class GUI:
             self.editor.set_driver(self.profile.aircraft)
             self.update_waypoints_list(set_to_first=True)
             self.update_profiles_list(self.profile.profilename)
-            PyGUI.Popup('Loaded waypoint data from encoded string successfully.', location=pposition)
+            sg.Popup('Loaded waypoint data from encoded string successfully.', location=pposition)
         except Exception as e:
             self.logger.error(e, exc_info=True)
-            PyGUI.Popup('Failed to parse profile from string.', location=pposition)
+            sg.Popup('Failed to parse profile from string.', location=pposition)
 
     def import_NS430(self, text):
         # Load NS430 dat
@@ -591,7 +591,7 @@ class GUI:
                     self.logger.error(e, exc_info=True)
                     psize = (313, 101)
                     pposition = self.calculate_popup_position(psize)
-                    PyGUI.Popup('Data error importing NS430 fixes.', location=pposition)
+                    sg.Popup('Data error importing NS430 fixes.', location=pposition)
 
     def load_new_profile(self):
         self.profile = Profile('')
@@ -774,9 +774,9 @@ class GUI:
         overwrite = "OK"
         psize = (351, 133)
         pposition = self.calculate_popup_position(psize)
-        name = PyGUI.PopupGetText("Enter profile name:", "Saving profile", location=pposition)
+        name = sg.PopupGetText("Enter profile name:", "Saving profile", location=pposition)
         if name in profiles:
-            overwrite = PyGUI.PopupOKCancel("Profile " + name + " already exists, overwrite?", location=pposition)
+            overwrite = sg.PopupOKCancel("Profile " + name + " already exists, overwrite?", location=pposition)
         if name and overwrite == "OK":
             self.profile.save(name)
             self.update_profiles_list(name)
@@ -860,7 +860,7 @@ class GUI:
                 elif event == "Import NS430 from file":
                     psize = (431, 133)
                     pposition = self.calculate_popup_position(psize)
-                    filename = PyGUI.PopupGetFile("Enter file name:", "Importing NS430 Data", location=pposition)
+                    filename = sg.PopupGetFile("Enter file name:", "Importing NS430 Data", location=pposition)
                     if filename is None:
                         continue
     
@@ -919,7 +919,7 @@ class GUI:
                         continue
                     psize = (264, 133)
                     pposition = self.calculate_popup_position(psize)
-                    confirm_delete = PyGUI.PopupOKCancel(f"Confirm delete {self.profile.profilename}?", location=pposition)
+                    confirm_delete = sg.PopupOKCancel(f"Confirm delete {self.profile.profilename}?", location=pposition)
                     if confirm_delete == "OK":
                         Profile.delete(self.profile.profilename)
                         profiles = sorted(self.get_profile_names())
@@ -942,12 +942,12 @@ class GUI:
                     except DoesNotExist:
                         psize = (264, 133)
                         pposition = self.calculate_popup_position(psize)
-                        PyGUI.Popup("Profile not found.", location=pposition)
+                        sg.Popup("Profile not found.", location=pposition)
     
                 elif event == "Save as Encoded file":
                     psize = (431, 133)
                     pposition = self.calculate_popup_position(psize)
-                    filename = PyGUI.PopupGetFile("Enter file name:", "Exporting profile", default_extension=".json",
+                    filename = sg.PopupGetFile("Enter file name:", "Exporting profile", default_extension=".json",
                                                 save_as=True, location=pposition, file_types=(("JSON File", "*.json"),))
     
                     if filename is None:
@@ -961,12 +961,12 @@ class GUI:
                     pyperclip.copy(profile_string)
                     psize = (264, 133)
                     pposition = self.calculate_popup_position(psize)
-                    PyGUI.Popup("Profile copied as plain text to clipboard", location=pposition)
+                    sg.Popup("Profile copied as plain text to clipboard", location=pposition)
     
                 elif event == "Load from Encoded file":
                     psize = (431, 133)
                     pposition = self.calculate_popup_position(psize)
-                    filename = PyGUI.PopupGetFile("Enter file name:", "Importing profile", location=pposition)
+                    filename = sg.PopupGetFile("Enter file name:", "Importing profile", location=pposition)
     
                     if filename is None:
                         continue
@@ -1079,28 +1079,28 @@ class GUI:
                             "along with this program. If not, see <https://www.gnu.org/licenses/>."
                     url = 'https://github.com/atcz/DCSWaypointEditor'
                     layout = [
-                        [PyGUI.Column([
-                            [PyGUI.Text(f"{' '*10}{text}", justification='center')],
-                            [PyGUI.Text(url, enable_events=True, text_color='blue', key='-LINK-')]
+                        [sg.Column([
+                            [sg.Text(f"{' '*10}{text}", justification='center')],
+                            [sg.Text(url, enable_events=True, text_color='blue', key='-LINK-')]
                         ], vertical_alignment='center', justification='center')],
-                    [PyGUI.Frame("GNU General Public License", [
-                        [PyGUI.Text(gpltext, pad=(40,(10,20)))],
+                    [sg.Frame("GNU General Public License", [
+                        [sg.Text(gpltext, pad=(40,(10,20)))],
                         ])
                     ],
-                        [PyGUI.Column([
-                            [PyGUI.Button('OK', size=(10, 1), pad=(10, 20), bind_return_key=True)]
+                        [sg.Column([
+                            [sg.Button('OK', size=(10, 1), pad=(10, 20), bind_return_key=True)]
                         ], vertical_alignment='center', justification='center')]
                     ]
     
                     # Create the window
                     psize = (513, 392)
                     pposition = self.calculate_popup_position(psize)
-                    pwindow = PyGUI.Window('Information', layout, location=pposition, finalize=True, modal=True)
+                    pwindow = sg.Window('Information', layout, location=pposition, finalize=True, modal=True)
     
                     # Event loop
                     while True:
                         event, _ = pwindow.read()
-                        if event == PyGUI.WINDOW_CLOSED or event == 'OK':
+                        if event == sg.WINDOW_CLOSED or event == 'OK':
                             break
                         elif event == '-LINK-':
                             webbrowser.open(url)

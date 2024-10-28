@@ -22,7 +22,7 @@ from configparser import ConfigParser
 from shutil import copytree, rmtree
 from src.logger import get_logger
 from pathlib import Path
-import PySimpleGUI as PyGUI
+import FreeSimpleGUI as sg
 import os
 import glob
 import tempfile
@@ -64,7 +64,7 @@ def install_dcs_bios(dcs_path):
             try:
                 rmtree(dcs_path + "Scripts\\DCS-BIOS", ignore_errors=True)
                 copytree(tmp_dir + '\\DCS-BIOS', dcs_path + "Scripts\\DCS-BIOS")
-                PyGUI.Popup(f'DCS-BIOS successfully downloaded and installed.')
+                sg.Popup(f'DCS-BIOS successfully downloaded and installed.')
             except:
                 logger.debug(f"DCS Bios install failed.")
 
@@ -103,48 +103,48 @@ def first_time_setup_gui(settings):
     the_way_detected = "Detected" if detect_the_way(settings.get(section, 'dcs_path')) else "Not Detected"
 
     layout = [
-        [PyGUI.Text("DCS User Folder Path:", (20,1), justification="right"),
-         PyGUI.Input(settings.get(section, 'dcs_path'), key="dcs_path", enable_events=True),
-         PyGUI.Button("Browse...", button_type=PyGUI.BUTTON_TYPE_BROWSE_FOLDER, target="dcs_path")],
+        [sg.Text("DCS User Folder Path:", (20,1), justification="right"),
+         sg.Input(settings.get(section, 'dcs_path'), key="dcs_path", enable_events=True),
+         sg.Button("Browse...", button_type=sg.BUTTON_TYPE_BROWSE_FOLDER, target="dcs_path")],
 
-        [PyGUI.Text("Tesseract.exe Path:", (20,1), justification="right"),
-         PyGUI.Input(settings.get(section, 'tesseract_path'), key="tesseract_path"),
-         PyGUI.Button("Browse...", button_type=PyGUI.BUTTON_TYPE_BROWSE_FILE, target="tesseract_path")],
+        [sg.Text("Tesseract.exe Path:", (20,1), justification="right"),
+         sg.Input(settings.get(section, 'tesseract_path'), key="tesseract_path"),
+         sg.Button("Browse...", button_type=sg.BUTTON_TYPE_BROWSE_FILE, target="tesseract_path", file_types = (('EXE Files', '*.exe'),))],
 
-        [PyGUI.Text("Capture Hotkey:", (20,1), justification="right"),
-         PyGUI.Input(settings.get(section, 'capture_key'), key="capture_key")],
+        [sg.Text("Capture Hotkey:", (20,1), justification="right"),
+         sg.Input(settings.get(section, 'capture_key'), key="capture_key")],
 
-        [PyGUI.Text("Capture To Profile Hotkey:", (20,1), justification="right"),
-         PyGUI.Input(settings.get(section, "quick_capture_hotkey"), key="quick_capture_hotkey")],
+        [sg.Text("Capture To Profile Hotkey:", (20,1), justification="right"),
+         sg.Input(settings.get(section, "quick_capture_hotkey"), key="quick_capture_hotkey")],
 
-        [PyGUI.Text("Capture F10/F11 Hotkey:", (20,1), justification="right"),
-         PyGUI.Input(settings.get(section, "camera_capture_hotkey"), key="camera_capture_hotkey")],
+        [sg.Text("Capture F10/F11 Hotkey:", (20,1), justification="right"),
+         sg.Input(settings.get(section, "camera_capture_hotkey"), key="camera_capture_hotkey")],
 
-        [PyGUI.Text("Send To Aircraft Hotkey:", (20,1), justification="right"),
-         PyGUI.Input(settings.get(section, 'enter_aircraft_hotkey'), key="enter_aircraft_hotkey")],
+        [sg.Text("Send To Aircraft Hotkey:", (20,1), justification="right"),
+         sg.Input(settings.get(section, 'enter_aircraft_hotkey'), key="enter_aircraft_hotkey")],
 
-        [PyGUI.Text("Default Aircraft:", (20,1), justification="right"),
-         PyGUI.Combo(values=aircraft_name, readonly=True,
+        [sg.Text("Default Aircraft:", (20,1), justification="right"),
+         sg.Combo(values=aircraft_name, readonly=True,
             default_value=aircraft_name[aircraft.index(settings.get(section, 'default_aircraft'))],
             enable_events=True, key='default_aircraft', size=(30, 1))],
 
-        [PyGUI.Text("PySimpleGUI Theme:", (20,1), justification="right"),
-         PyGUI.Combo(values=PyGUI.theme_list(), readonly=True, default_value=settings.get(section, 'pysimplegui_theme'),
-            enable_events=True, key='pysimplegui_theme', size=(30, 1))],
+        [sg.Text("GUI Theme:", (20,1), justification="right"),
+         sg.Combo(values=sg.theme_list(), readonly=True, default_value=settings.get(section, 'gui_theme'),
+            enable_events=True, key='gui_theme', size=(30, 1))],
 
-        [PyGUI.Text("Send To Aircraft Via:", (20,1), justification="right"),
-         PyGUI.Combo(values=["DCS-BIOS", "TheWay.lua"], readonly=True, default_value=settings.get(section, 'enter_method'),
+        [sg.Text("Send To Aircraft Via:", (20,1), justification="right"),
+         sg.Combo(values=["DCS-BIOS", "TheWay.lua"], readonly=True, default_value=settings.get(section, 'enter_method'),
             enable_events=True, key='enter_method', size=(30, 1))],
 
-        [PyGUI.Text("DCS-BIOS:", (20,1), justification="right"), PyGUI.Text(dcs_bios_detected, key="dcs_bios"),
-         PyGUI.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected"),
-         PyGUI.Button("Update to v" + DCS_BIOS_VERSION, key="update_button", disabled=dcs_bios_detected == "Not Detected")],
+        [sg.Text("DCS-BIOS:", (20,1), justification="right"), sg.Text(dcs_bios_detected, key="dcs_bios"),
+         sg.Button("Install", key="install_button", disabled=dcs_bios_detected == "Detected"),
+         sg.Button("Update to v" + DCS_BIOS_VERSION, key="update_button", disabled=dcs_bios_detected == "Not Detected")],
 
-        [PyGUI.Text("The Way:", (20,1), justification="right"), PyGUI.Text(the_way_detected, key="the_way")],
+        [sg.Text("The Way:", (20,1), justification="right"), sg.Text(the_way_detected, key="the_way")],
     ]
 
-    return PyGUI.Window("DCS Waypoint Editor Settings", [[PyGUI.Frame("Settings", layout)],
-                                             [PyGUI.Button("Accept", key="accept_button", pad=((270, 1), 1),
+    return sg.Window("DCS Waypoint Editor Settings", [[sg.Frame("Settings", layout)],
+                                             [sg.Button("Accept", key="accept_button", pad=((270, 1), 1),
                                                            disabled=dcs_bios_detected != "Detected")]], modal=True)
 
 
@@ -167,7 +167,7 @@ def first_time_setup(settings):
         settings.set(section, "camera_capture_hotkey", "ctrl+shift+u")
         settings.set(section, "enter_aircraft_hotkey", '')
         settings.set(section, "log_raw_tesseract_output", "false")
-        settings.set(section, "pysimplegui_theme", PyGUI.theme())
+        settings.set(section, "gui_theme", sg.theme())
         settings.set(section, "default_aircraft", "hornet")
         settings.set(section, "enter_method", "DCS-BIOS")
 
@@ -197,7 +197,7 @@ def first_time_setup(settings):
             except (FileExistsError, FileNotFoundError, requests.HTTPError) as e:
                 gui.Element("dcs_bios").Update(value="Install failed")
                 setup_logger.error("DCS-BIOS failed to install", exc_info=True)
-                PyGUI.Popup(f"DCS-BIOS failed to install:\n{e}")
+                sg.Popup(f"DCS-BIOS failed to install:\n{e}")
         elif event == "update_button":
             try:
                 setup_logger.info("Updating DCS BIOS...")
@@ -207,7 +207,7 @@ def first_time_setup(settings):
             except (FileExistsError, FileNotFoundError, requests.HTTPError) as e:
                 gui.Element("dcs_bios").Update(value="Update failed")
                 setup_logger.error("DCS-BIOS failed to update", exc_info=True)
-                PyGUI.Popup(f"DCS-BIOS failed to update:\n{e}")
+                sg.Popup(f"DCS-BIOS failed to update:\n{e}")
         elif event == "dcs_path":
             dcs_path.replace('/','\\')
             dcs_bios_detected = detect_dcs_bios(values["dcs_path"])
@@ -224,14 +224,14 @@ def first_time_setup(settings):
                 gui.Element("the_way").Update(value="Detected")
             else:
                 gui.Element("the_way").Update(value="Not detected")
-        elif event == "pysimplegui_theme":
-            PyGUI.theme(values['pysimplegui_theme'])
-            keep_new_theme = PyGUI.popup_get_text(
-                                'This is {}\nChanges are applied after restart.'.format(values['pysimplegui_theme']),
-                                title = 'Theme Sample', default_text = values['pysimplegui_theme'])
+        elif event == "gui_theme":
+            sg.theme(values['gui_theme'])
+            keep_new_theme = sg.popup_get_text(
+                                'This is {}\nChanges are applied after restart.'.format(values['gui_theme']),
+                                title = 'Theme Sample', default_text = values['gui_theme'])
             if keep_new_theme is None:
-                gui.Element("pysimplegui_theme").Update(settings.get(section, "pysimplegui_theme"))
-                PyGUI.theme(settings.get(section, "pysimplegui_theme"))
+                gui.Element("gui_theme").Update(settings.get(section, "gui_theme"))
+                sg.theme(settings.get(section, "gui_theme"))
 
     settings.set(section, "dcs_path", dcs_path or default_dcs_path)
     settings.set(section, "tesseract_path", values.get("tesseract_path") or default_tesseract_path)
@@ -239,9 +239,10 @@ def first_time_setup(settings):
     settings.set(section, "quick_capture_hotkey", values.get("quick_capture_hotkey") or "ctrl+shift+t")
     settings.set(section, "camera_capture_hotkey", values.get("camera_capture_hotkey") or "ctrl+shift+u")
     settings.set(section, "enter_aircraft_hotkey", values.get("enter_aircraft_hotkey") or '')
-    settings.set(section, "pysimplegui_theme", values.get("pysimplegui_theme") or PyGUI.theme())
+    settings.set(section, "gui_theme", values.get("gui_theme") or sg.theme())
     settings.set(section, "default_aircraft", aircraft[aircraft_name.index(values.get("default_aircraft"))] or "hornet")
     settings.set(section, "enter_method", values.get("enter_method") or "DCS-BIOS")
+    settings.remove_option(section, "pysimplegui_theme")
 
     with open("settings.ini", "w+") as f:
         settings.write(f)
