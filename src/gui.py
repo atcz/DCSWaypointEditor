@@ -269,14 +269,16 @@ class GUI:
         framepresetlayout = [
             [sg.Text("Select preset location:")],
             [sg.Combo(values=[""] + sorted(self.editor.default_bases),
-                         readonly=False, enable_events=True, key='baseSelector'),
+                         readonly=False, enable_events=True, key='baseSelector',
+                         size=(21), auto_size_text=False),
              sg.Button(button_text="F", key="presetFilter")]
         ]
 
         frameregionlayout = [
             [sg.Text("Select region:")],
             [sg.Combo(values=[""] + sorted(self.editor.base_files), readonly=True,
-                         enable_events=True, key='regionSelector', size=(19,1), pad=(6, 6))],
+                         enable_events=True, key='regionSelector', size=(19), pad=(6, 6),
+                         auto_size_text=False)],
         ]
 
         framewptypelayout = [
@@ -325,7 +327,8 @@ class GUI:
         col0 = [
             [sg.Text("Select profile:")],
             [sg.Combo(values=[""] + sorted(self.get_profile_names()), readonly=False,
-                         enable_events=True, key='profileSelector', size=(29, 1)),
+                         enable_events=True, key='profileSelector', size=(29),
+                         auto_size_text=False),
              sg.Button(button_text="F", key="profileFilter")],
             [sg.Listbox(values=list(), size=(33, 14),
                            enable_events=True, key='activesList')],
